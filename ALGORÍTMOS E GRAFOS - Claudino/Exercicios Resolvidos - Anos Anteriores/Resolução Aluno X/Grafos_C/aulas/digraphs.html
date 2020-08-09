@@ -1,0 +1,305 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/digraphs.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:38 GMT -->
+<HEAD>
+<TITLE>Algoritmos para Grafos: Digrafos e grafos</TITLE>
+<META NAME="Author" CONTENT="Paulo Feofiloff">
+<META name="language" content="Portuguese">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1"> 
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<LINK rel="stylesheet" href="code.css" type="text/css">
+</HEAD>
+<BODY>
+
+
+
+
+
+
+
+<p class="top">
+<a href="../index.html#contents">Algoritmos em C para Grafos via Sedgewick</a>&nbsp;
+
+
+<h1>Digrafos</h1>
+
+
+<p>Esta página define um objeto combinatório conhecido como&nbsp;
+<i>digrafo</i>&nbsp;
+ou&nbsp; <i>grafo dirigido</i>&nbsp; ou ainda&nbsp;
+<i>grafo orientado</i>.&nbsp;
+Digrafos são importantes modelos para uma grande variedade de problemas 
+de engenharia,
+computação, 
+matemática, 
+economia, 
+biologia, 
+etc.
+ 
+
+
+
+<p>
+(Esta página corresponde aproximadamente
+às seções 17.0 e 17.1 (Glossary)
+do capítulo&nbsp;17 (Graph Properties and Types)
+e às seções 
+19.0 e 19.1 (Glossary and Rules of the Game) 
+do capítulo&nbsp;19 (Digraphs and DAGs) do livro de Sedgewick.)
+
+
+
+
+
+
+
+<h2 id="digraph">Definições básicas</h2>
+
+<p>Um&nbsp; <span class="dfn">digrafo</span>&nbsp;
+(=&nbsp;<i>digraph</i> =&nbsp;<i>directed graph</i>)&nbsp; 
+é uma coisa que consiste em dois conjuntos:&nbsp;
+um conjunto de coisas conhecidas como 
+<span class="dfn">vértices</span>
+e um conjunto de coisas conhecidas como
+<span class="dfn">arcos</span>.&nbsp;
+<span class="dim">[Sedgewick diz <i>directed edge</i>
+em lugar de <i>arc</i>.]</span>&nbsp;
+Cada arco é um par ordenado de vértices.&nbsp;
+O&nbsp;primeiro vértice do par é 
+a <span class="dfn">ponta inicial</span> do arco
+e o segundo é a 
+<span class="dfn">ponta final</span>.
+
+
+
+<p><span class="dim">[A palavra <i>digrafo</i> 
+não consta dos dicionários,
+mas é cômoda e corresponde bem ao termo <i>digraph</i> em inglês,
+que já está bastante arraigado.&nbsp;
+Alguns autores descuidados 
+
+escrevem "dígrafo", com acento;
+isso não faz sentido algum e deve ser evitado a todo custo.]</span>
+
+<p id="loop">A ponta final de todo arco 
+é diferente de sua ponta inicial.&nbsp;
+<span class="dim">[O&nbsp;livro de Sedgewick 
+admite arcos cuja ponta final é igual à inicial.
+Arcos desse tipo são conhecidos como 
+<span class="dfn">laços</span> (=&nbsp;<i>loops</i>).
+Nossos digrafos não terão laços.]</span>&nbsp;&nbsp;
+Um arco com ponta inicial <tt>v</tt> 
+e ponta final <tt>w</tt> será denotado por
+
+<p class="display"><tt>v-w</tt>&nbsp;.
+
+<p>(É&nbsp;preciso estar atento ao contexto 
+para não confundir essa expressão
+com "<tt>v</tt>&nbsp;menos&nbsp;<tt>w</tt>".)&nbsp;
+A presença de um arco&nbsp; <tt>v-w</tt>&nbsp; 
+é independente da presença do 
+arco&nbsp;<tt>w-v</tt>:&nbsp;
+o digrafo 
+pode ter os arcos <tt>v-w</tt> e <tt>w-v</tt>,
+pode ter apenas um deles,
+ou pode não ter nenhum deles.
+
+<p>Dizemos que um vértice&nbsp; <tt>w</tt>&nbsp;
+é <span class="dfn">vizinho de</span> um vértice&nbsp;
+<tt>v</tt>&nbsp; se&nbsp; <tt>v-w</tt>&nbsp;
+é um arco do digrafo.&nbsp;
+Dizemos também, nessa circunstância,
+que <tt>w</tt> é 
+<span class="dfn">adjacente a</span>&nbsp;&nbsp;<tt>v</tt>.&nbsp;
+<span class="dim">[É&nbsp;mais comum e menos ambíguo dizer que 
+<tt>v</tt>&nbsp;<em>domina</em>&nbsp;<tt>w</tt>
+quando <tt>v-w</tt> é um arco.
+Infelizmente, Sedgewick não usa essa terminologia.]</span>
+ 
+
+
+
+
+
+<h2>Exemplo</h2>
+
+<p>Uma boa maneira de especificar um digrafo é 
+exibir o seu conjunto de arcos.&nbsp;&nbsp; 
+Por exemplo, o conjunto de arcos
+
+<p class="display">
+<tt>0-1 0-5 1-0 1-5 2-4 3-1 5-3</tt>
+
+<p>define um digrafo sobre o conjunto de vértices&nbsp;
+<tt>0..5</tt>.&nbsp;&nbsp;
+É claro que um digrafo definido dessa maneira 
+não tem vértices isolados.
+
+
+
+
+
+
+
+
+
+
+<h2 id="antiparallel">Arcos anti-paralelos e "arcos paralelos"</h2>
+
+
+
+<p>Dois arcos são&nbsp;
+<span class="dfn">anti-paralelos</span>&nbsp;
+se a ponta inicial de um é a ponta final do outro
+e vice-versa.
+Em outras palavras, 
+dois arcos são anti-paralelos se um é da forma&nbsp; <tt>v-w</tt>&nbsp;
+e o outro da forma&nbsp;&nbsp;<tt>w-v</tt>.
+
+
+
+<p id="parallel">
+Poderíamos tentar dizer que dois arcos são <i>paralelos</i> 
+se têm a mesma ponta inicial e a mesma ponta final.&nbsp;
+Mas esse conceito não faz sentido,
+uma vez que arcos são meros pares de vértices
+e portanto dois arcos diferentes 
+não podem ter a mesma ponta inicial e a mesma ponta final.&nbsp;
+<span class="dim">[O&nbsp;livro de Sedgewick 
+permite arcos paralelos, tratando-os como "cópias" distintas 
+de um mesmo arco.]</span>&nbsp;&nbsp;
+Nossos digrafos não têm "arcos paralelos".
+
+
+
+
+  
+<h2 id="symmetric">Digrafos simétricos</h2>
+
+<p>Um digrafo é&nbsp;
+<span class="dfn">simétrico</span>&nbsp;
+se cada um de seus arcos é anti-paralelo a algum outro arco:&nbsp;
+para cada arco&nbsp; <tt>v-w</tt>,&nbsp; 
+o digrafo também tem o arco&nbsp;&nbsp;<tt>w-v</tt>.
+
+<p>Por exemplo,
+o conjunto de arcos abaixo define um digrafo simétrico.
+
+<p class="display">
+<tt>0-1 1-0 0-5 5-0 1-5 5-1 2-4 4-2 3-1 1-3 5-3 3-5</tt>
+
+
+
+
+
+
+
+
+<h2 id="indegreeoutdegree">Grau de entrada e grau de saída</h2>
+
+<p>O 
+<span class="dfn">grau de saída</span>
+(=&nbsp;<i>outdegree</i>)
+de um vértice <tt>v</tt> num digrafo é o número de arcos 
+que têm ponta inicial&nbsp;<tt>v</tt>.&nbsp;
+O&nbsp;<span class="dfn">grau de entrada</span>
+(=&nbsp;<i>indegree</i>)
+de um vértice <tt>w</tt> num digrafo é o número de arcos 
+que têm ponta final&nbsp;<tt>w</tt>.
+
+<p>Num digrafo simétrico,
+todo vértice tem grau de entrada igual ao grau de saída.
+
+
+<p id="sourceandsink">Uma 
+<span class="dfn">fonte</span>
+(=&nbsp;<i>source</i>)
+é um vértice que tem grau de entrada nulo.
+Um <span class="dfn">sorvedouro</span>
+(=&nbsp;<i>sink</i>)
+é um vértice que tem grau de saída nulo.
+
+<p id="isolated">Um vértice é 
+<span class="dfn">isolado</span>
+se seu grau de entrada e seu grau de saída são ambos nulos.&nbsp;
+É claro que um digrafo sem vértices isolados 
+é completamente definido pelo seu conjunto de arcos.
+
+
+
+
+
+
+<h2 id="AleqV2">Número de arcos</h2>
+
+<p>Quantos arcos, no máximo, tem um digrafo com <tt>V</tt> 
+vértices?&nbsp;&nbsp;
+
+
+Não é difícil verificar que a resposta a essa pergunta é o produto
+
+<p class="display"><tt>V&middot;(V-1)</tt>.
+
+<p>Para valores grandes de <tt>V</tt>,
+esse número é apenas um pouco menor que&nbsp;&nbsp;<tt>V<sup>2</sup></tt>.
+
+
+<p id="complete">
+Um digrafo é&nbsp; <span class="dfn">completo</span>&nbsp;
+se todo par ordenado de vértices distintos é um arco.&nbsp;
+Um digrafo completo com <tt>V</tt> vértices
+tem exatamente <tt>V&middot;(V-1)</tt> arcos.
+
+<p id="dense">
+Um digrafo é denso se tem muitos arcos
+em relação ao número de vértices.&nbsp;
+Mais precisamente, 
+um digrafo é <span class="dfn">denso</span>
+se o seu número de arcos é proporcional ao quadrado
+do número de vértices.&nbsp;&nbsp;
+É&nbsp;claro que essa definição só faz sentido 
+para coleções infinitas de digrafos,
+e não para digrafos individuais.
+
+<p id="sparse">Um digrafo é <span class="dfn">esparso</span>
+se for o complemento de um digrafo denso,
+ou seja,
+se o número de pares ordenados de vértices que não são arcos 
+for proporcional ao quadrado do número de vértices.&nbsp;
+É&nbsp;claro que essa definição só faz sentido 
+para coleções infinitas de digrafos,
+e não para digrafos individuais.
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=1>
+
+<li class="exr">
+Quantos digrafos diferentes existem com conjunto de vértices&nbsp; 
+<tt>0..V-1</tt>&nbsp; 
+e&nbsp;&nbsp;<tt>A</tt>&nbsp; arcos?
+
+
+</ol>
+
+
+
+
+
+
+
+
+<p>&nbsp;
+<hr>
+<small>
+
+Last modified: Tue Jul 24 07:58:26 BRT 2007
+</small>
+
+</BODY>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/digraphs.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:38 GMT -->
+</HTML>

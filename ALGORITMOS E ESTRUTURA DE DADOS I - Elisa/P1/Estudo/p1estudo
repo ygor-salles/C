@@ -1,0 +1,37 @@
+		
+		Tad - Tipo Abstrato de dados
+
+.Tipo de dados
+	ex: int (1,2,3,4...)
+
+.Estrutura de dados
+	-Relacionamento lógico entre tipos de dados
+	-ex: struct
+
+.TAD
+	-Além do relacionamento lógico, inclui operações para manipulação dos dados
+	-ex: struct pessoa {
+	char nome [50];
+	int cpf;
+	float altura;
+};
+
+-Vantagens
+	-Encapsulamento e segurança
+	."usuário" não tem acesso direto aos dados
+	
+	-Flexibilidade e reutilização
+	.é possível alterar a TAD sem afetar as aplicações
+ 
+.Exemplo de TAD
+	File*f;
+	Operações: fopen(), fclose(), feof() etc...
+
+--> Modularização de uma TAD
+.implementar 2 arquivos
+	-arquivo.h {-tipo de ponteiros
+		   {-protótipos da funções
+		   {-dados globais
+
+	-arquivo.c {-declaração dos tipos de dados
+		   {-implementação das funções 

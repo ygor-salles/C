@@ -1,0 +1,21 @@
+MENOR E MAIOR VALOR EM VETOR    
+
+    maior = receber[0];
+    nome_maior = nome[0];
+    for (i=1; i<4; i++){
+        if (receber[i] > maior){
+            maior = receber[i];
+            nome_maior = nome[i];
+        }
+    }
+    printf ("\nO maior valor eh %.2f de %c\n",maior, nome_maior);
+
+    menor = receber[0];
+    nome_menor = nome[0];
+    for (i=1; i<4; i++){
+        if (receber[i] < menor){
+            menor = receber[i];
+            nome_menor = nome[i];
+        }
+    }
+    printf ("\nO menor valor eh %.2f de %c\n\n",menor, nome_menor);

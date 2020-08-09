@@ -1,0 +1,78 @@
+/* GRAFOS/algoritmos_para_grafos/aulas/footnotes/footnotes.css */
+BODY {
+   background: #f8f4e7; /* between floralwhite and wheat */ 
+   color: #000000;
+   margin-top: 3em;
+   margin-left: 10%;
+   margin-right: 8%;
+}
+a:link {
+   text-decoration: none;
+}
+a:visited {
+   text-decoration: none;
+}
+a:hover { /* Must come after :link and :visited */
+   color: red;
+}
+a:active {
+   color: red;
+}
+a.name {
+   color: #000000;
+   text-decoration: none;
+}
+p.right {
+   text-align: right;
+}
+
+dfn {
+   color: #aa0000;
+   font-weight: bold;
+}
+span.smallcaps {
+   font-variant: small-caps;
+}
+span.red {
+   color: red;
+   /* font-weight: bold; */
+}
+span.blue {
+   color: blue;
+}
+span.hide {
+   color: green;
+}
+
+pre.ind { /* indented, as in blockquote */
+   white-space: pre;
+   margin-top: 1em;
+   margin-bottom: 1em;
+   margin-left: 2.7em;
+   margin-right: 2em;
+}
+
+
+span.dfn { /* substitute for italic */
+   background: #ffffb0; 
+}
+
+li.spaced { /*generic use*/
+  margin-top: 0.3em;
+  margin-right: 0.5em
+}
+
+p.display {
+   text-align: center;
+}
+
+
+
+
+
+
+
+
+
+
+

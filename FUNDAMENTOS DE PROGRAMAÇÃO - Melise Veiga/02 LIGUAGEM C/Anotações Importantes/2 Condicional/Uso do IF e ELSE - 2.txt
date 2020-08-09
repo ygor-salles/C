@@ -1,0 +1,38 @@
+			USO DO IF E ELSE
+/* A partir de valores digitados pelo usuário da média de um aluno, informar se ele foi
+aprovado (media >= 6), reprovado (0 < media < 3), ou se ficou de exame
+(3<=media<6). Se ficou de exame, solicitar a nota do exame e informar se o aluno foi
+aprovado (nota do exame >= 6) ou reprovado. */
+
+uso [ELSE IF]:
+
+    if (media >= 6) {						(1ª)Condição
+        printf ("\n Aprovado \n\n");
+    }
+    else if ((media > 0) && (media < 3)) {			(2ª)Condição
+        printf ("\n Reprovado \n\n");
+    }
+    else if ((media >= 3) && (media <= 6)) {			(3ª)Condição
+        printf ("\n Ficou de exame \n\n");
+    }
+
+    if ((media >= 3) && (media < 6)) {				Caso ocorra a Condição 2, entrará em outro bloco de ações
+        printf ("Digite a sua nota do exame: ");
+        scanf ("%f",&exame);
+
+        if (exame>=3){						(1ª) Condição 
+            printf ("\n Aprovado \n\n");
+        }
+        else {							(2ª) Condição	
+            printf ("\n Reprovado \n\n");
+        }
+    }
+
+Neste caso é obrigatório o uso do ELSE IF pois uma condição não terá vículo com a outra, seja qual for a entrada de dados 
+digitadas pelo usuário, para que mostre o resultado correto na tela.
+
+Na realidade os dois termos dariam certo com uso do [ELSE IF] e [IF], porém para eficiência do programa
+para que fique mais leve, deve-se utilizar o modo [ELSE IF] conforme algoritmo acima, pois dessa maneira o programa não precisará rodar todas as linhas
+de código. 
+No [ELSE IF] quando ele encontra a linha que o satisfaça, ele para e já exibi o resultado, e, no [IF] ele roda todas as linhas do código
+mesmo que já tenha encontrado a condição que o satisfaça e depois de ter rodado todas as linhas ae que mostrará o resultado.

@@ -1,0 +1,60 @@
+PONTEIRO SOMENTE NA MAIN: Ex:
+
+int *p, j=3;
+p = &j;
+printf ("%d",*p);     //irá imprimir o valor de j (3)
+printf ("%p",p);      //irá imprimir o endereço de j
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+PONTEIRO EM FUNÇAO: Ex:Acrescentando 1 
+
+void ponteiro (int *p)
+{
+	*p = *p+1;
+}
+int main ()
+{
+	int j=3;	       //O valor era 3
+	ponteiro (&j);
+	printf ("%d",j);       //O valor passou a ser 4, irá imprimir 4
+}
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+PONTEIRO PARA VETOR: Ex: Imprimindo vetor através de ponteiro
+
+int v[] = {1, 2}, i, *p;
+    p=v;
+    for (i=0; i<2; i++){
+        printf (" %d",*(v+i));
+    }
+
+ELEMENTO DO VETOR 1: Ex: Imprimindo 3º Elemento
+
+int i, pulo[10];
+    for (i=0; i<10; i++){
+        pulo[i] = rand() % 100;
+        printf ("_%d_|",pulo[i]);
+    }
+    printf ("\n\nPulo 2, o 3º elemento eh: %d\n",*(pulo+2));
+
+
+ELEMENTO DO VETOR 2: Ex: Somando uma constante ao elemento
+
+int i, mat[4], *p, x;
+    p = mat;
+    for (i=0; i<4; i++){
+        mat[i] = rand() % 100;
+        printf ("_%d_|",mat[i]);
+    }
+    x = (*mat+5);
+    printf ("\n\nValidacao: %d\n",x);
+
+
+
+
+
+
+
+

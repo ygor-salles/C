@@ -1,0 +1,320 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/maxcapaugmpath.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:43 GMT -->
+<HEAD>
+<TITLE>Algoritmos para Grafos: Maximum capacity augmenting path</TITLE>
+<META NAME="Author" CONTENT="Paulo Feofiloff">
+<META name="language" content="Portuguese">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1"> 
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<LINK rel="stylesheet" href="code.css" type="text/css">
+</HEAD>
+<BODY>
+
+
+
+
+
+
+<p class="top">
+<a href="../index.html#contents">Algoritmos em C para Grafos via Sedgewick</a>&nbsp;
+
+
+
+
+<h1>Algoritmo de fluxo máximo:<br> 
+versão <i>maximum capacity augmenting paths</i></h1>
+
+
+
+
+<p>Esta página descreve uma implementação
+
+do <a href="flow-FF.html#fordfulkersonalgorithm"
+>algoritmo dos caminhos de aumento</a>
+que usa caminhos de aumento de capacidade residual máxima.&nbsp;
+O consumo de tempo dessa implementação 
+depende apenas do logaritmo das capacidades dos arcos,
+<a href="flow-FF.html#performance"
+>ao contrário do que acontece com a versão genérica do algoritmo</a>.
+
+<p>(Esta página é um resumo da segunda parte da seção
+22.2 (Augmenting-Path Maxflow Algorithms)
+do livro de Sedgewick.)
+
+
+
+<h2>Camada externa da implementação</h2>
+
+<p>A camada externa da implementação é idêntica à da 
+<a href="shortestaugmpath.html">implementação anterior</a>.
+
+<blockquote class="hlt" id="MaxFlow">
+<p class="doc">
+/* Calcula um fluxo máximo na rede capacitada <tt class="doc">G</tt>.
+   O fluxo é armazenado na estrutura de&nbsp;<tt class="doc">G</tt>.&nbsp;*/
+<p class="doc">
+/* (Esse código foi copiado da segunda parte do programa 22.3, p.378, 
+   de Sedgewick.)&nbsp;*/
+
+<pre>
+<span class="k">void</span> MaxFlow (<span class="k">Flownet</span> G) { 
+   <span class="k">Vertex</span> s = G->s, t = G->t, x; 
+   <span class="k">int</span> d; <span class="k">link</span> parnt[maxV]; 
+   <a href="flowdatastruct.html#Expand">Expand</a>(G);
+   <span class="k">while</span> (1) {
+      d = AugmentingPath(G, parnt);
+      <span class="k">if</span> (d == 0) <span class="k">break</span>;
+      <span class="k">for</span> (x = t; x != s; x = parnt[x]->dup->w) { 
+         parnt[x]->flow += d; 
+         parnt[x]->dup->flow -= d; 
+      }
+   }
+}
+</pre>
+</blockquote>
+
+<p>A função <tt>AugmentingPath</tt>
+procura um 
+<a href="flowdatastruct.html#expandedaugmpath"
+>caminho de aumento na rede de fluxo expandida</a>
+e devolve a 
+<a href="flowdatastruct.html#residualcapacity">capacidade residual</a>
+desse caminho.
+Se não existe caminho de aumento,
+a função deve devolver <tt>0</tt>.
+Senão, o caminho é armazenado no vetor <tt>parnt</tt>.
+
+
+<h2>Maximum-capacity augmenting paths</h2>
+
+<p>A versão de <tt>AugmentingPath</tt> 
+que descrevemos a seguir procura um 
+caminho de aumento que tenha capacidade residual máxima.&nbsp;
+Essa idéia foi sugerida, em 1972,
+por Edmonds e Karp.
+
+<p>Para encontrar um caminho de aumento 
+que tenha capacidade residual máxima,
+basta usar uma variante do 
+<a href="dijkstra.html">algoritmo de Dijkstra</a>.
+(Veja especialmente a função
+<tt><a href="dijkstra.html#DIGRAPHsptD3">DIGRAPHsptD3</a></tt>.)
+
+<p>Nossa implementação
+usa uma fila de prioridades manipulada pelas funções
+<tt>PQinit</tt>,
+<tt>PQinsert</tt>,
+<tt>PQinc</tt>,
+<tt>PQempty</tt> e
+<tt>PQdelmax</tt>.
+A prioridade de um vértice <tt>v</tt> é <tt>rc[v]</tt>.
+A função <tt>PQdelmax</tt> 
+retira da fila um vértice de prioridade máxima.
+A função <tt>PQinc</tt> 
+reorganiza a fila depois de um aumento no valor de <tt>rc[v]</tt>.
+
+
+
+
+
+
+<p>No início de cada iteração, 
+para cada vértice <tt>w</tt> fora da arborescência 
+definida por <tt>parnt</tt>,
+o número <tt>rc[w]</tt> é a capacidade residual de
+um caminho dirigido de capacidade residual máxima
+dentre os que começam em <tt>s</tt>,
+terminam em <tt>w</tt>, e 
+têm um só vértice (o último) fora da arborescência.
+
+<blockquote class="hlt">
+<p class="doc">
+/*  (Este código é uma versão melhorada do programa 22.3, 
+    p.378, de Sedgewick.)&nbsp;*/
+
+<pre class="code">
+<span class="k">#define</span> MaxCapAugmPath AugmentingPath
+<span class="k">static int</span> rc[maxV];
+</pre>
+
+<p class="doc">
+/* A macro <tt class="doc">RC</tt> recebe um link 
+   <tt class="doc">L</tt> e
+   calcula a capacidade residual
+   do arco da rede de fluxo expandida que vai do vértice 
+   <tt class="doc">L->dup->w</tt> ao vértice
+   <tt class="doc">L->w</tt>.&nbsp;*/
+<pre class="code">
+<span class="k">#define</span> RC(L) (L->cap >= 0 ? L->cap - L->flow : -L->flow)
+</pre>
+
+<p class="doc" id="MaxCapAugmPath">
+/* A função <tt class="doc">MaxCapAugmPath</tt>
+   devolve <tt class="doc">0</tt> se não há caminho de aumento.
+   Caso contrário, 
+   devolve a capacidade residual de um caminho de aumento
+   na rede de fluxo expandida 
+   e armazena o caminho no vetor <tt class="doc">parnt</tt>.
+   A&nbsp;função supõe que todas as capacidades são menores 
+   que&nbsp;<tt class="doc"><a class="doc" href="flow.html#capacitatednetwork"
+   >M</a></tt>.&nbsp;*/
+
+<pre class="code">
+<span class="k">int</span> MaxCapAugmPath (<span class="k">Flownet</span> G, <span class="k">link</span> parnt[]) { 
+   <span class="k">Vertex</span> s = G->s, t = G->t, v, w;
+   <span class="k">link</span> p; <span class="k">int</span> d;
+   PQinit(); 
+   <span class="k">for</span> (v = 0; v < G->V; v++) { 
+      rc[v] = 0; 
+      PQinsert(v); 
+   }
+   rc[s] = M; 
+   PQinc(s); 
+   <span class="k">while</span> (!PQempty()) {
+      v = PQdelmax();
+      <span class="k">if</span> (rc[v] == 0 <span class="k">||</span> v == t) <span class="k">break</span>;
+      <span class="k">for</span> (p = G->adj[v]; p != <span class="k">NULL</span>; p = p->next) {
+         <span class="k">if</span> (RC(p) > 0) {
+            <span class="k">int</span> min = (RC(p) < rc[v] ? RC(p) : rc[v]);
+            w = p->w;
+            <span class="k">if</span> (rc[w] < min) { 
+               rc[w] = min; 
+               PQinc(w); 
+               parnt[w] = p; 
+            }
+         }
+      }
+      rc[v] = M;
+   }
+   <span class="k">if</span> (rc[t] == 0) <span class="k">return</span> 0; 
+   d = M;
+   <span class="k">for</span> (w = t; w != s; w = parnt[w]->dup->w) { 
+      p = parnt[w]; 
+      <span class="k">if</span> (d > RC(p)) d = RC(p); 
+   }
+   <span class="k">return</span> d;
+}
+</pre>
+</blockquote>
+
+
+
+
+
+<h2 id="fig22.19">Exemplo</h2>
+
+<p>Aplique a função <tt><a href="#MaxFlow">MaxFlow</a></tt>
+à rede capacitada da figura:
+<pre>
+        arco     cap   s=0  t=13
+         0-1     9
+         0-2     6
+         0-3     9
+         0-4     6
+         1-5     7
+         1-6     3
+         1-7     3
+         2-3     2
+         2-8     3
+         2-9     3
+         3-5     7
+         3-8     3
+         3-10    3
+         4-1     2
+         4-6     3
+         4-11    3
+         5-12    6
+         6-7     5
+         6-11    3
+         7-13    9
+         8-9     3
+         8-10    5
+         9-13    6 
+        10-13    9
+        11-13    6
+        12-7     7
+        12-10    7
+</pre>
+
+<p>(A rede é a mesma do 
+<a href="shortestaugmpath.html#fig22.18">exemplo discutido
+quando estudamos a versão <i>shortest augmenting path</i>
+de <tt>MaxFlow</tt></a>.
+Veja figura 22.19, p.381, de Sedgewick.)
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=1>
+
+<li class="exr">
+Na função <tt>MaxCapAugmPath</tt>,
+a busca por um caminho de aumento 
+é interrompida tão logo o vértice <tt>t</tt> é atingido.
+Se deixarmos o processso iterativo continuar até que 
+a fila fique vazia,
+poderíamos encontrar um caminho até <tt>t</tt> 
+com capacidade residual maior?&nbsp;
+Isso é possível?
+
+
+<li class="exr">
+Que acontece se eliminarmos a linha 
+"<tt>rc[v]</tt> <tt>=</tt> <tt>M</tt>" 
+do código de <tt><a href="#MaxCapAugmPath">MaxCapAugmPath</a></tt>?
+
+<li class="exr">
+Mostre que a capacidade residual do caminho de aumento
+encontrado por <tt><a href="#MaxCapAugmPath">MaxCapAugmPath</a></tt>
+é, de fato, máxima.
+
+</ol>
+
+
+
+
+
+
+<h2>Número de iterações</h2>
+
+<p>O consumo de tempo da função <tt>MaxFlow</tt>
+é proporcional ao número de iterações
+e portanto ao número de caminhos de aumento
+necessários para atingir o fluxo máximo.&nbsp;
+Quantos caminhos são necessários, no pior caso?
+
+<blockquote class="display">
+<span class="sc">Número de Caminhos de Aumento</span>
+(Property 22.8, p.387, Sedgewick):&nbsp;
+O número de caminhos de aumento usados pela 
+função <tt>MaxFlow</tt> associada 
+à <tt><a href="#MaxCapAugmPath">MaxCapAugmPath</a></tt>
+nunca é maior que&nbsp; <tt>2A</tt>&nbsp;<tt>log(M)</tt>,&nbsp;
+sendo 
+<tt>A</tt> o número de arcos originais
+e <tt>M</tt> a maior das capacidades.
+</blockquote>
+
+
+
+
+
+
+
+
+
+
+<p>&nbsp;
+<hr>
+<small>
+
+Last modified: Thu Feb 15 08:55:40 BRST 2007
+</small>
+
+</BODY>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/maxcapaugmpath.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:43 GMT -->
+</HTML>

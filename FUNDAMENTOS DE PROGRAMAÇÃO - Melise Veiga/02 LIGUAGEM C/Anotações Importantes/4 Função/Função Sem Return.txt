@@ -1,0 +1,48 @@
+ALGORITMO FUN��O (SEM RETURN ()):
+
+A Função sem return, ela não irá retornar nenhum valor (variável) para a main
+printar o resultado na tela, ele será printado na própria função:
+
+EX 1:
+#include<stdio.h>
+
+/*Faça uma função que imprima na tela o seguinte cabeçalho:
+Curso Sistemas de Informação
+Disciplina – Fundamentos de Programação
+Universidade Federal de Itajubá
+Não é necessário implementar a função principal. */
+
+void imprima ()
+{
+    printf ("\n Curso: Sistemas de Informacao \n");
+    printf ("\n Disciplina _ Fundamentos de Programacao \n");
+    printf ("\n Universidade Federal de Itajuba \n");
+}
+int main ()
+{
+    imprima ();
+}
+
+
+EX 2:
+#include<stdio.h>
+#include<stdlib.h>
+
+/* Fa�a uma fun��o que receba 2 valores inteiros e imprima-os de forma
+ordenada. Utilize a fun��o no programa principal */
+
+void retorna (int a, int b)
+{
+    if (a>b)
+        printf ("\n %d %d \n", b, a);
+    else
+        printf ("\n %d %d \n", a, b);
+}
+
+int main ()
+{
+    int a, b;
+    printf ("Digite o valor de A e B: \n");
+    scanf ("%d %d", &a, &b);
+    retorna (a, b);
+}

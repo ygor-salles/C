@@ -1,0 +1,39 @@
+MATRIZ: A matriz representa uma malha com vários espaçoes na memória, com linhas e colunas.
+O vetor era preechido apenas por linhas, a matriz é preenchida por lihas e colunas:
+	   0   1   2 --> posição na memória da linha horizontal (ou linha)
+	0		
+	1
+	|--> posição da memória na linha vertical (ou coluna)
+EX: matriz[3][2] ==> o primeiro termo [2] é da linha o seundo [3] da coluna.
+
+EXemplo de preenchimento de matriz: 
+
+#include<stdio.h>
+#include<conio.h>
+
+/* Preencha uma matriz 3x3 e depois retorne esses dados da maneira que foi preenchido */
+
+int main ()
+{
+  int matriz[3][3],i, j;
+
+  printf ("\nDigite valor para os elementos da matriz\n\n");
+
+  for ( i=0; i<3; i++ )
+    for ( j=0; j<3; j++ )
+    {
+       printf ("\nElemento[%d][%d] = ", i, j);
+       scanf ("%d", &matriz[ i ][ j ]);
+    }
+
+   printf("\n\n******************* Saida de Dados ********************* \n\n");
+
+   for ( i=0; i<3; i++ )
+    for ( j=0; j<3; j++ )
+    {
+       printf ("\nElemento[%d][%d] = %d\n", i, j,matriz[ i ][ j ]);
+    }
+
+  getch();
+  return 0;
+}

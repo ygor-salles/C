@@ -1,0 +1,448 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/cheapestpaths.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:42 GMT -->
+<HEAD>
+<TITLE>Algoritmos para Grafos: Caminhos de custo minimo</TITLE>
+<META NAME="Author" CONTENT="Paulo Feofiloff">
+<META name="language" content="Portuguese">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1"> 
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<LINK rel="stylesheet" href="code.css" type="text/css">
+</HEAD>
+<BODY>
+
+
+
+
+
+
+
+<p class="top">
+<a href="../index.html#contents">Algoritmos em C para Grafos via Sedgewick</a>&nbsp;
+
+
+
+
+
+<h1>Caminhos de custo mínimo</h1>
+
+
+<p>Esta página introduz o problema dos caminhos de custo mínimo
+em digrafos
+com <a href="weightedgraphs.html">custos nos arcos</a>.&nbsp;
+Vamos supor que todos os custos são não-negativos
+(o&nbsp;problema faz sentido sem essa hipótese, 
+mas fica bem mais difícil).
+
+
+<p>(Esta página é um resumo das seções 21.0
+e 21.1 (Underlying Principles), p.265-280,
+do capítulo&nbsp;21 (Shortest Paths) do livro de Sedgewick.)
+
+
+
+
+
+<h2>Caminhos mínimos e distâncias</h2>
+
+<p id="minpath">
+Num digrafo com custos nos arcos,
+o custo de um <a href="paths.html#path">caminho</a>
+é a soma dos custos dos arcos do caminho.&nbsp;&nbsp;
+Um caminho <i>C</i> é&nbsp; 
+<span class="dfn">mínimo</span>&nbsp;
+se não existe outro caminho 
+com mesma origem e mesmo término que <i>C</i>
+
+mas mais barato que&nbsp;<i>C</i>.&nbsp;
+Por causa da presença dos custos,
+este conceito é mais geral que o conceito de caminho mínimo 
+<a href="shortestpaths.html#distance">definido em outra página</a>.
+
+<p id="distance">
+A&nbsp; <span class="dfn">distância</span>&nbsp;
+de um vértice <i>s</i> a um vértice <i>t</i>
+é o custo de um caminho mínimo 
+de <i>s</i> a&nbsp;<i>t</i>.&nbsp;
+(Dada a presença dos custos,
+esse conceito é mais geral 
+que o conceito de distância definido em
+<a href="shortestpaths.html#distance">outra página</a>.)&nbsp;
+Em outras palavras, 
+a distância de <i>s</i> a <i>t</i> é <i>d</i>
+se e somente se&nbsp; 
+(1)&nbsp;existe um caminho de custo <i>d</i> 
+de <i>s</i> a&nbsp;<i>t</i>&nbsp; e&nbsp;
+(2)&nbsp;nenhum caminho  
+de <i>s</i> a <i>t</i> 
+tem custo menor que&nbsp;<i>d</i>.
+
+<p>Se o digrafo é um grafo,
+a distância de <i>s</i> a <i>t</i> é igual à 
+distância de <i>t</i> a&nbsp;<i>s</i>.
+Portanto, podemos usar a expressão 
+"distância <i>entre</i> <i>s</i> e <i>t</i>"
+nesse caso.
+
+
+<p>Vamos supor, ao tratar de caminhos mínimos e distâncias,
+que o custo de cada arco é um número
+
+<p class="display">
+não-negativo.
+
+
+<p>Assim, 
+a distância de um vértice <i>s</i> a um vértice <i>t</i> 
+fica bem definida sempre que 
+existe algum caminho de <i>s</i> a <i>t</i>.&nbsp;
+(Se não existe caminho algum,
+podemos dizer que a distância de <i>s</i> a&nbsp;<i>t</i>
+é infinita.)&nbsp;&nbsp;
+<span class="dim">[O&nbsp;problema do caminho mínimo
+em digrafos que têm arcos de custo negativo 
+é muito importante,
+mas bem mais difícil.
+No caso de digrafos simétricos,
+ele está relacionado com o célebre
+problema do caminho hamiltoniano.]</span>
+
+
+
+<p id="segment">
+Digrafos com custos não-negativos têm
+a seguinte propriedade crucial:&nbsp;
+qualquer segmento de um caminho mínimo é um caminho mínimo.
+
+<p id="simplepath">
+Outro aspecto dessa mesma propriedade:&nbsp;
+a menos que o digrafo tenha um ciclo de custo nulo,
+todo caminho mínimo é 
+<a href="paths.html#simple">simples</a>.&nbsp;
+Mesmo que o digrafo tenha ciclos de custo nulo,
+é verdade que para todo vértice <i>s</i> e todo vértice&nbsp;<i>t</i>
+
+<p class="display">
+existe um caminho <a href="paths.html#simple">simples</a>
+de <i>s</i> a <i>t</i>
+cujo custo é igual à distância de <i>s</i> a&nbsp;<i>t</i>
+
+<p>(desde que essa distância seja finita).&nbsp;&nbsp;
+Podemos nos restringir, portanto, a caminho mínimos que são simples.
+
+
+
+
+
+
+
+
+
+<h2>O problema do caminho mínimo</h2>
+
+<p>Nosso problema básico é o seguinte:&nbsp;
+
+<blockquote class="display" id="sourcesink">
+<span class="sc"
+>Problema do Caminho Mínimo com Origem e Término Fixos</span> 
+(<i>Source-sink Shortest Path Problem</i>):&nbsp;
+Dados vértices <i>s</i> e <i>t</i> de 
+um digrafo com custos não-negativos nos arcos,
+encontrar um caminho 
+mínimo simples de <i>s</i> a&nbsp;<i>t</i>.
+</blockquote>
+
+<p>(É claro que o problema só tem solução se <i>t</i>
+pode ser alcançado a partir de <i>s</i>,
+ou seja, se existe um caminho de <i>s</i> a&nbsp;<i>t</i>.)&nbsp;
+A experiência mostra que é mais prático 
+tratar de um problema mais geral:
+
+<blockquote class="display" id="singlesource">
+<span class="sc"
+>Problema dos Caminhos Mínimos com Origem Fixa</span> 
+(<i>Single-source Shortest Paths Problem</i>):&nbsp;
+Dado um vértice <i>s</i> de 
+um digrafo com custos não-negativos nos arcos,
+encontrar,
+para cada vértice <i>t</i> 
+que pode ser alcançado a partir de&nbsp;<i>s</i>,
+um caminho mínimo simples de <i>s</i> a&nbsp;<i>t</i>.
+</blockquote>
+
+
+<p>Todos os algoritmos para esses problemas 
+exploram a seguinte propriedade básica:
+
+<blockquote class="display" id="triangularproperty">
+<span class="sc">Propriedade Triangular</span>:&nbsp;
+Para quaisquer vértices <i>x</i>, <i>y</i> e <i>z</i>
+de um digrafo com custos não-negativos nos arcos,
+tem-se
+<p class="display">
+<i>d(x,z)</i>&nbsp; &le;&nbsp; <i>d(x,y)</i> + <i>d(y,z)</i>&nbsp;,
+<p>
+sendo <i>d(i,j)</i> a distância de <i>i</i> a <i>j</i>.
+</blockquote>
+
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=1>
+      
+<li class="exr">
+Mostre como o algoritmo de 
+<a href="shortestpaths.html#bfsdistances">busca em largura</a>
+(que atua sobre um digrafo sem custos nos arcos)
+pode ser usado para calcular um caminho mínimo
+num digrafo com custos inteiros positivos nos arcos.&nbsp;
+(Sugestão:
+Se um arco <tt>u-v</tt> tem custo <tt>4</tt>,
+troque-a por um caminho <tt>u-a-b-c-v</tt>,
+sendo <tt>a</tt>, <tt>b</tt> e <tt>c</tt> 
+vértices que não estão no digrafo original.
+Faça algo semelhante com os demais arcos.)&nbsp;
+Estime o consumo de tempo do seu algoritmo.
+
+<li class="exr" id="E21.10">
+A seguinte tabela promete dar as distâncias entre 
+os vértices <tt>A,B,C</tt> e <tt>D</tt> de um digrafo simétrico
+com custos não-negativos.
+<p>
+<table align="center" cellpadding=3 cellspacing=0 border=0>
+<tr>
+<td width=30 align="center">&nbsp;
+<td width=40 align="right"><tt>A</tt>
+<td width=40 align="right"><tt>B</tt>
+<td width=40 align="right"><tt>C</tt>
+<td width=40 align="right"><tt>D</tt>
+<tr>
+<td align="center"><tt>A</tt>
+<td align="right"><tt>0</tt>
+<td align="right"><tt>53</tt>
+<td align="right"><tt>54</tt>
+<td align="right"><tt>48</tt>
+<tr>
+<td align="center"><tt>B</tt>
+<td align="right"><tt>53</tt>
+<td align="right"><tt>0</tt>
+<td align="right"><tt>18</tt>
+<td align="right"><tt>101</tt>
+<tr>
+<td align="center"><tt>C</tt>
+<td align="right"><tt>54</tt>
+<td align="right"><tt>18</tt>
+<td align="right"><tt>0</tt>
+<td align="right"><tt>12</tt>
+<tr>
+<td align="center"><tt>D</tt>
+<td align="right"><tt>48</tt>
+<td align="right"><tt>101</tt>
+<td align="right"><tt>12</tt>
+<td align="right"><tt>0</tt>
+</table>
+<p>
+As distâncias estão corretas?&nbsp;
+Refaça a tabela se necessário.&nbsp;
+Faça outra tabela que indique em cada posição <i>(x,y)</i>
+qual o primeiro vértice no caminho mínimo 
+de <i>x</i> para&nbsp;<i>y</i>.&nbsp;
+(Veja figura 21.4, p.270,
+de Sedgewick.)
+
+
+
+
+</ol>
+
+
+
+
+
+
+
+
+
+<h2 id="spt">Arborescência de caminhos mínimos</h2>
+
+<p>Dado um vértice <i>s</i> de um digrafo <i>G</i> 
+com custos não-negativos nos arcos,
+uma <span class="dfn">arborescência de caminhos mínimos</span>
+(=&nbsp;<i>shortest-paths tree</i> =&nbsp;<i>SPT</i>)
+<span class="dfn">com raiz&nbsp;<i>s</i></span>
+é uma <a href="arborescences.html#arborescence">arborescência</a> 
+<a href="footnotes/subgraph.html">em</a> <i>G</i>
+que tem a seguinte propriedade:&nbsp;
+para todo vértice <i>t</i> de <i>G</i>
+que pode ser alcançado a partir de&nbsp;<i>s</i>,
+
+<p class="display">
+o único caminho de <i>s</i> a <i>t</i> 
+na arborescência é um 
+<a href="#minpath">caminho mínimo</a> 
+em&nbsp;<i>G</i>.
+
+
+<p>Vou usar a sigla em inglês &mdash;
+<span class="dfn">SPT</span> &mdash;
+para me referir a uma arborescência de caminhos mínimos.&nbsp;&nbsp;
+É&nbsp;claro que qualquer SPT pode ser 
+representada por um 
+<a href="arborescences.html#parnt-array">vetores de pais</a>.
+
+<p id="sptproblem">Uma SPT pode ser vista como uma solução do 
+<a href="#singlesource"
+>Problema dos Caminhos Mínimos Com Origem Fixa</a>.&nbsp;
+Por isso mesmo, esse problema pode ser reformulado assim:
+
+
+<blockquote class="display">
+<span class="sc">Problema da SPT</span>:&nbsp;
+Dado um vértice <i>s</i> de 
+um digrafo com custos não-negativos nos arcos,
+encontrar uma SPT com raiz&nbsp;<i>s</i> no digrafo.
+</blockquote>
+
+
+
+
+
+
+<h2>Exemplo</h2>
+
+<p id="fig21.1">
+A tabela define um digrafo com custos nos arcos.&nbsp;
+(Este é o exemplo da
+figuras 21.1, p.266, e 21.3, p.269, do Sedgewick.)
+<center>
+<pre>
+0-1 .41
+1-2 .51
+2-3 .50
+4-3 .36
+3-5 .38
+3-0 .45
+0-5 .29
+5-4 .21
+1-4 .32
+4-2 .32
+5-1 .29
+</pre>
+</center>
+<p>A tabela abaixo dá a distância de <tt>0</tt>
+a cada um dos demais vértices. 
+Também especifica caminhos mínimos de <tt>0</tt>
+a cada um dos demais vértices.
+<center>
+<pre>
+0  .0     0      
+1  .41    0-1    
+2  .82    0-5-4-2
+3  .86    0-5-4-3
+4  .50    0-5-4  
+5  .29    0-5    
+</pre>
+</center>
+<p>Eis uma SPT com origem <tt>0</tt>
+representados por um 
+<a href="arborescences.html#parnt-array">vetores de pais</a>:
+<center>
+<pre>
+      v     0  1  2  3  4  5
+parnt[v]    0  0  4  4  5  0
+</pre>
+</center>
+
+
+
+
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=3>
+
+<li class="exr">
+Mostre que SPTs e <a href="mst.html#mst">MSTs</a> 
+de grafos (conexos) podem ser muito diferentes.
+Dê um exemplo de um grafo <i>G</i>
+com custos não-negativos nas arestas
+e uma MST <i>T</i> nesse grafo 
+que tenha a seguinte propriedade:&nbsp;
+para todo vértice <i>s</i> existe um vértice <i>t</i>
+tal que 
+a distância de <i>s</i> a <i>t</i> em <i>G</i> 
+é diferente da 
+distância de <i>s</i> a <i>t</i> em&nbsp;<i>T</i>.&nbsp;
+(Dica: existem exemplos com 4 vértices apenas.)
+
+
+
+
+
+
+
+<li class="exr" id="E21.30">
+Digamos que o <i>gargalo</i>
+de um caminho é o custo de seu arco mais caro.&nbsp;
+Mostre que toda MST <i>T</i> de um grafo
+tem a seguinte propriedade:&nbsp;
+para todo par <i>v,w</i> de vértices,
+o caminho entre <i>v</i> e <i>w</i> em <i>T</i>
+é um caminho de gargalo mínimo dentre todos 
+os que ligam <i>v</i> a <i>w</i> no grafo.
+
+<li class="exr" id="E21.3">
+Suponha dado um digrafo com custos não-negativos
+associados aos vértices.
+O custo de um caminho num tal digrafo é a soma dos custos
+dos vértices do caminho.
+Quero encontrar um caminho de custo mínimo
+dentre os que começam num vértices <i>s</i> e terminam num 
+vértices <i>t</i>.&nbsp;
+Reduza esse problema ao problema de encontrar 
+um caminho num digrafo com custos nos arcos.
+
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<p>&nbsp;
+<hr>
+<small>
+
+Last modified: Thu Feb 15 08:55:43 BRST 2007
+</small>
+
+</BODY>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/cheapestpaths.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:42 GMT -->
+</HTML>

@@ -1,0 +1,777 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+   <HEAD>
+   <TITLE>Projeto de Algoritmos: Filas</TITLE>
+   <META NAME="Author" CONTENT="Paulo Feofiloff">
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1"> 
+   <LINK rel="stylesheet" href="http://www.ime.usp.br/~pf/algoritmos/aulas/Laulas.css" type="text/css">
+</HEAD>
+<BODY>
+
+
+
+
+
+
+
+
+<H1>Filas</H1>
+
+
+
+
+
+
+
+<p>Uma fila é uma estrutura de dados que admite 
+inserção de novos elementos e
+remoção de elementos antigos.&nbsp;
+Mais especificamente,
+uma&nbsp; <dfn>fila</dfn> <i>(=&nbsp;queue)</i>&nbsp; é uma 
+estrutura sujeita à seguinte regra de operação:
+sempre que houver uma remoção,
+o elemento removido é o que está na estrutura há mais tempo.
+
+<p>Em outras palavras,
+o primeiro objeto inserido na fila é também 
+o primeiro a ser removido.
+Essa política é conhecida pela sigla FIFO <i>(=&nbsp;First-In-First-Out)</i>.
+
+
+
+
+
+<h2>Implementação em um vetor</h2>
+
+
+
+
+
+<p>Suponha que nossa fila FIFO mora em um vetor 
+<tt>fila[0..N-1]</tt>.&nbsp;
+Suponha que os elementos do vetor são inteiros
+(isso é só um exemplo; 
+os elementos da fila poderiam ser quaisquer outros objetos).&nbsp;
+
+A parte do vetor ocupada pela fila será
+
+<p class="center">
+
+<tt>fila[ini..fim-1]</tt>.<br><br>
+
+
+<p>
+<table class="ab" align="center" cellspacing=2 cellpadding=0>
+<TR>
+   <TD align="center">   <tt>0</tt>
+   <TD align="center">       &nbsp;
+   <TD align="center"> <tt>ini</tt>
+   <TD align="center">       &nbsp;
+   <TD align="center">       &nbsp;
+   <TD align="center">       &nbsp;
+   <TD align="center">       &nbsp;
+   <TD align="center">   <tt>fim</tt>
+   <TD align="center">       &nbsp;
+   <TD align="center">       &nbsp;
+   <TD align="center"> <tt>N-1</tt>
+<TR>
+   <TD width=30 bgcolor="#cccccc">&nbsp;
+   <TD width=30 bgcolor="#cccccc">&nbsp;
+   <TD width=30 bgcolor="#e050b0">&nbsp;
+   <TD width=30 bgcolor="#e050b0">&nbsp;
+   <TD width=30 bgcolor="#e050b0">&nbsp;
+   <TD width=30 bgcolor="#e050b0">&nbsp;
+   <TD width=30 bgcolor="#e050b0">&nbsp;
+   <TD width=30 bgcolor="#cccccc">&nbsp;
+   <TD width=30 bgcolor="#cccccc">&nbsp;
+   <TD width=30 bgcolor="#cccccc">&nbsp;
+   <TD width=30 bgcolor="#cccccc">&nbsp;
+</TABLE>
+
+
+<p>&nbsp;
+<p>O primeiro elemento da fila está na posição <tt>ini</tt>
+e o último na posição <tt>fim-1</tt>.&nbsp;
+
+A fila está <dfn>vazia</dfn> 
+se&nbsp; <tt>ini</tt>&nbsp;<tt>==</tt>&nbsp;<tt>fim</tt>&nbsp;
+e <dfn>cheia</dfn> se&nbsp;
+
+<tt>fim</tt>&nbsp;<tt>==</tt>&nbsp;<tt>N</tt>.&nbsp;&nbsp;&nbsp;
+
+
+
+Para <dfn>remover</dfn> 
+
+<i>(=&nbsp;<a href="footnotes/deletar.html">delete</a>
+= de-queue)</i> 
+um elemento da fila basta fazer
+
+<pre class="ind">
+   x = fila[ini++];  
+</pre>
+<p>
+Isso equivale ao par de instruções&nbsp;
+&quot;<tt>x</tt>&nbsp;<tt>=</tt>&nbsp;<tt>fila[ini];</tt> 
+<tt>ini</tt>&nbsp;<tt>+=</tt>&nbsp;<tt>1;</tt>&quot;,&nbsp;
+nesta ordem.&nbsp;
+É claro que você só deve fazer isso se tiver certeza de que a fila não
+está vazia.&nbsp;&nbsp;&nbsp;
+
+
+Para <dfn>inserir</dfn> <i>(=&nbsp;insert =&nbsp;enqueue)</i> 
+um objeto <tt>y</tt> na fila basta fazer
+
+<pre class="ind">
+   fila[fim++] = y;  
+</pre>
+<p>
+Note como a coisa funciona bem mesmo quando a fila está vazia.
+É claro que você só deve inserir um elemento na fila se ela não estiver cheia;
+caso contrário a fila <i>transborda</i>
+(transbordar = <i>to overflow</i>).&nbsp;
+
+Em geral, a tentativa de inserir em uma fila cheia é uma situação excepcional,
+que indica um mau planejamento lógico do seu programa.
+
+
+
+
+
+
+<h2 class="exr" id="exr1">Exercícios</h2>
+
+<div class="exr">
+
+<ol start=1>
+
+<li class="exr">
+Escreva uma função que devolva o comprimento 
+(ou seja, o número de elementos) 
+de uma fila dada.
+
+</ol>
+</div>
+
+
+
+
+
+
+<h2 id="distancias">Aplicação: distâncias</h2>
+
+
+<p>Eis uma aplicação 
+clássica do conceito de fila.
+Imagine 6 cidades numeradas de 0 a 5 e 
+interligadas por estradas de mão única.
+(É claro que você pode trocar &quot;6&quot; 
+pelo seu número favorito.)
+As ligações entre as cidades são representadas por uma
+matriz <tt>A</tt> da seguinte maneira:
+
+<p class="center">
+<tt>A[i][j]</tt> vale 1&nbsp; 
+se existe estrada da cidade <tt>i</tt> para a cidade <tt>j</tt>
+
+<p>e vale 0 em caso contrário.
+Suponha que a matriz tem zeros na diagonal, 
+embora isso não seja importante.&nbsp;&nbsp;
+Exemplo:
+
+<p>
+<table class="ab" CELLPADDING=0 CELLSPACING=2 align="center">
+<TR align="center">
+   <TD width=25>
+   <TD width=20>0
+   <TD width=20>1
+   <TD width=20>2
+   <TD width=20>3
+   <TD width=20>4
+   <TD width=20>5
+<TR align="center">
+   <TD> 0
+   <TD bgcolor="#c0c0c0"> 0
+   <TD bgcolor="#c0c0c0"> 0
+   <TD bgcolor="#c0c0c0"> 0
+   <TD bgcolor="#c0c0c0"> 0
+   <TD bgcolor="#c0c0c0"> 0
+   <TD bgcolor="#c0c0c0"> 0
+<TR align="center">
+   <TD>1
+   <TD bgcolor="#c0c0c0">1
+   <TD bgcolor="#c0c0c0">0
+   <TD bgcolor="#c0c0c0">0
+   <TD bgcolor="#c0c0c0">0
+   <TD bgcolor="#c0c0c0">0
+   <TD bgcolor="#c0c0c0">0
+<TR align="center">
+   <TD>2
+   <TD bgcolor="#c0c0c0">0
+   <TD bgcolor="#c0c0c0">1
+   <TD bgcolor="#c0c0c0">0
+   <TD bgcolor="#c0c0c0">0
+   <TD bgcolor="#c0c0c0">1
+   <TD bgcolor="#c0c0c0">0
+<TR align="center">
+   <TD>3
+   <TD bgcolor="#c0c0c0">0
+   <TD bgcolor="#c0c0c0">0
+   <TD bgcolor="#c0c0c0">1
+   <TD bgcolor="#c0c0c0">0
+   <TD bgcolor="#c0c0c0">1
+   <TD bgcolor="#c0c0c0">0
+<TR align="center">
+   <TD>4
+   <TD bgcolor="#c0c0c0">1
+   <TD bgcolor="#c0c0c0">0
+   <TD bgcolor="#c0c0c0">0
+   <TD bgcolor="#c0c0c0">0
+   <TD bgcolor="#c0c0c0">0
+   <TD bgcolor="#c0c0c0">0
+<TR align="center">
+   <TD>5
+   <TD bgcolor="#c0c0c0">0
+   <TD bgcolor="#c0c0c0">1
+   <TD bgcolor="#c0c0c0">0
+   <TD bgcolor="#c0c0c0">0
+   <TD bgcolor="#c0c0c0">0
+   <TD bgcolor="#c0c0c0">0
+</TABLE>
+
+
+
+
+
+
+
+<p>A <i>distância</i> 
+de uma cidade <tt>c</tt> a uma outra <tt>j</tt> 
+é o menor número de estradas que devo percorrer
+para ir de <tt>c</tt> a&nbsp;<tt>j</tt>.&nbsp;
+Nosso problema:&nbsp;
+dada uma cidade <tt>c</tt>, 
+
+<p class="center">
+determinar a distância de <tt>c</tt> a cada uma das demais cidades.
+
+<p>As distâncias serão armazenadas em um vetor <tt>d</tt>:
+a distância de <tt>c</tt> a <tt>j</tt> será <tt>d[j]</tt>.&nbsp;
+Que fazer se é impossível chegar de <tt>c</tt> a&nbsp;<tt>j</tt>?&nbsp;
+Poderíamos dizer nesse caso que <tt>d[j]</tt>
+
+é infinito.&nbsp;
+Mas é mais limpo e prático dizer 
+que <tt>d[j]</tt> vale&nbsp;6,
+pois nenhuma distância &quot;real&quot; pode ser maior que 5.&nbsp;
+Se adotarmos <tt>c</tt> igual a 3 no exemplo acima,
+teremos <tt>d</tt> igual&nbsp;a<br>
+
+<p>
+<table class="ab" CELLPADDING=0 CELLSPACING=2 align="center">
+<TR align="center">
+   <TD width=25>
+   <TD width=20>0
+   <TD width=20>1
+   <TD width=20>2
+   <TD width=20>3
+   <TD width=20>4
+   <TD width=20>5
+<TR align="center">
+   <TD>&nbsp;
+   <TD bgcolor="#c0c0c0"> 2
+   <TD bgcolor="#c0c0c0"> 2
+   <TD bgcolor="#c0c0c0"> 1
+   <TD bgcolor="#c0c0c0"> 0
+   <TD bgcolor="#c0c0c0"> 1
+   <TD bgcolor="#c0c0c0"> 6
+</TABLE>
+
+
+
+
+<p>&nbsp;
+<p>Eis a idéia de um algoritmo que usa o conceito de fila 
+para resolver nosso problema:&nbsp;
+<ul>
+<li class="space">
+uma cidade é considerada <i>ativa</i>
+se já foi visitada mas as estradas que começam nela ainda não foram 
+exploradas;
+<li class="space">
+mantenha uma fila das cidades ativas;
+<li class="space">
+em cada iteração,
+remova da fila uma cidade <tt>i</tt> e 
+insira na fila todas as cidades vizinhas de <tt>i</tt> 
+que ainda não foram visitadas.
+</ul>
+
+<pre class="hlt">
+<span class="comm">// Recebe uma matriz A que representa as interligações entre 
+// cidades 0,1,..,5: há uma estrada (de mão única) de i a j 
+// se e só se A[i][j] == 1.  Devolve um vetor d que registra 
+// as distâncias da cidade c a cada uma das outras: d[i] é a 
+// distância de c a i.</span>
+
+int *<b>distancias</b> (int A[][6], int c)
+{
+   int *d, j;
+   int fila[6], ini, fim;
+
+   d = malloc (6 * sizeof (int));
+   for (j = 0; j &lt; 6; ++j)  d[j] = 6;
+   d[c] = 0;
+   ini = 0; fim = 1; fila[0] = c;  <span class="comm">// c entra na fila</span>
+
+   while (ini != fim) { 
+      int i, di;
+      i = fila[ini++];  <span class="comm">// i sai da fila</span>
+      di = d[i];
+      for (j = 0; j &lt; 6; ++j)
+         if (A[i][j] == 1 &amp;&amp; d[j] &gt;= 6) {
+            d[j] = di + 1;
+            fila[fim++] = j;  <span class="comm">// j entra na fila</span>
+         }
+   }
+   return d;
+}
+</pre>
+
+<p>Para compreender o algoritmo
+(e provar que ele está correto),
+observe que as seguintes propriedades invariantes
+valem no início de cada iteração:
+
+<ol>
+<li class="sspace">
+para cada cidade <tt>x</tt>,&nbsp;
+se <tt>d[x]</tt>&nbsp;&lt;&nbsp;6
+então <tt>d[x]</tt> é a distância de <tt>c</tt> a <tt>x</tt>;
+
+
+<li class="sspace">
+a seqüência de números&nbsp; 
+
+<tt>d[fila[0]]</tt>,
+&hellip; ,
+<tt>d[fila[fim-1]]</tt>&nbsp; 
+é crescente;
+
+
+<li class="sspace">
+se&nbsp; 
+<tt>d[fila[ini]]</tt> vale <tt>k</tt>&nbsp; 
+então&nbsp;
+<tt>d[fila[fim-1]]</tt>&nbsp;&le;&nbsp;<tt>k+1</tt>;
+
+<li class="sspace">
+para cada índice <tt>h</tt> em <tt>0..ini-1</tt>,
+toda estrada que começa em <tt>fila[h]</tt> termina em algum elemento de 
+<tt>fila[0..fim-1]</tt>.
+
+
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h2 class="exr" id="exr1a">Exercícios</h2>
+
+<div class="exr">
+<p>Responda as seguintes perguntas sobre a função
+<tt>distancias</tt>.
+
+<ol start=2>
+
+<li class="exr">
+Quem garante que a instrução &quot;<tt>fila[fim++]=j</tt>&quot; 
+não provoca o transbordamento da fila?&nbsp;
+Em outras palavras, 
+quem garante que o espaço alocado para o vetor <tt>fila</tt>
+é suficiente?
+
+
+<li class="exr">
+Prove que a função <tt>distancias</tt> de fato calcula 
+as distâncias corretas.
+Para isso prove as propriedades invariantes enunciadas acima.
+
+
+
+<li class="exr">
+Reescreva a função <tt>distancias</tt>
+para um número arbitrário de cidades.&nbsp;
+Faça uma versão que devolva a distância entre duas 
+cidades dadas.
+
+
+<li class="exr">
+Imagine um labirinto quadrado 10-por-10.
+As posições livres são marcadas com <tt>0</tt>,
+as posições bloqueadas com <tt>-1</tt>.
+Há uma formiga na posição (1,1)
+(e essa posição é livre).
+Ajude a formiga a sair do labirinto.
+A saída está em (10,10) e essa posição é livre.&nbsp;&nbsp;
+(<i>Sugestão:</i>
+Faça uma &quot;moldura&quot; de <tt>-1</tt>s em volta do labirinto.  
+O labirinto fica sendo uma 
+matriz <tt>L[12][12]</tt>.)
+
+
+</ol>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h2 id="circularqueue">Implementação circular</h2>
+
+
+
+
+
+
+
+<p>No exemplo das distâncias,
+é fácil ver que o vetor que abriga a fila
+não precisa ter mais componentes que o número total de cidades,
+pois cada cidade entra na fila no máximo uma vez.&nbsp;
+
+Em geral, entretanto,
+é difícil prever o espaço necessário para abrigar a fila.
+Nesses casos,
+é mais inteligente implementar a fila de maneira &quot;circular&quot;,
+como mostraremos a seguir.
+
+
+<p>Suponha que os elementos da fila estão dispostos
+no vetor&nbsp; <tt>fila[0..N-1]</tt>&nbsp;
+de uma das seguintes maneiras:
+
+
+
+<p class="center">
+<tt>fila[ini..fim-1]&nbsp;&nbsp;</tt>
+ou
+<tt>&nbsp;&nbsp;fila[ini..N-1]</tt> <tt>fila[0..fim-1]</tt>.
+
+
+
+
+<p><table class="ca" align="center" cellspacing=2 cellpadding=0>
+<TR>
+   <TD align="center">   <tt>0</tt>
+   <TD align="center">       &nbsp;
+   <TD align="center"> <tt>ini</tt>
+   <TD align="center">       &nbsp;
+   <TD align="center">       &nbsp;
+   <TD align="center">       &nbsp;
+   <TD align="center">       &nbsp;
+   <TD align="center">   <tt>fim</tt>
+   <TD align="center">       &nbsp;
+   <TD align="center">       &nbsp;
+   <TD align="center"> <tt>N-1</tt>
+<TR>
+   <TD width=30 bgcolor="#cccccc">&nbsp;
+   <TD width=30 bgcolor="#cccccc">&nbsp;
+   <TD width=30 bgcolor="#e050b0">&nbsp;
+   <TD width=30 bgcolor="#e050b0">&nbsp;
+   <TD width=30 bgcolor="#e050b0">&nbsp;
+   <TD width=30 bgcolor="#e050b0">&nbsp;
+   <TD width=30 bgcolor="#e050b0">&nbsp;
+   <TD width=30 bgcolor="#cccccc">&nbsp;
+   <TD width=30 bgcolor="#cccccc">&nbsp;
+   <TD width=30 bgcolor="#cccccc">&nbsp;
+   <TD width=30 bgcolor="#cccccc">&nbsp;
+</TABLE>
+
+<table class="ab" align="center" cellspacing=2 cellpadding=0>
+<TR>
+   <TD align="center">   <tt>0</tt>
+   <TD align="center">       &nbsp;
+   <TD align="center">       &nbsp;
+   <TD align="center">       &nbsp;
+   <TD align="center"> <tt>fim</tt>
+   <TD align="center">       &nbsp;
+   <TD align="center">       &nbsp;
+   <TD align="center">       &nbsp;
+   <TD align="center">   <tt>ini</tt>
+   <TD align="center">       &nbsp;
+   <TD align="center"> <tt>N-1</tt>
+<TR>
+   <TD width=30 bgcolor="#e050b0">&nbsp;
+   <TD width=30 bgcolor="#e050b0">&nbsp;
+   <TD width=30 bgcolor="#e050b0">&nbsp;
+   <TD width=30 bgcolor="#e050b0">&nbsp;
+   <TD width=30 bgcolor="#cccccc">&nbsp;
+   <TD width=30 bgcolor="#cccccc">&nbsp;
+   <TD width=30 bgcolor="#cccccc">&nbsp;
+   <TD width=30 bgcolor="#cccccc">&nbsp;
+   <TD width=30 bgcolor="#e050b0">&nbsp;
+   <TD width=30 bgcolor="#e050b0">&nbsp;
+   <TD width=30 bgcolor="#e050b0">&nbsp;
+</TABLE>
+
+
+
+
+
+<p>&nbsp;
+<p>Teremos sempre
+<tt>0</tt> &le; <tt>ini</tt> &lt; <tt>N</tt>
+e <tt>0</tt> &le; <tt>fim</tt> &lt; <tt>N</tt>,&nbsp;
+mas não podemos supor que 
+<tt>ini</tt> &le; <tt>fim</tt>&nbsp;.&nbsp;
+A fila está 
+
+<ul>
+<li class="space">
+&nbsp;<dfn>vazia</dfn>&nbsp; se&nbsp;&nbsp; 
+    <tt>fim</tt>&nbsp;<tt>==</tt>&nbsp;<tt>ini</tt>&nbsp; e
+<li class="space">
+&nbsp;<dfn>cheia</dfn>&nbsp; se&nbsp;&nbsp;
+    <tt>fim+1</tt>&nbsp;<tt>==</tt>&nbsp;<tt>ini</tt>&nbsp;&nbsp;&nbsp;&nbsp;
+ou&nbsp;&nbsp;&nbsp;&nbsp;
+    <tt>fim+1</tt>&nbsp;<tt>==</tt>&nbsp;<tt>N</tt>&nbsp; 
+    e&nbsp; <tt>ini</tt>&nbsp;<tt>==</tt>&nbsp;<tt>0</tt>&nbsp;.
+</ul>
+
+<p>(Resumindo, a fila está cheia se&nbsp; 
+<tt>(fim+1)</tt> <tt>%</tt> <tt>N</tt> <tt>==</tt> <tt>ini</tt>.)&nbsp;
+A posição <tt>fim</tt> ficará sempre desocupada,
+para que possamos distinguir uma fila cheia de uma vazia.&nbsp;
+Para remover um elemento da fila basta fazer
+
+<pre class="ind">
+   x = fila[ini++];
+   if (ini == N) ini = 0;
+</pre>
+
+<p>É claro que isso só deve ser feito se você sabe que a fila não está vazia.
+Para inserir um elemento <tt>y</tt> na fila faça
+
+<pre class="ind">
+   if (fim + 1 == ini || fim + 1 == N &amp;&amp; ini == 0) {
+      printf ("\nSocorro! Fila vai transbordar!\n");
+      exit (EXIT_FAILURE); 
+   }
+   fila[fim++] = y;
+   if (fim == N) fim = 0;
+</pre>
+
+<p>O código começa por verificar se a fila está cheia;
+se estiver, não há nada a fazer senão pedir socorro e
+abortar o programa.
+
+
+
+
+
+
+
+
+
+
+<h2 class="exr" id="exr2">Exercícios</h2>
+
+<div class="exr">
+<ol start=6>
+
+<li class="exr">
+Resolva os seguintes problemas a respeito da 
+implementação circular
+de uma fila.
+
+(Lembre-se de que uma fila é um pacote com três objetos:
+um vetor e dois índices.
+Não use variáveis globais.)&nbsp;&nbsp;
+(a)&nbsp;Escreva uma função que remova
+  um elemento da fila.
+  Quais são os parâmetros da função?&nbsp;&nbsp;
+(b)&nbsp;Escreva uma função que insira um número na fila.&nbsp;&nbsp;
+  
+(c)&nbsp;Escreva uma função que devolva o comprimento 
+  (ou seja, o número de elementos) da fila.
+
+
+
+
+
+
+
+
+<li class="exr">
+Uma <dfn>fila dupla</dfn> <i>(=&nbsp;deque)</i>
+permite saída e entrada em qualquer das duas extremidades da fila.
+Implemente uma fila dupla e programe todas as funções de manipulação
+da estrutura.
+
+</ol>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h2>Implementação de uma fila em uma lista encadeada</h2>
+
+<p>Como administrar uma fila
+armazenada em uma <a href="lista.html">lista encadeada</a>?
+Digamos que as células da lista são do tipo <tt>celula</tt>:
+
+<pre class="ind">
+typedef struct cel {
+   int         conteudo; 
+   struct cel *prox;
+} celula;
+</pre>
+
+<p>É preciso tomar algumas decisões de projeto
+sobre como a fila vai morar na lista.&nbsp;
+Vamos supor que nossa lista encadeada é <i>circular</i>&nbsp;:&nbsp;
+a última célula aponta para a primeira.
+Vamos supor também que a lista tem uma <i>célula-cabeça</i>;
+essa célula não será removida nem mesmo se a fila ficar vazia.&nbsp;
+O primeiro elemento da fila ficará na <i>segunda</i> célula
+e o último elemento ficará na célula <i>anterior</i> à célula-cabeça.
+
+<p>Temos um ponteiro <tt>fi</tt> que guarda o endereço da célula-cabeça.
+A fila está <i>vazia</i> se <tt>fi-&gt;prox</tt> == <tt>fi</tt>.&nbsp;
+Uma fila vazia pode ser criada e inicializada assim:
+
+<pre class="ind">
+celula *fi;
+fi = malloc (sizeof (celula));
+fi-&gt;prox = fi;
+</pre>
+
+
+<p>Podemos agora definir as funções de manipulação da fila.&nbsp;
+A&nbsp;remoção é fácil:
+
+<pre class="hlt">
+<span class="comm">// Remove um elemento da fila fi. Supõe que a fila 
+// não está vazia. Devolve o elemento removido.</span>
+
+int <b>remove</b> (celula *fi) {
+   int x;
+   celula *p;
+   p = fi-&gt;prox;  <span class="comm">// p aponta primeiro da fila</span>
+   x = p-&gt;conteudo;
+   fi-&gt;prox = p-&gt;prox;
+   free (p);
+   return x;  
+}
+</pre>
+
+<p>A&nbsp;inserção exige um truque de gosto duvidoso:
+armazenar o novo elemento na célula-cabeça original:
+
+<pre class="hlt">
+<span class="comm">// Insere um novo elemento com conteudo y na fila fi.
+// Devolve o endereço da cabeça da fila resultante.</span>
+
+celula *<b>insere</b> (int y, celula *fi) { 
+   celula *nova;
+   nova = mallocX (sizeof (celula));
+   nova-&gt;prox = fi-&gt;prox;
+   fi-&gt;prox = nova;
+   fi-&gt;conteudo = y;
+   return nova;
+}
+</pre>
+
+
+
+
+
+
+
+
+
+
+<h2 class="exr" id="exr3">Exercícios</h2>
+
+<div class="exr">
+<ol start=8>
+
+<li class="exr">
+Implemente uma fila em uma lista encadeada circular
+<i>sem</i> célula-cabeça.
+Basta manter o endereço <tt>fim</tt> da última célula;
+a primeira célula será apontada por <tt>fim-&gt;prox</tt>.
+Se a lista encadeada estiver vazia 
+então <tt>fim</tt> == <tt>NULL</tt>.
+
+
+
+<li class="exr">
+Implemente uma fila em uma lista encadeada simples (não-circular)
+com célula-cabeça.
+Será preciso manter o endereço <tt>ini</tt> da célula-cabeça
+e um ponteiro <tt>fim</tt> para a última célula.
+
+
+
+<li class="exr">
+Implemente uma fila em uma lista encadeada simples sem célula-cabeça.
+Será preciso manter um ponteiro <tt>ini</tt> para a primeira célula
+e um ponteiro <tt>fim</tt> para a última.
+
+
+
+<li class="exr">
+Implemente uma fila em uma lista <i>duplamente</i> 
+encadeada <i>sem</i> célula-cabeça.
+Use um ponteiro <tt>ini</tt> para a primeira célula e um ponteiro <tt>fim</tt>
+para a última.
+
+</ol>
+</div>
+
+
+
+
+
+<p>&nbsp;
+<div class="left">
+<hr>
+<small>
+1998 |
+
+Last modified: Mon Aug 25 07:07:58 BRT 2008
+
+<br>
+&nbsp;</small></div>
+
+</BODY>
+</HTML>

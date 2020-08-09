@@ -1,0 +1,22 @@
+2ª OPÇÃO PARA FUNÇÃO:
+
+EXEMPLO: 
+
+
+
+#include<stdio.h>
+
+int soma (int x, int y);
+
+
+int main ()
+{
+	código main......
+}
+
+
+
+int soma (int x, int y)
+{
+	código da função soma.....
+}

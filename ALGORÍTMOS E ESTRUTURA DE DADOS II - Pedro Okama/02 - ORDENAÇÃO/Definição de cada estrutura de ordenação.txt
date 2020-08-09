@@ -1,0 +1,32 @@
+Método de Ordenação
+
+(1) Bubble Sort - Neste método, os elementos da lista são movidos para as posições adequadas de forma contínua. 
+Se um elemento está inicialmente numa posição i e, para que a lista fique ordenada, ele deve ocupar a posição j, então ele terá que passar por todas as posições entre i e j.
+Em cada iteração do método, percorre-se a lista a partir de seu início, comparando cada elemento com seu sucessor, trocando-os de posição se houver necessidade.
+
+
+(2) Insert Sort - Neste método, considera-se que a lista está dividida em parte esquerda, já ordenada, e parte direita, em possível desordem. 
+Inicialmente, a parte esquerda contém apenas o primeiro elemento da lista. Cada iteração consiste em colocar o primeiro elemento da 
+parte direita (pivô) na posição adequada da parte esquerda, de modo que a parte esquerda continue ordenada.
+
+
+(3) Select Sort - Neste método, considera-se que a lista está dividida em parte esquerda, já ordenada, e parte direita, em possível desordem. Além disso, 
+os elementos da parte esquerda são todos menores ou iguais aos elementos da parte direita. Cada iteração consiste em escolher o menor elemento da parte direita (pivô) e trocá-lo com o primeiro elemento da parte direita. 
+Com isso, a parte esquerda aumenta, pois passa a incluir o pivô, e a parte direita diminui.
+
+
+(4) Shellsort - Neste método, a lista é subdividida em h-listas, as quais são ordenadas com um método de ordenação qualquer. 
+Esse procedimento é repetido para valores decrescentes de h, sendo que o último valor de h tem que ser 1.
+
+
+(5) Mergesort - Neste método, a lista é dividida em duas metades. Essas metades são ordenadas recursivamente e depois são intercaladas.
+Para tanto, faz-se uso das variáveis i e j para percorrer a metade esquerda e a metade direita, respectivamente. Em cada iteração, compara-se o elemento na posição i com o elemento na posição j.
+O menor deles é copiado para um vetor auxiliar. Esse procedimento é repetido até que uma das duas metades tenha sido totalmente copiada para o vetor auxiliar.
+
+
+(6) Quicksort - Neste método, a lista é dividida em parte esquerda e parte direita, sendo que os elementos da parte esquerda são todos menores do que os elementos da parte direita.
+Em seguida, as duas partes são ordenadas recursivamente.
+
+
+(7) Heapsort - Neste método, são usados, inicialmente, os elementos da lista que são inseridos em um heap binário crescente.
+Em seguida, são feitas sucessivas remoções do menor elemento do heap, colocando os elementos removidos do heap de volta na lista.

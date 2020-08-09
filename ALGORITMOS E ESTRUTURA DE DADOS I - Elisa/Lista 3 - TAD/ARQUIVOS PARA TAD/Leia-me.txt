@@ -1,0 +1,19 @@
+CRIAR UMA TAD NO CODE BLOCKS:
+
+NO MICRO:
+1 - Criar uma pasta para armazenar todos arquivos da TAD num só local
+
+
+NO CODE BLOCKS
+2 - CRIAR PROJETO .CBP:  File / New / Project... / Console Application / C / Next / (Inserir o nome do projeto e indicar o diretório do passo 1)
+
+3 - CRIAR TAD.C: File / New / File... / C/C++source / C / Next / (Inserir o nome da tad.c e indicar o diretório do passo 1)
+
+4 - CRIAR TAD.H: File / New / File... / C/C++header / C / Next / (Inserir o nome da tad.h e indicar o diretório do passo 1)
+
+5 - Ir no canto esquerdo em Projeto, com direito do mouse "Add file...". Abrir a tad.c
+
+6 - Ir no canto esquerdo em Projeto, com direito do mouse "Add file...". Abrir a tad.h
+
+
+*** O arquivo a ser exceutado para abrir e editar o código é o .cbp ***

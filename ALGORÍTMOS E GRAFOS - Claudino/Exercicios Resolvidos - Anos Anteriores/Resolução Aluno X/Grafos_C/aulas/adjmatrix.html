@@ -1,0 +1,467 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/adjmatrix.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:38 GMT -->
+<HEAD>
+<TITLE>Algoritmos para Grafos: Matriz de adjacencia</TITLE>
+<META NAME="Author" CONTENT="Paulo Feofiloff">
+<META name="language" content="Portuguese">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1"> 
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<LINK rel="stylesheet" href="code.css" type="text/css">
+</HEAD>
+<BODY>
+
+
+
+
+
+
+
+
+
+<p class="top">
+<a href="../index.html#contents">Algoritmos em C para Grafos via Sedgewick</a>&nbsp;
+
+
+
+<h1>Matrizes de adjacência</h1>
+
+
+<p>A <span class="dfn">matriz de adjacência</span> de um digrafo 
+tem colunas e linhas indexadas pelos vértices.&nbsp;
+Se&nbsp; <tt>adj</tt>&nbsp; é uma tal matriz então,
+para cada vértice <tt>v</tt> e cada vértice&nbsp;<tt>w</tt>,
+
+<ol type="none">
+<li><tt>adj[v][w] = 1</tt>&nbsp;&nbsp; se <tt>v-w</tt> 
+é um arco&nbsp;&nbsp;e
+<li><tt>adj[v][w] = 0</tt>&nbsp;&nbsp; em caso contrário.
+</ol> 
+
+
+<p>As matrizes de adjacência de 
+<a href="graphs.html">grafos</a> 
+são simétricas:&nbsp;
+<tt>adj[v][w]</tt> <tt>=</tt> <tt>adj[w][v]</tt>&nbsp;
+para todo <tt>v</tt> e todo&nbsp;<tt>w</tt>.
+
+<p>(Esta página foi inspirada 
+na seção 17.3 (Adjacency Matrix Representation),
+em particular nos programas
+17.3, 17.4 e 17.5 (p.22-25),
+do livro de Sedgewick.)
+
+
+
+
+
+
+
+<h2>Exemplo</h2>
+
+<p>Eis um digrafo e sua matriz de adjacência:
+<p>
+<table align="center" cellspacing=0 cellpadding=1 border=0>
+<tr>
+<td valign="middle">
+<pre>
+0-1 0-5 1-0 1-5 2-4 3-1 5-3
+</pre>
+<td valign="top">
+<pre>
+           0 1 2 3 4 5
+                        
+        0  <b>0 1 0 0 0 1</b>
+        1  <b>1 0 0 0 0 1</b>
+        2  <b>0 0 0 0 1 0</b>
+        3  <b>0 1 0 0 0 0</b>
+        4  <b>0 0 0 0 0 0</b>
+        5  <b>0 0 0 1 0 0</b>
+</pre>
+</table>
+
+<p>Eis um grafo (definido por seu conjunto de arestas)
+e sua matriz de adjacência:
+
+<p>
+<table align="center" cellspacing=0 cellpadding=1 border=0>
+<tr>
+<td valign="middle">
+<pre>
+0-1 0-5 1-5 2-4 3-1 5-3
+</pre>
+<td valign="top">
+<pre>
+           0 1 2 3 4 5
+                        
+        0  <b>0 1 0 0 0 1</b>
+        1  <b>1 0 0 1 0 1</b>
+        2  <b>0 0 0 0 1 0</b>
+        3  <b>0 1 0 0 0 1</b>
+        4  <b>0 0 1 0 0 0</b>
+        5  <b>1 1 0 1 0 0</b>
+</pre>
+</table>
+
+
+
+
+
+<h2>Estruturas</h2>
+
+<p>Um digrafo será representado por uma struct <tt>digraph</tt>
+que contém o número de vértices, 
+o número de arcos 
+e a matriz de adjacência 
+do digrafo.
+
+
+
+<blockquote class="hlt" id="digraph">
+<p class="doc">
+/* A estrutura <tt class="doc">digraph</tt> representa um digrafo.
+   O&nbsp;campo <tt>adj</tt> é um ponteiro para 
+   a matriz de adjacência do digrafo.
+   O&nbsp;campo <tt class="doc">V</tt> contém o número de vértices e 
+   o campo <tt class="doc">A</tt> contém 
+   o número de arcos do digrafo.&nbsp;*/
+
+
+<pre class="code">
+<span class="k">struct</span> digraph {
+   <span class="k">int</span> V; 
+   <span class="k">int</span> A; 
+   <span class="k">int</span> **adj; 
+};
+</pre>
+
+<p class="doc">
+/* Um objeto do tipo <tt class="doc">Digraph</tt> contém o endereço de 
+   um <tt class="doc">digraph</tt>.&nbsp;*/
+
+<pre class="code">
+<span class="k">typedef struct</span> digraph *Digraph;
+</pre>
+</blockquote>
+
+
+
+<p><span class="dim">[O livro de Sedgewick 
+escreve "<tt>graph</tt>" no lugar do nosso "<tt>digraph</tt>".
+Também escreve "<tt>E</tt>" 
+no lugar do nosso "<tt>A</tt>".]</span>
+
+<p>Essa mesma estrutura será usada para representar grafos,
+mas nesse caso escreveremos "<tt>graph</tt>" e "<tt>Graph</tt>"
+no lugar de "<tt>digraph</tt>" e "<tt>Digraph</tt>":
+
+<blockquote class="hlt" id="graph">
+<pre class="code">
+<span class="k">#define</span> graph <span class="k">digraph</span>
+<span class="k">#define</span> Graph <span class="k">Digraph</span>
+</pre>
+</blockquote>
+
+
+<p>É apropriado lembrar que,
+o número de arestas de um grafo é mais significativo que 
+o seu número de arcos.&nbsp;
+Se <tt>G</tt> é um <tt>Graph</tt>,
+o número de arestas de <tt>G</tt> é&nbsp;<tt>(G->A)/2</tt>.
+
+
+<p>Essas estruturas devem ser consideradas mais como modelos
+do que como algo definitivo. 
+Elas poderão ser modificadas e adaptadas adiante,
+conforme as necessidades.
+
+
+
+
+
+
+<h2>Algumas funções básicas</h2>
+
+<p>Eis algumas funções básicas de criação e 
+manipulação de digrafos representados por 
+matrizes de adjacência:
+
+
+<blockquote class="hlt">
+<p class="doc" id="DIGRAPHinit">
+/* Esta função devolve (o endereço de) um novo digrafo com 
+   vértices <tt class="doc">0,..,V-1</tt> e nenhum arco.&nbsp;*/
+
+<pre class="code">
+<span class="k">Digraph</span> DIGRAPHinit (<span class="k">int</span> V) { 
+   <span class="k">Digraph</span> G = <span class="k">malloc</span>(<span class="k">sizeof</span> *G);
+   G->V = V; 
+   G->A = 0;
+   G->adj = MATRIXint(V, V, 0);
+   <span class="k">return</span> G;
+}
+</pre>
+
+
+<p class="doc">
+/* A função abaixo aloca uma matriz com linhas 
+   <tt class="doc">0..r-1</tt> 
+   e colunas <tt class="doc">0..c-1</tt>.
+   Cada elemento da matriz recebe valor <tt class="doc">val</tt>.&nbsp;*/  
+
+<pre class="code">
+<span class="k">int</span> **MATRIXint (<span class="k">int</span> r, <span class="k">int</span> c, <span class="k">int</span> val) { 
+   <span class="k">Vertex</span> i, j;
+   <span class="k">int</span> **m = <span class="k">malloc</span>(r * <span class="k">sizeof</span>(<span class="k">int</span> *));
+   <span class="k">for</span> (i = 0; i < r; i++)
+      m[i] = <span class="k">malloc</span>(c * <span class="k">sizeof</span>(<span class="k">int</span>));
+   <span class="k">for</span> (i = 0; i < r; i++)
+      <span class="k">for</span> (j = 0; j < c; j++)
+         m[i][j] = val;
+   <span class="k">return</span> m;
+}
+</pre>
+
+
+<p class="doc" id="DIGRAPHinsertA">
+/* Esta função insere um arco <tt class="doc">v-w</tt> 
+   no digrafo <tt class="doc">G</tt>.  
+   Se <tt class="doc">v</tt>&nbsp;==&nbsp;<tt class="doc">w</tt>
+   ou o digrafo já tem arco <tt class="doc">v-w</tt>,
+   a função não faz nada.&nbsp;
+   É&nbsp;claro que <tt class="doc">v</tt> e <tt class="doc">w</tt>
+   não podem ser negativos e devem ser 
+   menores que <tt class="doc">G->V</tt>.&nbsp;*/
+
+<pre class="code">
+<span class="k">void</span> DIGRAPHinsertA (<span class="k">Digraph</span> G, <span class="k">Vertex</span> v, <span class="k">Vertex</span> w) { 
+   <span class="k">if</span> (v != w <span class="k">&amp;&amp;</span> G->adj[v][w] == 0) {
+      G->adj[v][w] = 1; 
+      G->A++;
+   }
+}
+</pre>
+
+<p class="doc" id="DIGRAPHremoveA">
+/* Esta função remove  do digrafo&nbsp;<tt class="doc">G</tt>
+   o arco que tem ponta inicial <tt class="doc">v</tt>
+   e ponta final <tt class="doc">w</tt>.&nbsp;
+   Se não existe tal arco, a função nada faz.&nbsp;*/
+</p>
+<pre class="code">
+<span class="k">void</span> DIGRAPHremoveA (<span class="k">Digraph</span> G, <span class="k">Vertex</span> v, <span class="k">Vertex</span> w) { 
+   <span class="k">if</span> (G->adj[v][w] == 1) {
+      G->A--;
+      G->adj[v][w] = 0; 
+   }
+}
+</pre>
+
+<p class="doc" id="DIGRAPHshow">
+/* Para cada vértice <tt class="doc">v</tt> 
+   do digrafo <tt class="doc">G</tt>,
+   esta função imprime, em uma linha, 
+   todos os vértices adjacentes a <tt class="doc">v</tt>.&nbsp;*/
+
+
+<pre class="code">
+<span class="k">void</span> DIGRAPHshow (<span class="k">Digraph</span> G) { 
+   <span class="k">Vertex</span> v, w; 
+   <span class="k">for</span> (v = 0; v < G->V; v++) {
+      <span class="k">printf</span>("<span class="t">%2d:</span>", v);
+      <span class="k">for</span> (w = 0; w < G->V; w++)
+         <span class="k">if</span> (G->adj[v][w] == 1) 
+            <span class="k">printf</span>("<span class="t"> %2d</span>", w);
+      <span class="k">printf</span>("<span class="t">\n</span>");
+   }
+}
+</pre>
+</blockquote>
+
+
+<p>É claro que essas mesmas funções podem ser usadas
+para construir grafos.
+Mas é conveniente adaptar os nomes das funções
+e escrever uma função específica para inserção de arestas:
+
+
+<blockquote class="hlt">
+<pre class="code" id="GRAPHinit">
+<span class="k">#define</span> GRAPHinit <span class="k">DIGRAPHinit</span>
+<span class="k">#define</span> GRAPHshow <span class="k">DIGRAPHshow</span>
+</pre>
+
+<p class="doc" id="GRAPHinsertE">
+/* Esta função insere uma aresta <tt class="doc">v-w</tt> 
+   no grafo&nbsp;<tt class="doc">G</tt>.&nbsp;*/  
+
+<pre class="code">
+<span class="k">void</span> GRAPHinsertE (<span class="k">Graph</span> G, <span class="k">Vertex</span> v, <span class="k">Vertex</span> w) { 
+   DIGRAPHinsertA(G, v, w);
+   DIGRAPHinsertA(G, w, v);
+}
+</pre>
+
+</blockquote>
+
+
+<p>É um bom exercício escrever uma função
+<tt>GRAPHremoveE</tt>
+que remova uma aresta de um grafo.
+ 
+
+
+
+
+
+
+
+<h2>Exercícios</h2>
+
+<p>A maior parte dos exercícios abaixo envolve grafos.
+Convido o leitor a refazer todos os exercícios 
+depois de trocar "grafo" e "aresta" por 
+"digrafo" e "arco" respectivamente.
+
+<ol start=1>
+
+<li class="exr">
+Escreva uma função que verifique se um digrafo 
+(dado por sua martriz de adjajcência) é 
+<a href="digraphs.html#symmetric">simétrico</a>
+
+
+<li class="exr">
+Escreva uma função que confira a consistência 
+da representação de um grafo.&nbsp;
+Ao receber um grafo <tt>G</tt>,
+a função deve devolver <tt>1</tt> 
+se a matriz <tt>G->adj</tt> é simétrica e tem diagonal nula,
+e se valor de <tt>G->A</tt> é consistente com 
+o conteúdo de <tt>G->adj</tt>.&nbsp;
+Caso contrário, a função deve devolver&nbsp;<tt>0</tt>.
+
+
+
+<li class="exr" id="E17.40">
+Escreva uma função <tt>GRAPHdeg</tt>
+que devolva o grau de  
+um vértice <tt>v</tt> num grafo&nbsp;<tt>G</tt>.
+
+<li class="exr" id="E17.40modified">
+Escreva uma função <tt>DIGRAPHindeg</tt>
+que devolva o grau de entrada de um vértice <tt>v</tt>
+num digrafo <tt>G</tt> representado por sua matriz de adjacência.
+
+<li class="exr" id="GRAPHremoveE">
+Escreva uma função <tt>GRAPHremoveE</tt>
+que remova uma aresta <tt>v-w</tt> de um grafo <tt>G</tt>
+dado por sua matriz de adjacência.
+(Veja <tt><a href="#DIGRAPHremoveA">DIGRAPHremoveA</a></tt>.)
+Se <tt>v-w</tt> não for aresta, a função nada faz.
+
+<li class="exr" id="E17.24">
+Escreva uma função de <tt>DIGRAPHcopy</tt>
+que receba um digrafo 
+representado por sua matriz de adjacência,
+crie uma cópia do digrafo,
+e devolva (o endereço d)a cópia.
+
+<li class="exr" id="E17.24B">
+Escreva uma função de <tt>DIGRAPHdestoy</tt>
+que destrua um digrafo representado por sua matriz de adjacência
+(ou seja, libere o espaço que o digrafo ocupa na memória).
+
+
+<li class="exr" id="E17.13">
+Escreva uma função que receba um vetor de arestas 
+e devolva a representação por matriz de adjacência 
+do grafo definido por essas arestas.
+
+<li class="exr" id="DIGRAPHarcs">
+Escreva uma função <tt>DIGRAPHarcs</tt>
+que armazene os arcos de um digrafo
+num vetor fornecido pelo usuário.
+
+<li class="exr" id="GRAPHedges">
+Escreva uma função <tt>GRAPHedges</tt>
+que armazene as arestas de um grafo 
+num vetor fornecido pelo usuário.
+
+
+</ol>
+
+
+
+
+
+
+<h2>Mais exercícios</h2>
+
+<p>A maior parte dos exercícios abaixo envolve grafos.
+Convido o leitor a refazer todos os exercícios
+depois de trocar "grafo" e "aresta" por 
+"digrafo" e "arco" respectivamente.
+
+<ol start=11>
+
+<li class="exr" id="E17.49">
+Digamos que um arquivo é <i>gráfico</i>
+se sua primeira linha contém um inteiro <tt>V</tt> 
+e cada uma das demais linha contém dois inteiros 
+pertencentes ao intervalo <tt>[0..V-1]</tt>
+separados por um caracter '<tt>-</tt>'.&nbsp;
+Eis um exemplo:
+<pre>
+       6
+       0-1 
+       0-5 
+       1-0 
+       1-5 
+       2-4 
+       3-1
+</pre>
+<p>Se interpretarmos cada linha do arquivo como uma aresta,
+podemos dizer que o arquivo define um grafo com 
+vértices <tt>0..V-1</tt>.&nbsp;
+Escreva uma função <tt>GRAPHconstruct</tt>
+que receba um arquivo gráfico
+e construa a matriz de adjacência do grafo.
+Use as funções <tt>GRAPHinit</tt> e <tt>GRAPHinsertE</tt>.
+
+<li class="exr">
+Considere o problema de decidir se dois vértices 
+são adjacentes num grafo representado por sua matriz de adjacência.
+Quanto tempo consome a solução do problema?
+Dê sua resposta em função do número de vértices.
+
+<li class="exr">
+Considere o problema de decidir se um vértice 
+é isolado num grafo representado por sua matriz de adjacência.
+Quanto tempo consome a solução do problema?
+Dê sua resposta em função do número de vértices.
+
+</ol>
+
+
+
+
+
+
+
+
+
+
+<p>&nbsp;
+<hr>
+<small>
+
+Last modified: Thu Feb 15 08:55:52 BRST 2007
+<br>
+&nbsp;</small>
+
+</BODY>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/adjmatrix.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:38 GMT -->
+</HTML>

@@ -1,0 +1,367 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/maxflowmincut.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:42 GMT -->
+<HEAD>
+<TITLE>Algoritmos para Grafos: Corte minimo e fluxo maximo</TITLE>
+<META NAME="Author" CONTENT="Paulo Feofiloff">
+<META name="language" content="Portuguese">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1"> 
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<LINK rel="stylesheet" href="code.css" type="text/css">
+</HEAD>
+<BODY>
+
+
+
+
+
+
+
+<p class="top">
+<a href="../index.html#contents">Algoritmos em C para Grafos via Sedgewick</a>&nbsp;
+
+
+
+
+<h1>Fluxo máximo e corte mínimo</h1>
+
+
+<p>Esta página mostra que o 
+<a href="flow-FF.html#fordfulkersonalgorithm">algoritmo de Ford e Fulkerson</a>
+de fato resolve o
+<a href="flow.html#maxflowproblem">problema do fluxo máximo</a>.&nbsp;
+Assim, prova o célebre Teorema do Fluxo Máximo e Corte Mínimo.
+
+<p>(A página é um resumo 
+de parte da seção
+22.2 (Augmenting-Path Maxflow Algorithms)
+do livro de Sedgewick.)
+
+
+
+
+
+<h2>Cortes e sua capacidade</h2>
+
+<p>Precisamos de uma definição de corte
+ligeiramente mais restrita que aquela 
+usada na <a href="connected.html#cut"
+>definição de grafo conexo</a>.&nbsp;&nbsp;
+Dada um digrafo com vértice inicial <tt>s</tt>
+e vértice final <tt>t</tt>, um&nbsp;
+<span class="dfn">corte</span>&nbsp;
+(=&nbsp;<i>st-cut</i>)&nbsp;
+é qualquer 
+<a href="footnotes/partition.html">partição</a>&nbsp; 
+<tt>(S,T)</tt>&nbsp;
+do conjunto de vértices tal que 
+
+<p class="display">
+<tt>s</tt> está em <tt>S</tt>&nbsp;&nbsp; 
+e&nbsp;&nbsp;
+<tt>t</tt> está em&nbsp;<tt>T</tt>.
+
+<p>Um <span class="dfn">arco direto</span>
+de um corte <tt>(S,T)</tt>
+é qualquer arco que 
+vai de <tt>S</tt> para&nbsp;<tt>T</tt>.&nbsp;
+Um <span class="dfn">arco inverso</span> do corte
+é qualquer arco que 
+vai de <tt>T</tt> para&nbsp;<tt>S</tt>.
+
+<p>Numa <a href="flow.html#capacitatednetwork">rede capacitada</a>,&nbsp; 
+a <span class="dfn">capacidade</span>&nbsp; 
+de um corte&nbsp; <tt>(S,T)</tt>&nbsp;
+é a soma das capacidades dos arcos diretos do corte.
+
+
+
+
+<h2>Fluxo através de um corte</h2>
+
+<p>Suponha dada uma <a href="flow.html#capacitatednetwork">rede capacitada</a>
+e um fluxo que respeita as capacidades.&nbsp;
+O&nbsp;fluxo <span class="dfn">através de um corte</span>
+<tt>(S,T)</tt>
+é a diferença entre 
+a soma dos fluxos nos arcos diretos do corte 
+e a soma dos fluxos nos arcos inversos do corte,
+ou seja,
+o <a href="flow.html#saldoemS">saldo</a> de fluxo em&nbsp;<tt>S</tt>.
+
+<p>A seguinte propriedade decorre imediatamente
+da <a href="flow.html#property22.3">propriedade dos saldos</a>:
+
+<blockquote class="display" id="property22.4">
+<span class="sc">Delimitação Superior dos Fluxos</span>
+(Property&nbsp;22.4, p. 374, Sedgewick):&nbsp;
+Para qualquer fluxo que respeita as capacidades de uma rede capacitada,
+o fluxo através de qualquer corte 
+é menor ou igual à capacidade do corte.
+</blockquote>
+
+<p id="certificate">Uma conseqüência importante dessa propriedade:&nbsp;
+Se um fluxo <tt>f</tt> respeita as capacidades
+e tem intensidade igual à capacidade de um corte <tt>(S,T)</tt>
+então o fluxo tem intensidade máxima
+(e o corte tem capacidade mínima).&nbsp;
+Um tal corte <tt>(S,T)</tt> é, portanto, 
+um <i>certificado</i> da maximalidade do fluxo.
+
+
+
+<h2 id="fig22.16">Exemplo 1</h2>
+
+<p>Considere a rede capacitada abaixo,
+com vértice inicial <tt>0</tt> e vértice final <tt>5</tt>.&nbsp;
+A coluna <tt>f</tt> dá um fluxo que respeita as capacidades.
+<pre>
+         arco  cap  f    s = 0
+         0-1   2    2    t = 5
+         0-2   3    2
+         1-3   3    1
+         1-4   1    1
+         2-3   1    1
+         2-4   1    1
+         3-5   2    2
+         4-5   3    2
+</pre>
+
+<p>A tabela abaixo lista todos os cortes.
+Em cada linha temos um corte 
+(com <tt>S</tt> na primeira coluna e <tt>T</tt> na segunda),
+os arcos diretos do corte (terceira coluna),
+os arcos inversos do corte (quarta coluna)
+e a capacidade do corte (quinta coluna).
+<pre>
+     0     1 2 3 4 5    0-1 0-2                               5
+     0 1     2 3 4 5    0-2 1-3 1-4                           7
+     0 2     1 3 4 5    0-1 2-3 2-4                           4
+     0 3     1 2 4 5    0-1 0-2 3-5        1-3 2-3            7
+     0 4     1 2 3 5    0-1 0-2 4-5        1-4 2-4            8
+     0 1 2     3 4 5    1-3 1-4 2-3 2-4                       6
+     0 1 3     2 4 5    0-2 1-4 3-5        2-3                6
+     0 1 4     2 3 5    0-2 1-3 4-5        2-4                9
+     0 2 3     1 4 5    0-1 2-4 3-5        1-3                5
+     0 2 4     1 3 5    0-1 2-3 4-5        1-4                6
+     0 3 4     1 2 5    0-1 0-2            1-3 1-4 2-3 2-4    5
+     0 1 2 3     4 5    1-4 2-4 3-5                           4
+     0 1 2 4     3 5    1-3 4-5                               6
+     0 2 3 4     1 5    0-1 3-5 4-5        1-3 1-4            7
+     0 1 2 3 4     5    3-5 4-5                               5
+</pre>
+
+<p>Verifique que o fluxo através de cada um dos  
+quinze cortes tem intensidade&nbsp;<tt>4</tt>.&nbsp;&nbsp;
+(Este exemplo é cópia da figura 22.16, p.375, de Sedgewick.)
+
+
+
+
+
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=1>
+
+<li class="exr" id="E22.22">
+Mostre, no estilo do <a href="#fig22.16">exemplo acima</a>,
+todos os cortes na rede capacitada abaixo.
+Para cada corte, liste os arcos diretos e os inversos,
+bem como a capacidade do corte.&nbsp;
+<pre class="small">
+                arco  cap         s = 0
+                0-1   2           t = 5
+                0-2   3
+                0-3   2
+                1-2   1
+                1-3   1
+                1-4   1
+                2-4   1
+                2-5   2
+                3-4   2
+                3-5   3
+                4-5   2
+</pre>
+
+
+<li class="exr" id="E22.23">
+Encontre um corte de capacidade mínima na rede capacitada abaixo.
+Mostre também um corte de capacidade não-mínima.
+Encontre um fluxo máximo dentre os que respeitam as capacidades.
+Mostre duas diferentes seqüências de caminhos de aumento
+que levam ao fluxo máximo.&nbsp;
+<pre class="small" id="fig22.12">
+                arco  cap     s = 0  t = 5
+                0-1   2
+                0-2   3
+                0-3   2
+                1-3   1
+                1-4   1
+                2-1   1
+                2-5   2
+                3-4   2
+                3-5   3
+                4-2   1
+                4-5   2
+</pre>
+
+</ol>
+
+
+
+
+
+
+<h2 id="mfmctheorem">Análise do algoritmo dos caminhos de aumento</h2>
+
+<p>Quando discutimos o <a href="flow-FF.html#fordfulkersonalgorithm"
+>algoritmo dos caminhos de aumento</a>,
+omitimos a prova de sua correção.&nbsp;
+É&nbsp;verdade que aquele algoritmo 
+resolve o 
+<a href="flow.html#maxflowproblem">Problema do Fluxo Máximo</a>?
+
+<p>Para mostrar que isso é verdade, 
+basta provar o seguinte fato:&nbsp;
+se não existe um caminho de aumento em relação a um dado fluxo
+então o fluxo tem intensidade máxima.&nbsp;
+Eis a prova desse fato
+(veja propriedade&nbsp;22.5, p.374, Sedgewick):
+
+<blockquote>
+Suspenda, temporariamente, a cláusula da
+<a href="flow-FF.html#augmentingpath">definição de caminho de aumento</a>
+que exige que o caminho termine em&nbsp;<tt>t</tt>.&nbsp;
+Agora, seja&nbsp; <tt>S</tt>&nbsp; 
+o conjunto de todos os vértices que são término
+de um caminho de aumento.&nbsp;
+É&nbsp;claro que <tt>s</tt> está em&nbsp;<tt>S</tt>.&nbsp;&nbsp;&nbsp;
+Seja&nbsp; <tt>T</tt>&nbsp; o conjunto de todos os 
+demais vértices de&nbsp;<tt>G</tt>.&nbsp;
+O vértice <tt>t</tt> está em <tt>T</tt> 
+pois não existe caminho de aumento que termine em&nbsp;<tt>t</tt>.&nbsp;
+Portanto,&nbsp; <tt>(S,T)</tt>&nbsp; é um corte.&nbsp;
+Todos os arcos diretos desse corte estão 
+<a href="flow-FF.html#augmentingpath">cheios</a>
+e todos os arcos inversos estão 
+<a href="flow-FF.html#augmentingpath">vazios</a>.&nbsp;
+Portanto, o fluxo através desse corte é igual à capacidade do corte.
+
+<p>Mas o fluxo através de <tt>(S,T)</tt> é igual ao saldo em <tt>S</tt>
+e portanto igual à intensidade do fluxo
+(veja a <a href="flow.html#property22.3"
+>Propriedade dos Saldos</a>).&nbsp;
+Por outro lado,
+não existe fluxo de intensidade maior que a capacidade de algum corte
+(veja a <a href="#property22.4"
+>Delimitação Superior dos Fluxos</a>).&nbsp;
+Logo, nosso fluxo tem intensidade máxima.
+</blockquote>
+
+<p>Essa análise do algoritmo dos caminhos de aumento
+prova que a
+<a href="#property22.4">Delimitação Superior dos Fluxos</a>
+vale com igualdade quando o fluxo é máximo e o corte é mínimo:
+
+<blockquote class="display" id="property22.5">
+<span class="sc">Teorema do Fluxo Máximo e Corte Mínimo</span>
+(<i>Maxflow-mincut Theorem</i>,
+Property&nbsp;22.5, p.374, Sedgewick):&nbsp;
+Em qualquer rede capacitada,
+a&nbsp;intensidade de um fluxo máximo 
+é igual à capacidade de um corte mínimo.
+</blockquote>
+
+
+
+
+
+<h2 id="fig22.14">Exemplo 2</h2>
+
+<p>Considere a rede capacitada abaixo,
+com vértice inicial <tt>0</tt> e vértice final&nbsp;<tt>5</tt>.
+(Este exemplo é cópia da figura 22.14, p.372, de Sedgewick.)
+<pre>
+            arco  cap    s = 0
+            0-1   2      t = 5
+            0-2   3  
+            1-3   3  
+            1-4   1  
+            2-3   1  
+            2-4   1  
+            3-5   2  
+            4-5   3  
+</pre>
+
+<p>Eis um fluxo máximo:
+<pre>
+            arco   f
+            0-1    2
+            0-2    2
+            1-3    2
+            1-4    1
+            2-3    1
+            2-4    1
+            3-5    2
+            4-5    2
+</pre>
+
+<p>Eis um corte mínimo:
+<pre>
+            S        T
+            0 2      1 3 4 5 
+</pre>
+
+<p>A intensidade do fluxo máximo é <tt>4</tt> 
+e a capacidade do corte mínimo é&nbsp;<tt>4</tt>.
+
+
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=1>
+
+<li class="exr">
+<p>A figura define um fluxo <tt>f</tt>
+numa rede capacitada com capacidade&nbsp;<tt>c</tt>.&nbsp;
+Qual o vértice inicial e o final?&nbsp;
+Existe caminho de aumento para&nbsp;<tt>f</tt>?&nbsp;
+Exiba um fluxo máximo e um corte mínimo.&nbsp;
+Diga qual a capacidade do corte.
+<pre class="small">
+            arco  c   f
+            0-1   1   0
+            0-4   2   2
+            1-5   4   2
+            2-0   2   1
+            2-3   2   0
+            2-4   1   0
+            4-3   2   2
+            5-0   2   1
+            5-2   1   1
+</pre>
+
+</ol>
+
+
+
+
+
+
+<p>&nbsp;
+<hr>
+<small>
+
+Last modified: Thu Feb 15 08:55:41 BRST 2007
+</small>
+
+</BODY>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/maxflowmincut.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:42 GMT -->
+</HTML>

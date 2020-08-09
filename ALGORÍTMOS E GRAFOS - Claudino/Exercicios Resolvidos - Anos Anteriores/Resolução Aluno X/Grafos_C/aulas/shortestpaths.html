@@ -1,0 +1,412 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/shortestpaths.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:40 GMT -->
+<HEAD>
+<TITLE>Algoritmos para Grafos: Caminhos minimos</TITLE>
+<META NAME="Author" CONTENT="Paulo Feofiloff">
+<META name="language" content="Portuguese">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1"> 
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<LINK rel="stylesheet" href="code.css" type="text/css">
+</HEAD>
+<BODY>
+
+
+
+
+
+
+
+
+
+<p class="top">
+<a href="../index.html#contents">Algoritmos em C para Grafos via Sedgewick</a>&nbsp;
+
+
+
+
+
+<h1>Caminhos mínimos</h1>
+
+
+
+<p>(Esta página corresponde aproximadamente à 
+seção&nbsp;18.7 (Breadth-First Search), p.114-124,
+do capítulo 18 
+do livro de Sedgewick.)
+
+
+
+<h2 id="distance">Distância</h2>
+
+<p id="minpath">Um <a href="paths.html#path">caminho</a> 
+<i>C</i> num digrafo é 
+<span class="dfn">mínimo</span>
+se não existe outro caminho 
+com mesma origem e mesmo término que <i>C</i>
+mas <a href="paths.html#length">comprimento</a> 
+menor que o de&nbsp;<i>C</i>.&nbsp;
+É claro que todo caminho mínimo é 
+<a href="paths.html#simple">simples</a>.
+
+<p>A&nbsp;
+<span class="dfn">distância</span>&nbsp;
+de um vértice <i>s</i> a um vértice <i>t</i>
+num digrafo é o comprimento de um caminho mínimo 
+de <i>s</i> a <i>t</i>.&nbsp;
+Se não existe caminho algum de <i>s</i> a <i>t</i>,
+a distância de <i>s</i> a <i>t</i> é infinita.&nbsp;
+A&nbsp;distância de <i>s</i> a <i>t</i> é <i>d</i>
+se e somente se&nbsp; 
+(1)&nbsp;existe um caminho de comprimento <i>d</i> 
+de <i>s</i> a&nbsp;<i>t</i>&nbsp; e&nbsp;
+(2)&nbsp;nenhum caminho 
+de <i>s</i> a <i>t</i> 
+tem comprimento menor que&nbsp;<i>d</i>.
+
+<p>Em geral, a distância de um vértice <i>s</i> a um vértice <i>t</i>
+é diferente da distância de <i>t</i> a&nbsp;<i>s</i>.
+Num <a href="graphs.html">grafo</a>, entretanto,
+as duas distâncias são iguais.
+
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=1>
+
+<li class="exr">
+Seja <i>s</i> um vértice de digrafo&nbsp;<i>G</i>.
+Para cada vértice <i>x</i> do digrafo, seja <i>dist(x)</i>
+a distância de <i>s</i> a <i>x</i> em&nbsp;<i>G</i>.&nbsp;
+Mostre que&nbsp;
+<i>dist(w)</i> &le; <i>dist(v)</i>&nbsp;+&nbsp;1&nbsp;
+para todo arco&nbsp;<i>v-w</i>.
+
+<li class="exr" id="E18.54">
+Seja <i>s</i> um vértice de um digrafo&nbsp;<i>G</i>.
+Suponha que conhecemos a distância entre <i>s</i>
+e cada um dos demais vértices do digrafo.
+O&nbsp;que se pode dizer sobre a distância 
+entre dois vértices quaisquer <i>v</i> e&nbsp;<i>w</i>?
+
+<li class="exr">
+Critique a seguinte função.
+Ela promete devolver a distância de <tt>s</tt> a&nbsp;<tt>t</tt>.
+<pre class="small">
+       int distancia (Digraph G, Vertex s, Vertex t) { 
+          int dist[1000], d;
+          Vertex v, w;
+          for (v = 0; v < G->V; v++) dist[v] = -1;
+          dist[r] = 0;
+          for (d = 0; d < G->V; d++) 
+             for (v = 0; v < G->V; v++) 
+                if (dist[v] == d)   
+                   for (w = 0; w < G->V; w++) 
+                      if (G->adj[v][w] == 1 &amp;&amp; dist[w] == -1)  
+                         dist[w] = d + 1;
+          return dist[s];
+       }
+</pre>
+
+</ol>
+
+
+
+
+
+
+
+<h2 id="bfsdistances">Busca em largura e distâncias</h2>
+
+<p>O <a href="bfs.html#DIGRAPHbfs1">algoritmo de busca em largura</a>
+foi concebido sob medida para calcular distâncias 
+a partir de um vértice <tt>s</tt>.&nbsp;
+Ele visita 
+todos os vértices que estão à distância&nbsp;1 de <tt>s</tt>,
+depois todos os vértices que estão à distância&nbsp;2 de&nbsp;<tt>s</tt>,
+e assim por diante.
+
+
+<blockquote class="hlt">
+<pre class="code">
+<span class="k">static int</span> dist[maxV];
+</pre>
+
+<p class="doc" id="DIGRAPHdist">
+/* A função <tt class="doc">DIGRAPHdist</tt>
+   armazena no vetor <tt class="doc">dist</tt>
+   a distância do vértice <tt class="doc">s</tt>
+   a cada um dos demais vértices do 
+   digrafo&nbsp;<tt class="doc">G</tt>:
+   <tt class="doc">dist[v]</tt> é a distância de 
+   <tt class="doc">s</tt> a&nbsp;<tt class="doc">v</tt>.
+   Distância infinita é representada 
+   por&nbsp;<tt class="doc">-1</tt>.&nbsp;
+   (Código inspirado no programa 18.9, p.119, de Sedgewick.)&nbsp;*/
+
+<pre class="codedim">
+<span class="k">void</span> DIGRAPHdist (<span class="k">Digraph</span> G, <span class="k">Vertex</span> s) { 
+   <span class="k">Vertex</span> v, w;
+   <span class="k">for</span> (v = 0; v < G->V; v++) <b>dist[v]</b> = -1;
+   QUEUEinit(G->V);
+   <b>dist[s]</b> = 0;
+   QUEUEput(s); 
+   <span class="k">while</span> (!QUEUEempty()) {
+      v = QUEUEget(); 
+      <span class="k">for</span> (w = 0; w < G->V; w++)
+         <span class="k">if</span> (G->adj[v][w] == 1)
+            <span class="k">if</span> (<b>dist[w]</b> == -1) { 
+               <b>dist[w] = dist[v] + 1;</b>
+               QUEUEput(w); 
+            }
+   }
+}
+</pre>
+</blockquote>
+
+<p>
+No início de cada iteração
+(imediatamente da invocação de <tt>QUEUEempty</tt>),
+a fila consiste em 
+
+<ol type="none">
+<li>
+zero ou mais vértices à distância <i>d</i> de <tt>s</tt>,
+<li>
+seguidos de zero ou mais vértices à distância <i>d</i>+1
+de&nbsp;<tt>s</tt>,
+</ol>
+
+<p>para algum <i>d</i>.&nbsp;
+Essa propriedade permite concluir que,
+no início de cada iteração,
+para todo vértice&nbsp;<tt>x</tt>,
+se <tt>dist[x]</tt> é diferente de <tt>-1</tt>
+então <tt>dist[x]</tt> é a distância de <tt>s</tt> a&nbsp;<tt>x</tt>.
+
+
+
+
+<h2 id="example">Exemplo</h2>
+
+
+<p id="fig18.21">
+Considere o grafo (digrafo simétrico)
+definido pelo conjunto de arestas abaixo.
+(Trata-se do mesmo exemplo que examinamos 
+na página de <a href="bfs.html#example1">busca em largura</a>.)&nbsp;
+Represente o grafo por sua matriz de adjacência.
+
+<p class="display">
+<tt>0-2 2-6 6-4 4-5 5-0 0-7 7-1 7-4 3-4 3-5</tt>
+
+<p>Agora use a função <tt>DIGRAPHdist</tt>
+para calcular as distâncias a partir do vértice&nbsp;<tt>0</tt>.&nbsp;
+Eis o estado do vetor <tt>dist</tt> no início de sucessivas iterações
+(com "<tt>*</tt>" no lugar de&nbsp;"<tt>-1</tt>"):
+<pre>
+              0 1 2 3 4 5 6 7
+              ---------------
+              0 * * * * * * * 
+              0 * 1 * * 1 * 1 
+              0 * 1 * * 1 2 1 
+              0 * 1 2 2 1 2 1 
+              0 2 1 2 2 1 2 1 
+</pre>
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=4>
+
+<li class="exr" id="bfsforlists">
+Escreva uma versão da função <tt>DIGRAPHdist</tt> 
+para digrafos representados por listas de adjacência.
+
+
+<li class="exr" id="wrong">
+A seguinte função promete calcular a distância
+de um vértice <tt>s</tt> a cada um dos demais vértices do 
+grafo&nbsp;<tt>G</tt>.&nbsp;
+A função está correta?
+<pre class="small">
+   static int cnt, dist[maxV];
+   void distance (Graph G, Vertex s) { 
+      Vertex v, w;
+      cnt = 0;
+      for (v = 0; v < G->V; v++) dist[v] = -1;
+      QUEUEinit(G->V);
+      dist[s] = 0;
+      QUEUEput(s); 
+      while (!QUEUEempty()) {
+         v = QUEUEget(); 
+         for (w = 0; w < G->V; w++)
+            if (G->adj[v][w] == 1 &amp;&amp; dist[w] == -1) { 
+               dist[w] = cnt;
+               QUEUEput(w);
+            }
+         cnt++;
+      }
+   }
+</pre>
+
+<li class="exr">
+Escreva uma função que receba um vértice&nbsp; <tt>s</tt>&nbsp;
+de um grafo&nbsp;&nbsp;<tt>G</tt>&nbsp;
+(representado por suas listas de adjacência)
+e armazene num vetor global&nbsp; <tt>dist</tt>&nbsp;
+as distâncias de&nbsp; <tt>s</tt>&nbsp; 
+a cada um dos demais vértices.&nbsp;&nbsp;
+Sua função não deve invocar outras funções.&nbsp;
+Escreva código simples, sem variáveis supérfluas 
+e sem comandos supérfluos.
+
+
+<li class="exr">
+Seja <tt>s</tt> um vértice de um grafo 
+conexo&nbsp;<tt>G</tt>.&nbsp;
+Suponha dado um vetor <tt>dist</tt> tal que
+<tt>dist[v]</tt> é a distância de <tt>s</tt> a <tt>v</tt> 
+para cada vértice&nbsp;<tt>v</tt>.&nbsp;
+Escreva uma função que receba um vértice <tt>w</tt>
+e imprima um caminho mínimo de <tt>w</tt> a&nbsp;<tt>s</tt>.
+
+</ol>
+
+
+
+
+
+<h2 id="distancetree">Caminhos mínimos e arborescência de distâncias</h2>
+
+<p>
+Se acrescentar ao código de <tt>DIGRAPHdist</tt>
+o cálculo de um 
+<a href="arborescences.html#parnt-array">vetor de pais</a>&nbsp;<tt>parnt</tt>,
+teremos uma representação da 
+<a href="bfs.html#bfstree">arborescência de busca em largura</a>.&nbsp;
+No presente contexto,
+essa árvore pode ser chamada 
+<span class="dfn">arborescência das distâncias</span>:&nbsp;
+para cada vértice <tt>x</tt>
+tal que <tt>dist[x]</tt> é diferente de <tt>-1</tt>,
+o único caminho de <tt>s</tt> a <tt>x</tt> na arborescência
+é um 
+<a href="#minpath">caminho mínimo</a> no digrafo.&nbsp;
+O&nbsp;fragmento de código abaixo imprime
+o inverso desse caminho:
+
+<pre class="code">
+         <span class="k">for</span> (v = x; v != s; v = parnt[v])
+            <span class="k">printf</span>("<span class="k">%d-</span>", v)
+         <span class="k">printf</span>("<span class="k">%d\n</span>", s)
+</pre>
+
+
+
+
+
+
+
+
+
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=8>
+
+<li class="exr" id="E18.50">
+Considere o grafo definido pelas arestas abaixo.
+Represente o grafo por uma matriz de adjacência.
+<center>
+<pre class="small">
+8-9 3-7 1-4 7-8 0-5 5-2 3-8 2-9 0-6 4-9 2-6 6-4
+</pre>
+</center>
+<p>Calcule a distância do vértice <tt>0</tt> 
+a cada um dos demais vértices.
+Faça um desenho da arborescência de distâncias.
+
+
+<li class="exr" id="E18.49">
+Represente o grafo abaixo por listas de adjacência.
+Insira as arestas, na ordem dada, num grafo inicialmente vazio.
+<center>
+<pre class="small">
+8-9 3-7 1-4 7-8 0-5 5-2 3-8 2-9 0-6 4-9 2-6 6-4&nbsp;.
+</pre>
+</center>
+<p>Calcule a distância do vértice <tt>0</tt> 
+a cada um dos demais vértices.
+Faça um desenho da arborescência de distâncias.
+
+
+<li class="exr">
+Escreva uma versão de <tt><a href="#DIGRAPHdist">DIGRAPHdist</a></tt>
+que calcule uma <a href="#distancetree">arborescência de distâncias</a>.
+Escreva código simples e "enxuto", sem o vetor <tt>dist</tt>.
+
+</ol>
+
+
+
+
+
+
+<h2>Desempenho</h2>
+
+<p>A função <tt>DIGRAPHdist</tt> é linear:&nbsp;
+ela consome tempo proporcional a&nbsp; <tt>V<sup>2</sup></tt>&nbsp;
+no pior caso.&nbsp;
+A variante dessa função para listas de adjacência consome tempo 
+proporcional a&nbsp;&nbsp;<tt>V+E</tt>.
+
+<p>A versão de <tt>DIGRAPHdist</tt> que calcula a 
+arborescência de distâncias
+também é linear.
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=11>
+
+<li class="exr" id="E18.55">
+Denote por <tt>dist(v,w)</tt> a distância entre dois vértices 
+<tt>v</tt> e <tt>w</tt> num grafo conexo.&nbsp;
+O <span class="dfn">diâmetro</span>
+de um grafo conexo é a valor máximo da expressão&nbsp;
+<tt>dist(v,w)</tt>&nbsp;
+com <tt>v</tt> e <tt>w</tt> 
+variando no conjunto de todos os vértices.&nbsp;
+Escreva uma função que calcule o diâmetro de qualquer 
+grafo conexo.
+
+
+</ol>
+
+
+
+
+
+
+
+
+
+<p>&nbsp;
+<hr>
+<small>
+
+Last modified: Thu Feb 15 08:55:46 BRST 2007
+</small>
+
+</BODY>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/shortestpaths.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:40 GMT -->
+</HTML>

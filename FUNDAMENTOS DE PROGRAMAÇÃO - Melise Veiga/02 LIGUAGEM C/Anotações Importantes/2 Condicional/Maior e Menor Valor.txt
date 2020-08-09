@@ -1,0 +1,29 @@
+Retornar maior valor ou menor valor de uma sequencia de valores:
+deve-se usar um auxuliar da seguinte maneira:
+
+ if (variavel>maior) {
+	maior = variavel
+ }
+ printf ("O maior valor eh: ",maior);
+
+
+##################################################
+
+
+ if (variavel<menor) {
+	menor = variavel
+ }
+ printf ("O menor valor eh: ",menor);
+
+
+##################################################
+
+ if (variavel>maior) {
+	maior = variavel
+ }
+ printf ("O maior valor eh: ",maior);
+ 
+ if (variavel<menor) {
+	menor = variavel
+ }
+ printf ("O menor valor eh: ",menor);

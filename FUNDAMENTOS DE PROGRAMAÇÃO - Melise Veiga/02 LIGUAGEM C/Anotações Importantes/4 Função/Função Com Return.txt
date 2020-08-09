@@ -1,0 +1,41 @@
+FUNÇÃO
+
+Para uso da função ela sempre seguirá o mesmo padrão, contento algumas diferenças em função com return
+e função sem return ().
+
+ALGORITMO FUNÇÃO (COM RETURN ()):
+
+FORA DA MAIN:
+1º variavel retorna declarada com novas variaveis de entrada ligadas a da main, tambem declaradas;
+2º calculo do codigo (podendo conter if else, for, while, etc..);
+3º acrescentar return ao valor final. Ex: return (1);.
+
+DENTRO DA MAIN:
+1º declarar variaveis inclusive a da função;
+2º pedir dados x de entrada, ler dados de entrada;
+3º realizar o codigo da função ( funcao = retorna(x); )
+4º imprimir o resultado final.Ex: printf("%d",funcao);
+5º finalizar codigo sem return 0;.
+
+EX:
+#include <stdio.h>
+/* Elabore uma função que receba um número inteiro e retorne 1 se o
+número recebido for positivo ou retorne 0, se o número for negativo ou 0. */
+
+int retorna (int a)
+{
+    if (a>0)
+        return (1);
+        else
+        return (0);
+}
+
+
+int main ()
+{
+    int x, funcao;
+    printf ("Digite o valor de x: ");
+    scanf ("%d",&x);
+    funcao = retorna (x);
+    printf ("%d\n", funcao);
+}

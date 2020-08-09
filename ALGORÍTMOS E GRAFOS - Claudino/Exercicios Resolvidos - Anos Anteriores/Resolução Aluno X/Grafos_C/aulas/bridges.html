@@ -1,0 +1,492 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/bridges.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:40 GMT -->
+<HEAD>
+<TITLE>Algoritmos para Grafos: Pontes</TITLE>
+<META NAME="Author" CONTENT="Paulo Feofiloff">
+<META name="language" content="Portuguese">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1"> 
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<LINK rel="stylesheet" href="code.css" type="text/css">
+</HEAD>
+<BODY>
+
+
+
+
+
+
+
+<p class="top">
+<a href="../index.html#contents">Algoritmos em C para Grafos via Sedgewick</a>&nbsp;
+
+
+
+
+
+<h1>Pontes em grafos e aresta-biconexão</h1>
+
+
+<p>Esta página trata de grafos que deixam de ser 
+<a href="connected.html#connected">conexos</a>
+quando perdem uma de suas arestas.&nbsp;
+Ela se restringe a grafos,
+pois os conceitos discutidos
+não fazem sentido em 
+digrafos não-<a href="digraphs.html#symmetric">simétricos</a>.
+
+<p>(A página é um resumo da primeira parte da 
+seção&nbsp;18.6 (Separability and Biconnectivity), p.106-114,
+do capítulo&nbsp;18 (Graph Search)
+do livro de Sedgewick.)
+
+
+<h2>Pontes em grafos</h2>
+
+<p id="bridge">Uma aresta de um grafo é uma&nbsp;
+<span class="dfn">ponte</span>&nbsp;
+(=&nbsp;<i>bridge</i> =&nbsp;<i>separation edge</i>)&nbsp;
+se ela é a única aresta
+que <a href="connected.html#crosses">atravessa</a> algum 
+<a href="connected.html#cut">corte</a> do grafo.&nbsp;
+<span class="dim">[Pontes são também conhecidas 
+com <span class="dfn">arestas de corte</span>,
+mas nós não vamos usar essa terminologia.]</span>
+
+<p>Em outras palavras,
+uma ponte é uma aresta cuja remoção aumenta o número de 
+<a href="components.html#component">componentes</a>
+do grafo.
+
+
+
+<blockquote class="display">
+<span class="sc">Problema</span>:&nbsp;
+Encontrar as pontes de um grafo dado.
+</blockquote>
+
+
+<p>Poderíamos aplicar cegamente a definição de ponte 
+para resolver o problema,
+mas é possível fazer coisa melhor.
+
+
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=1>
+
+<li class="exr">
+Critique o seguinte algoritmo 
+para encontrar as pontes de um grafo:&nbsp;
+para cada aresta <tt>v-w</tt>,
+verifique 
+(com auxílio de <tt><a href="components.html#GRAPHcc">GRAPHcc</a></tt>
+talvez)
+se a remoção da aresta aumenta o número de componentes
+do grafo.
+
+<li class="exr">
+Mostre que todas as arestas de 
+qualquer <a href="trees.html#forest">floresta</a>
+são pontes.&nbsp;
+A recíproca é verdadeira?
+
+</ol>
+
+
+
+
+<h2>Pontes e busca em profundidade</h2>
+
+<p>É&nbsp;possível encontrar as pontes de um grafo 
+de maneira muito eficiente.&nbsp;
+O&nbsp;ponto de partida  
+é o seguinte fato básico:&nbsp;
+
+em qualquer grafo,
+uma aresta é uma ponte se e somente se
+não faz parte de um 
+<a href="cycles.html#undirected">ciclo não-trivial</a>.&nbsp;
+(Em outras palavras, 
+toda aresta é de um e apenas um de dois tipos:
+ou ela é uma ponte ou pertence a um ciclo não-trivial.)
+
+<p>
+Se fizermos uma busca em profundidade no grafo,
+um dos dois arcos que constituem qualquer ponte 
+será necessariamente um
+<a href="dfs2.html#treearc">arco de arborescência</a>
+(por que?).&nbsp;
+Agora observe a seguinte 
+
+
+<blockquote class="display" id="property18.5">
+<span class="sc">Propriedade</span>
+(Property 18.5, p.107, Sedgewick):&nbsp;
+Em qualquer busca em profundidade, 
+um arco <tt>v-w</tt> da <a href="dfs2.html#dfstree">floresta DFS</a> 
+faz parte (juntamente com <tt>w-v</tt>) 
+de uma ponte se e somente se 
+não existe 
+<a href="dfs2.html#backarc">arco de retorno</a>
+que ligue um 
+<a href="arborescences.html#ancestordescendant">descendente</a>
+de <tt>w</tt> 
+a um <a href="arborescences.html#ancestordescendant">ancestral</a>
+de <tt>v</tt>.
+</blockquote>
+
+<p>(Os descendentes e ancestrais de que trata a propriedade
+não são necessariamente 
+<a href="arborescences.html#proper">próprios</a>.)&nbsp;
+Para tirar proveito dessa propriedade,
+vamos calcular,
+para cada vértice&nbsp;<tt>v</tt>,
+o menor <a href="dfs1.html#lbl">número de pré-ordem</a>
+(=&nbsp;<i>lowest preorder number</i>)
+que pode ser alcançado a partir de&nbsp;<tt>v</tt>.&nbsp;
+Esse número será denotado por
+<p class="display">
+<tt>low[v]</tt>.
+<p>Explico melhor:
+Digamos, só para efeito desta explicação,
+que um caminho é <i>interessante</i> se 
+
+<ul>
+<li>começa em&nbsp;<tt>v</tt>,
+<li>"desce" pela 
+<a href="dfs2.html#dfstree">arborescência de busca em profundidade</a>,
+<li>e finalmente percorre no máximo um arco de retorno.
+</ul>
+
+<p>(Por exemplo, todo caminho de comprimento <tt>0</tt> 
+que começa em <tt>v</tt> é interessante.
+Outro exemplo: um caminho de comprimento <tt>1</tt> 
+que começa em <tt>v</tt>
+e percorre um só arco de retorno é interessante.)&nbsp;
+Digamos que o <i>valor</i> de um caminho interessante é <tt>lbl[z]</tt>, 
+sendo <tt>z</tt> o último vértice do caminho.
+Então&nbsp;
+<tt>low[v]</tt>&nbsp; 
+é, por definição, 
+o valor de um caminho interessante de valor mínimo.
+
+
+
+<p>É claro que&nbsp; <tt>low[v]</tt> &le; <tt>lbl[v]</tt>&nbsp;
+para todo vértice&nbsp;<tt>v</tt>.&nbsp;&nbsp;
+Digo mais: para todo arco&nbsp; <tt>v-w</tt>&nbsp; do grafo,
+
+<ul>
+<li class="spaced">
+se&nbsp; <tt>v-w</tt>&nbsp; é um arco de arborescência
+(e portanto <tt>v</tt> 
+é <a href="arborescences.html#parentchild">pai</a> de <tt>w</tt>)
+então&nbsp; <tt>low[v]</tt>&nbsp;&le;&nbsp;<tt>low[w]</tt>;
+<li class="spaced">
+se&nbsp; <tt>v-w</tt>&nbsp; é uma arco de retorno
+(e portanto <tt>lbl[v]</tt>&nbsp;&gt;&nbsp;<tt>lbl[w]</tt>)
+então&nbsp; <tt>low[v]</tt>&nbsp;&le;&nbsp;<tt>lbl[w]</tt>.
+</ul>
+
+
+
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=3>
+<li class="exr" id="bridges01">
+Escreva uma função que
+calcule <tt>low[v]</tt> para cada vértice&nbsp;<tt>v</tt>
+de um grafo dado.
+Use essa função para imprimir 
+uma tabela com os valores de <tt>lbl[w]</tt> e <tt>low[w]</tt> 
+para cada&nbsp;<tt>w</tt>.
+
+<li class="exr" id="bridges02">
+Critique a maneira de calcular o vetor <tt>low</tt>
+descrita no <a href="bridges02.html">arquivo anexo</a>.&nbsp;
+O algoritmo está correto? É eficiente?
+
+<li class="exr">
+Faça uma busca em profundidade no grafo abaixo
+(supondo que o grafo é representado por sua matriz de adjacência).
+<center>
+<pre class="small">
+0-1 1-2 1-4 2-3 2-4 2-9 3-4 4-5 4-6 4-7 5-6 7-8 7-9
+</pre>
+</center>
+<p>Exiba o vetor&nbsp; <tt>lbl</tt>&nbsp; definido pela busca
+(ou seja, diga em que ordem os vértices são visitados).&nbsp;
+Exiba o vetor&nbsp; <tt>low</tt>&nbsp; associado à árvore de busca.
+
+</ol>
+
+
+
+
+
+<h2>Algoritmo das pontes</h2>
+
+<p>A <a href="#property18.5">propriedade acima</a>
+pode ser reformulada assim:
+em qualquer floresta de busca em profundidade 
+de um grafo, 
+um arco de arborescência <tt>v-w</tt> faz parte de uma ponte 
+se e somente se <tt>low[w]</tt> == <tt>lbl[w]</tt>.
+
+
+
+
+
+
+<blockquote class="hlt">
+<p class="doc">
+/* Nosso grafos terão no máximo 
+   <tt class="doc">maxV</tt> vértices.&nbsp;*/
+
+<pre class="code">
+<span class="k">static int</span> cnt, lbl[maxV], bcnt, low[maxV];
+<span class="k">static int</span> parnt[maxV];
+</pre>
+
+<p class="doc" id="all_bridges">
+/* A função abaixo calcula o número <tt class="doc">bcnt</tt>
+   de pontes do 
+   grafo&nbsp;<tt class="doc">G</tt>
+   e imprime todas as pontes.&nbsp;
+   (O&nbsp;código foi inspirado no programa 18.7, p.108, 
+   de Sedgewick.)&nbsp;*/
+
+<pre class="codedim">
+<span class="k">void</span> all_bridges (<span class="k">Graph</span> G) { 
+   <span class="k">Vertex</span> v;
+   cnt = bcnt = 0;
+   <span class="k">for</span> (v = 0; v < G->V; v++) 
+      lbl[v] = -1;
+   <span class="k">for</span> (v = 0; v < G->V; v++)
+      <span class="k">if</span> (lbl[v] == -1) {
+         parnt[v] = v;
+         bridgeR(G, v);
+}
+</pre>
+
+<pre class="code" id="bridgeR">
+<span class="k">void</span> bridgeR (<span class="k">Graph</span> G, <span class="k">Vertex</span> v) { 
+   <span class="k">link</span> p; <span class="k">Vertex</span> w;
+   lbl[v] = cnt++; 
+   low[v] = lbl[v];
+   <span class="k">for</span> (p = G->adj[v]; p != <span class="k">NULL</span>; p = p->next)
+      <span class="k">if</span> (lbl[w = p->w] == -1) {
+         parnt[w] = v;
+         bridgeR(G, w); 
+         <span class="k">if</span> (low[v] > low[w]) low[v] = low[w];
+         <span class="k">if</span> (low[w] == lbl[w]) {
+            bcnt++; 
+            <span class="k">printf</span>("<span class="t">%d-%d\n</span>", v, w);
+         }
+      }
+      <span class="k">else if</span> (w != parnt[v] <span class="k">&amp;&amp;</span> low[v] > lbl[w]) 
+         low[v] = lbl[w];
+}
+</pre>
+</blockquote>
+
+<p>
+O teste&nbsp; "<tt>if (w != parnt[v])</tt>"&nbsp;
+garante que <tt>v-w</tt> é um arco de retorno
+(e não um <a href="dfs2.html#kindsofarcs">arco-pai</a>).
+
+
+
+
+
+
+<p>
+A função <tt><a href="#all_bridges">all_bridges</a></tt> 
+é linear:&nbsp;
+ela consome tempo proporcional a <tt>V+E</tt>.&nbsp;
+A variante dessa função para matrizes de adjacência consome tempo 
+proporcional a&nbsp;<tt>V&sup2;</tt>.
+
+
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=6>
+
+
+<li class="exr">
+Escreva a documentação da função 
+<tt><a href="#bridgeR">bridgeR</tt></a>,
+ou seja, diga o que a função faz.
+
+<li class="exr" id="bridges03">
+
+Faça uma busca em profundidade no grafo abaixo
+(supondo que o grafo é representado por sua matriz de adjacência).
+<p class="display">
+<tt>0-1 1-2 1-4 2-3 2-4 2-9 3-4 4-5 4-6 4-7 5-6 7-8 7-9</tt>
+<p>Exiba o vetor&nbsp; <tt>lbl</tt>&nbsp; definido pela busca
+(ou seja, diga em que ordem os vértices são visitados).&nbsp;
+Exiba o vetor&nbsp; <tt>low</tt>&nbsp;
+associado à arborescência de busca.
+
+
+<li class="exr" id="fig18.17">
+Execute a função <tt><a href="#all_bridges">all_bridges</a></tt> 
+para encontrar todas as pontes
+do grafo definido pelo conjunto de arestas abaixo.
+<p class="display">
+<tt class="small">0-6 0-1 0-5 1-2 2-6 6-7 7-8 7-10 10-8 5-3 5-4 4-11 4-9 4-3 9-11 11-12</tt>
+<p>
+(Adote a representação por listas de adjacência e insira as arestas,
+na ordem dada, num grafo inicialmente vazio.)
+Faça um desenho da arborescência de busca em profundidade do grafo.
+
+<li class="exr">
+A seguinte variante da função 
+<tt><a href="#bridgeR">bridgeR</tt></a>,
+está correta?
+<pre class="small">
+      void bridgeR (Graph G, Vertex v) { 
+         link p; Vertex w;
+         lbl[v] = cnt++; 
+         low[v] = lbl[v];
+         for (p = G->adj[v]; p != NULL; p = p->next) {
+            if (lbl[w = p->w] == -1) {
+               parnt[w] = v;
+               bridgeR(G, w); 
+               if (low[v] > low[w]) low[v] = low[w];
+            }
+            else if (w != parnt[v])
+               if (low[v] > lbl[w]) 
+                  low[v] = lbl[w];
+         }
+         if (low[v] == lbl[v]) {
+            bcnt++; 
+            printf("%d-%d\n", parnt[v], v);
+         }
+      }
+</pre>
+
+</ol>
+
+
+
+
+<h2 id="edge-connected">Aresta-biconexão</h2>
+
+
+<p>Um grafo é&nbsp;
+<span class="dfn">aresta-biconexo</span>
+(=&nbsp;<i>edge-connected</i>)&nbsp;
+ou&nbsp;
+<span class="dfn">2-aresta-conexo</span>&nbsp;
+se for conexo e não tiver pontes.&nbsp;
+
+Portanto,
+é preciso remover pelo menos duas arestas de um grafo aresta-biconexo 
+para que ele deixe de ser conexo.
+
+
+
+<p><span class="sc">Fato básico importante</span>:&nbsp;
+Um grafo é aresta-biconexo 
+se e somente se,
+para cada par <i>(s,t)</i> de seus vértices,
+existem (pelo menos) dois caminhos de <i>s</i> a <i>t</i>
+sem arestas em comum.
+
+
+<p>Uma
+<span class="dfn">componente aresta-biconexa</span>&nbsp;
+(=&nbsp;<i>edge-connected component</i>)&nbsp;
+de um grafo é qualquer 
+<a href="components.html#component">componente</a>
+do grafo que se obtém 
+depois que todas as pontes são removidas.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=10>
+
+<li class="exr" id="E18.33">
+Faça um desenho da arborescência de busca em profundidade 
+do grafo
+<p class="display">
+<tt>8-9 3-7 1-4 7-8 0-5 5-2 3-8 2-9 0-6 4-9 2-6 6-4</tt>&nbsp;.
+<p>
+(Adote a representação por listas de adjacência e insira as arestas,
+na ordem dada, num grafo inicialmente vazio.)
+Execute a função <tt><a href="#all_bridges">all_bridges</a></tt> 
+para encontrar 
+todas as pontes do grafo.
+Encontre todos as componentes aresta-biconexas.
+
+<li class="exr" id="E18.45">
+Escreva uma função que receba um grafo <tt>G</tt>
+e devolva <tt>1</tt> se o grafo é aresta-biconexo
+e devolva <tt>0</tt> em caso contrário.
+(Sugestão:
+modifique o código de <tt>all_briges</tt>
+e <tt><a href="#bridgeR">bridgeR</tt></a>.)
+
+<li class="exr">
+Seja <i>G</i> um grafo aresta-biconexo.
+Sejam <i>s</i> e <i>t</i> dois vértices de <i>G</i>.
+Prove que existem dois caminhos de <i>s</i> e <i>t</i>
+sem arestas em comum.
+
+<li class="exr">
+Qual o número mínimo de arestas de um grafo aresta-biconexo
+que tem <tt>V</tt> vértices?
+
+
+
+
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+<p>&nbsp;
+<hr>
+<small>
+
+Last modified: Thu Feb 15 08:55:47 BRST 2007
+</small>
+
+</BODY>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/bridges.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:40 GMT -->
+</HTML>

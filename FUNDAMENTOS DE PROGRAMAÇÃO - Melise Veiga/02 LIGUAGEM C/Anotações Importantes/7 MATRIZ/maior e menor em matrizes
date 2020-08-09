@@ -1,0 +1,40 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+/* Matriz para maior e menor valor mostrando tb a posicao */
+
+int main ()
+{
+    int m[6][3], i, j, maior, menor, lmaior, cmaior, lmenor, cmenor;
+
+    //Preencher a matriz
+    for (i=0; i<6; i++){
+        for (j=0; j<3; j++){
+            m[i][j] = rand() % 100;
+            printf ("%d ",m[i][j]);
+        }
+        printf ("\n");
+    }
+
+    //processamento de dados
+    menor = m[0][0];
+    maior = m[0][0];
+    for (i=0; i<6; i++){
+        for (j=0; j<3; j++){
+            if (m[i][j] > maior){
+                maior = m[i][j];
+                lmaior = i; cmaior = j;
+            }
+            if (m[i][j] < menor){
+                menor = m[i][j];
+                lmenor = i; cmenor = j;
+            }
+        }
+    }
+
+    //Imprimir os resultados
+    printf ("\n\nMaior valor e %d da posicao [%d][%d]",maior, lmaior, cmaior);
+    printf ("\nMenor valor e %d da posicao [%d][%d]\n",menor, lmenor, cmenor);
+
+    return 0;
+}

@@ -1,0 +1,1039 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+   <HEAD>
+   <TITLE>Projeto de Algoritmos: Pilhas</TITLE>
+   <META NAME="Author" CONTENT="Paulo Feofiloff">
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1"> 
+   <LINK rel="stylesheet" href="Laulas.css" type="text/css">
+</HEAD>
+<BODY>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h1>Pilhas</h1>
+
+
+
+
+
+
+<p>Uma pilha é uma das várias estruturas de dados que admitem 
+remoção de elementos e 
+inserção de novos elementos.&nbsp;
+Mais especificamente,
+uma&nbsp; <dfn>pilha</dfn> <i>(=&nbsp;stack)</i>&nbsp; é uma 
+estrutura sujeita à seguinte regra de operação:
+sempre que houver uma remoção,
+o elemento removido é o que está na estrutura há menos tempo.
+
+<p>Em outras palavras,
+o primeiro objeto a ser inserido na pilha é 
+o último a ser removido.
+Essa política é conhecida pela sigla LIFO <i>(=&nbsp;Last-In-First-Out)</i>.
+
+
+
+
+
+
+
+
+
+<h2>Implementação em um vetor</h2>
+
+<p>Suponha que nossa pilha está armazenada em um vetor&nbsp; 
+<tt>pilha[0..n-1]</tt>.&nbsp;
+Suponha ainda que os elementos de <tt>pilha</tt> são números inteiros.
+(Isto é só um exemplo; 
+os elementos de <tt>pilha</tt> poderiam ser objetos de qualquer outro tipo.)
+
+A parte do vetor ocupada pela pilha será 
+
+<p class="center">
+
+<tt>pilha[0..t-1]</tt>&nbsp;.
+
+
+
+<p>
+<table class="ab" align="center" cellspacing=2 cellpadding=0>
+<TR>
+   <TD align="center">   <tt>0</tt>
+   <TD align="center">       &nbsp;
+   <TD align="center">       &nbsp;
+   <TD align="center">       &nbsp;
+   <TD align="center">       &nbsp;
+   <TD align="center">       &nbsp;
+   <TD align="center">       &nbsp;
+   <TD align="center">   <tt>t</tt>
+   <TD align="center">       &nbsp;
+   <TD align="center">       &nbsp;
+   <TD align="center"> <tt>N-1</tt>
+<TR>
+   <TD width=30 bgcolor="#e050b0">&nbsp;
+   <TD width=30 bgcolor="#e050b0">&nbsp;
+   <TD width=30 bgcolor="#e050b0">&nbsp;
+   <TD width=30 bgcolor="#e050b0">&nbsp;
+   <TD width=30 bgcolor="#e050b0">&nbsp;
+   <TD width=30 bgcolor="#e050b0">&nbsp;
+   <TD width=30 bgcolor="#e050b0">&nbsp;
+   <TD width=30 bgcolor="#cccccc">&nbsp;
+   <TD width=30 bgcolor="#cccccc">&nbsp;
+   <TD width=30 bgcolor="#cccccc">&nbsp;
+   <TD width=30 bgcolor="#cccccc">&nbsp;
+</TABLE>
+
+
+
+<p>&nbsp;
+<p>O índice <tt>t</tt> indica o 
+<dfn>topo</dfn> <i>(=&nbsp;top)</i> da pilha.&nbsp;
+
+Esta é a primeira posição vaga da pilha.&nbsp;
+A pilha está <dfn>vazia</dfn> se 
+<tt>t</tt> vale <tt>0</tt>
+e <dfn>cheia</dfn> se 
+
+<tt>t</tt> vale&nbsp;<tt>n</tt>.
+
+<p>Para <dfn>remover</dfn> 
+um elemento da pilha&nbsp;&mdash;
+esta operação é conhecida como 
+desempilhar <i>(=&nbsp;to pop)</i>&nbsp;&mdash;
+faça
+<pre class="ind">
+   x = pilha[--t];
+</pre>
+
+<p>Isso equivale ao par de instruções&nbsp;
+&quot;<tt>t</tt>&nbsp;<tt>-=</tt>&nbsp;<tt>1;</tt> 
+<tt>x</tt>&nbsp;<tt>=</tt>&nbsp;<tt>pilha[t];</tt>&quot;&nbsp; nesta ordem.&nbsp;
+É claro que você só deve desempilhar se tiver certeza 
+de que a pilha não está vazia.
+Para <dfn>consultar</dfn> a pilha sem desempilhar faça 
+<tt>x&nbsp;=&nbsp;pilha[t-1]</tt>.
+
+<p>Para <dfn>inserir</dfn>&nbsp;&mdash;
+ou seja, para empilhar <i>(=&nbsp;to push)</i>&nbsp;&mdash;
+um objeto <tt>y</tt> na pilha
+faça
+<pre class="ind">
+   pilha[t++] = y;  
+</pre>
+
+<p>Isso equivale ao par de instruções&nbsp;
+&quot;<tt>pilha[t]</tt>&nbsp;<tt>=</tt>&nbsp;<tt>y;</tt> 
+<tt>t</tt>&nbsp;<tt>+=</tt>&nbsp;<tt>1;</tt>&quot;&nbsp; nesta ordem.&nbsp;
+Antes de empilhar, verifique se a pilha já está cheia
+para evitar que ela <i>transborde</i> 
+(ou seja, para evitar um <i>overflow</i>).&nbsp;
+
+Em geral, a tentativa de inserir em 
+uma pilha cheia é uma situação excepcional,
+que indica um mau planejamento lógico do seu programa.
+
+
+
+
+
+<h2 class="exr" id="exr0">Exercícios</h2>
+
+<div class="exr">
+
+<ol start=1>
+
+<li class="exr">
+Suponha que,
+diferentemente da convenção adotada no texto,
+a parte do vetor ocupada pela pilha
+é <tt>pilha[0..t]</tt>.
+Escreva a instrução que remove um elemento da pilha.
+Escreva a instrução que insere um objeto <tt>y</tt> na pilha.
+
+<li class="exr">
+Escreva funções <tt>empilha</tt> e <tt>desempilha</tt>
+para manipular uma pilha.
+Lembre-se de que uma pilha é um pacote com dois objetos:
+um vetor e um índice.
+Não use variáveis globais.
+Quais os parâmetros de suas funções?
+
+
+
+</ol>
+</div>
+
+
+
+
+
+<h2 id="bem-formada">Aplicação: parênteses e colchetes</h2>
+
+
+<p>Suponha que queremos decidir se uma dada seqüência de
+parênteses e colchetes está bem-formada.
+Por exemplo, a primeira das seqüências abaixo está bem-formada
+enquanto a segunda não está.
+
+<table class="ca" cellspacing=0 cellpadding=0 align="center">
+<tr>
+<td>
+ <TABLE CELLSPACING=2 CELLPADDING=3>
+ <TR>
+ <TD bgcolor="#d0d0ff" valign="middle"><tt>(</tt>
+ <TD bgcolor="#d0d0ff" valign="middle"><tt>(</tt>
+ <TD bgcolor="#d0d0ff"><tt>)</tt>
+ <TD bgcolor="#d0d0ff"><tt>[</tt> 
+ <TD bgcolor="#d0d0ff"><tt>(</tt>
+ <TD bgcolor="#d0d0ff"><tt>)</tt>
+ <TD bgcolor="#d0d0ff"><tt>]</tt>
+ <TD bgcolor="#d0d0ff"><tt>)</tt>
+ </TABLE>
+<td width=80>
+<td> 
+ <TABLE CELLSPACING=2 CELLPADDING=3>
+ <TR>
+ <TD bgcolor="#d0d0ff"><tt>(</tt>
+ <TD bgcolor="#d0d0ff"><tt>[</tt>
+ <TD bgcolor="#d0d0ff"><tt>)</tt>
+ <TD bgcolor="#d0d0ff"><tt>]</tt>
+ </TABLE>
+</table>
+
+<p>Suponha que a seqüência de parênteses e colchetes
+está armazenada em uma 
+cadeia de caracteres <i>(=&nbsp;string)</i>&nbsp;&nbsp;<tt>s</tt>.&nbsp;
+Como é hábito em C, o último caractere da cadeia 
+é o
+caractere nulo,&nbsp;&nbsp;<tt>'\0'</tt>.
+
+
+<pre class="hlt" id="parenteses">
+<span class="comm">// A função devolve 1 se a cadeia s contém uma seqüência 
+// bem-formada de parênteses e colchetes e devolve 0 se
+// a seqüência está malformada.</span>
+
+int bemFormada (char s[])
+{
+   char *pilha; int t; 
+   int n, i;
+  
+   n = strlen (s);
+   pilha = malloc (n * sizeof (char));
+   t = 0;
+   for (i = 0; s[i] != '\0'; ++i) {
+      <span class="comm">// a pilha está armazenada em pilha[0..t-1]</span>
+      switch (s[i]) {
+         case ')': if (t != 0 &amp;&amp; pilha[t-1] == '(') 
+                      --t;
+                   else return 0;
+                   break;
+         case ']': if (t != 0 &amp;&amp; pilha[t-1] == '[') 
+                      --t;
+                   else return 0;
+                   break;
+         default:  pilha[t++] = s[i];
+      }
+   }
+   free (pilha);
+   if (t == 0) return 1;
+   else return 0; 
+}
+</pre>
+
+<p>Note que a pilha não transborda porque nunca terá
+mais elementos do que o número de caracteres de&nbsp;<tt>s</tt>.
+
+
+
+
+
+
+<h2 class="exr" id="exr1">Exercícios</h2>
+
+<div class="exr">
+
+<p>Eis algumas questões sobre a função 
+<a href="pilha.html#parenteses"><tt>bemFormada</tt></a>:
+
+<ol start=3>
+
+<li class="exr">
+A função funciona corretamente 
+se <tt>s</tt> tem apenas dois elementos?
+apenas um? nenhum?
+
+<li class="exr">
+Mostre que no início de cada iteração
+<tt>s</tt> está bem-formada se e somente se
+a seqüência&nbsp;&nbsp;
+<tt>pilha[0..t-1]</tt>&nbsp;<tt>s[i...]</tt>&nbsp;&nbsp;
+estiver bem-formada. 
+
+</ol>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<h2 id="infixa">Outra aplicação: notação polonesa</h2>
+
+
+
+
+
+
+<p>Na notação usual de expressões aritméticas,
+os operadores são escritos <i>entre</i> os operandos;&nbsp;
+por isso, a notação é chamada <dfn>infixa</dfn>.&nbsp;
+Na notação <dfn>polonesa</dfn>,
+ou <dfn>posfixa</dfn>,
+os operadores são escritos <i>depois</i> dos operandos.&nbsp;
+(A propósito, veja exercício sobre expressões aritméticas e árvores binárias.)&nbsp;
+Exemplo:
+
+<table class="ca" CELLSPACING=6 cellpadding=2 align="center">
+<TR>
+   <TD bgcolor="#d0d0d0">infixa
+   <TD bgcolor="#d0d0d0">posfixa 
+
+<TR>
+   <TD><tt>(A+B*C)</tt>
+   <TD><tt>ABC*+</tt>  
+
+<TR>
+   <TD><tt>(A*(B+C)/D-E)</tt>
+   <TD><tt>ABC+*D/E-</tt>    
+
+<TR>
+   <TD><tt>(A+B*(C-D*(E-F)-G*H)-I*3)</tt>
+   <TD><tt>ABCDEF-*-GH*-*+I3*-</tt>      
+
+<tr>
+   <TD><tt>(A+B*C/D*E-F)</tt>
+   <TD><tt>ABC*D/E*+F-</tt>
+
+<tr>
+   <TD><tt>(A+(B-(C+(D-(E+F)))))</tt>
+   <TD><tt>ABCDEF+-+-+</tt>
+
+<tr>
+   <TD><tt>(A*(B+(C*(D+(E*(F+G))))))</tt>
+   <TD><tt>ABCDEFG+*+*+*</tt>
+
+</TABLE>
+
+
+<p>A notação posfixa dispensa parênteses.
+A ordem dos operandos é a mesma nas 
+expressões infixa e posfixa.
+Nosso problema:
+
+<p class="center">
+Traduzir para notação posfixa 
+a expressão infixa 
+armazenada em uma cadeia de caracteres&nbsp;<tt>inf</tt>.
+
+
+
+
+
+
+<p>Para simplificar nossa vida, 
+vamos supor que a expressão infixa está 
+ 
+correta e consiste apenas de letras,
+abre-parêntese, fecha-parêntese e símbolos para as quatro
+operações aritméticas.
+Vamos supor também que cada nome de variável tem uma letra apenas.
+Finalmente, vamos supor que a expressão toda
+está embrulhada em um par de parênteses, 
+isto é, <tt>inf[0]</tt> vale <tt>'('</tt> e
+os dois últimos elementos de <tt>inf</tt> são 
+<tt>')'</tt> e <tt>'\0'</tt>.
+
+
+
+<p>Usaremos uma pilha para resolver o problema.
+Como a expressão infixa está embrulhada em um par de 
+parênteses, não precisamos nos preocupar com pilha vazia!
+
+
+<pre class="hlt" id="polonesa">
+<span class="comm">// A função abaixo recebe uma expressão infixa inf e
+// devolve a correspondente expressão posfixa.</span>
+
+char *<b>infixaParaPosfixa</b> (char inf[]) {
+   char *posf; 
+   char *pi; int t; <span class="comm">// pilha</span>
+   int n, i, j;
+
+   n = strlen (inf);
+   posf = malloc (n * sizeof (char));
+   pi = malloc (n * sizeof (char));
+   t = 0;
+   pi[t++] = inf[0];                          <span class="comm">// empilha '('</span>
+   for (j = 0, i = 1; <span class="comm">/*X*/</span> inf[i] != '\0'; ++i) {
+      <span class="comm">// a pilha está em pi[0..t-1]</span>
+      switch (inf[i]) {
+         char x;
+         case '(': pi[t++] = inf[i];          <span class="comm">// empilha</span>
+                   break;
+         case ')': while (1) {                <span class="comm">// desempilha</span>
+                      x = pi[--t];
+                      if (x == '(') break;
+                      posf[j++] = x;
+                   }
+                   break;
+         case '+': 
+         case '-': while (1) {
+                      x = pi[t-1];
+                      if (x == '(') break;
+                      --t;                    <span class="comm">// desempilha</span>
+                      posf[j++] = x;
+                   }
+                   pi[t++] = inf[i];          <span class="comm">// empilha</span>
+                   break;
+         case '*':
+         case '/': while (1) {
+                      x = pi[t-1];
+                      if (x == '(' || x == '+' || x == '-') 
+                         break;
+                      --t;
+                      posf[j++] = x;
+                   }
+                   pi[t++] = inf[i];
+                   break;
+         default:  posf[j++] = inf[i];
+      }
+   }
+   free (pi);
+   posf[j] = '\0';      
+   return posf;
+}  
+</pre>
+
+
+
+<p><span class="comm">[Veja outra maneira de escrever a função
+tirando proveito dos recursos sintáticos 
+da linguagem&nbsp;C.]</span>&nbsp;&nbsp;
+Constantes e variáveis vão diretamente de <tt>inf</tt> para <tt>posf</tt>.
+Abre-parêntese vai para a pilha.
+Ao encontrar um fecha-parêntese, 
+a função remove tudo da pilha até o abre-parêntese inclusive. 
+Ao encontrar um <tt>+</tt> ou <tt>-</tt> 
+a função desempilha tudo até um abre-parêntese exclusive.
+Ao encontrar um&nbsp;<tt>*</tt> ou&nbsp;<tt>/</tt> 
+desempilha tudo até um abre-parêntese
+ou um <tt>+</tt> ou um&nbsp;<tt>-</tt>.
+
+
+
+
+
+<p>Eis o resultado da aplicação da função à expressão infixa&nbsp;
+<tt>( A * ( B * C + D ) )</tt>&nbsp;.
+A tabela abaixo registra os valores das variáveis a cada passagem
+pelo ponto <tt>X</tt>:
+
+<table class="ca" CELLSPACING=2 cellpadding=0 align="center">
+<TR>
+   <TD bgcolor="#d0d0d0"><tt>inf[0..i-1]</tt>
+   <TD bgcolor="#d0d0d0"><tt>pi[0..t-1]</tt>
+   <TD bgcolor="#d0d0d0"><tt>posf[0..j-1]</tt>
+<TR>
+   <TD><tt>(</tt>
+   <TD><tt>(</tt>  
+   <TD><tt>&nbsp;</tt>  
+<TR>
+   <TD><tt>(A</tt>
+   <TD><tt>(</tt>  
+   <TD><tt>A</tt>  
+<TR>
+   <TD><tt>(A*</tt>
+   <TD><tt>(*</tt>  
+   <TD><tt>A</tt>  
+<tr>
+   <TD><tt>(A*(</tt>
+   <TD><tt>(*(</tt>  
+   <TD><tt>A</tt>  
+<tr>
+   <TD><tt>(A*(B</tt>
+   <TD><tt>(*(</tt>  
+   <TD><tt>AB</tt>  
+<tr>
+   <TD><tt>(A*(B*</tt>
+   <TD><tt>(*(*</tt>  
+   <TD><tt>AB</tt>  
+<tr>
+   <TD><tt>(A*(B*C</tt>
+   <TD><tt>(*(*</tt>  
+   <TD><tt>ABC</tt>  
+<tr>
+   <TD><tt>(A*(B*C+</tt>
+   <TD><tt>(*(+</tt>  
+   <TD><tt>ABC*</tt>  
+<tr>
+   <TD><tt>(A*(B*C+D</tt>
+   <TD><tt>(*(+</tt>  
+   <TD><tt>ABC*D</tt>  
+<tr>
+   <TD><tt>(A*(B*C+D)</tt>
+   <TD><tt>(*</tt>  
+   <TD><tt>ABC*D+</tt>  
+<tr>
+   <TD><tt>(A*(B*C+D))&nbsp;&nbsp;</tt>
+   <TD><tt></tt>  
+   <TD><tt>ABC*D+*</tt>  
+</TABLE>
+
+
+
+
+
+
+
+
+
+
+
+
+<h2 class="exr" id="exr2">Exercícios</h2>
+
+<div class="exr">
+
+<ol start=5>
+
+<li class="exr">
+Aplique o algoritmo de conversão para a notação posfixa à
+expressão aritmética
+<p class="center">
+<tt>(A + B) * D + E / (F + A * D) + C</tt> 
+
+
+<li class="exr">
+Considere a função
+<a href="pilha.html#polonesa"><tt>infixaParaPosfixa</tt></a>.
+Suponha que a expressão infixa <tt>inf</tt> tem 
+<tt>n</tt> caracteres
+(sem contar o <tt>'\0'</tt> final).
+Que tamanho a pilha <tt>pi</tt> pode atingir, no pior caso?
+Em outras palavras, 
+qual o valor máximo da variável <tt>t</tt> no pior caso?
+Que acontece se o número de abre-parênteses na expressão 
+for limitado (menor que 6, por exemplo)? 
+
+
+<li class="exr">
+No código da função
+<tt><a href="#polonesa">infixaParaPosfixa</a></tt>,
+alguns casos têm um <tt>while</tt>&nbsp;<tt>(1)</tt>.
+Escreva uma nova versão sem esses <tt>while</tt>.
+(Dica: troque o <tt>for</tt> externo por um 
+<tt>while</tt> apropriado.)
+
+
+
+<li class="exr">
+Reescreva a função 
+<a href="pilha.html#polonesa"><tt>infixaParaPosfixa</tt></a>
+<i>sem</i> supor que a expressão infixa está 
+embrulhada em um par de parênteses.
+
+
+<li class="exr">
+Reescreva a função 
+<a href="pilha.html#polonesa"><tt>infixaParaPosfixa</tt></a>
+supondo que a expressão pode ter parênteses 
+<i>e colchetes</i>.
+
+
+<li class="exr">
+Reescreva a função 
+<a href="pilha.html#polonesa"><tt>infixaParaPosfixa</tt></a>
+supondo que a expressão pode não estar bem-formada.
+
+
+</ol>
+</div>
+
+
+
+
+
+
+<h2 class="exr" id="exr3">Exercícios</h2>
+
+<div class="exr">
+
+
+<ol start=11>
+
+<li class="exr" id="valorpolonesa">
+<span class="smallcaps">Valor de Expressão Polonesa</span>.&nbsp;&nbsp;
+Suponha que <tt>posf</tt> é uma string 
+que guarda uma expressão aritmética em notação posfixa.
+Suponha que <tt>posf</tt> não é vazio
+e contém somente os operadores&nbsp; 
+<tt>+</tt>,&nbsp; <tt>-</tt>,&nbsp; <tt>*</tt>&nbsp; e&nbsp; <tt>/</tt>&nbsp;
+(todos exigem <i>dois</i> operandos).
+Suponha também que a expressão não tem constantes e que
+todos os nomes de variáveis na expressão 
+consistem de uma única letra maiúscula 
+(<tt>A</tt>,&nbsp;.&nbsp;.&nbsp;.&nbsp;, <tt>Z</tt>).
+Suponha ainda que temos um vetor <tt>tabela</tt> que dá os valores 
+das variáveis
+(todas as variáveis têm valores inteiros):
+  <blockquote>
+  <tt>tabela[0]</tt> é o valor da variável <tt>A</tt>,<BR>
+  <tt>tabela[1]</tt> é o valor da variável <tt>B</tt>&nbsp;etc. 
+  </blockquote>
+
+
+<p class="noindent">
+Escreva uma função que calcule o valor da expressão <tt>posf</tt>.
+Cuidado com divisões por zero!
+    
+
+<li class="exr">
+Escreva um algoritmo que use uma pilha para 
+<i>inverter a ordem</i> das letras de cada palavra
+de uma string, preservando a ordem das palavras. 
+Por exemplo, dado o texto&nbsp;
+<tt>ESTE EXERCICIO E MUITO FACIL</tt>&nbsp;
+a saída deve ser&nbsp;
+<tt>ETSE OICICREXE E OTIUM LICAF</tt>.&nbsp;
+(Lembre-se: strings em C terminam com&nbsp;<tt>'\0'</tt>.)
+
+
+<li class="exr">
+Digamos que nosso alfabeto é formado pelas letras <tt>a</tt>, 
+<tt>b</tt> e <tt>c</tt>.
+Considere o seguinte conjunto de cadeias de caracteres sobre nosso alfabeto:
+   <p class="center">
+   <tt>c</tt>,&nbsp; 
+   <tt>aca</tt>,&nbsp; 
+   <tt>bcb</tt>,&nbsp; 
+   <tt>abcba</tt>,&nbsp; 
+   <tt>bacab</tt>,&nbsp; 
+   <tt>aacaa</tt>,&nbsp; 
+   <tt>bbcbb</tt>,&nbsp;&nbsp;.&nbsp;.&nbsp;.&nbsp;
+
+<p class="noindent">Qualquer cadeia deste conjunto tem a forma 
+<i>W</i><tt>c</tt><i>M</i>,
+onde <i>W</i> é
+uma seqüência de letras que só contém <tt>a</tt> e 
+<tt>b</tt> e 
+<i>M</i> é o inverso de <i>W</i>, 
+ou seja, <i>M</i> é <i>W</i> lido de trás para frente.
+Escreva um programa que determina se uma cadeia <i>X</i>
+pertence ou não ao nosso conjunto, 
+ou seja, determina se <i>X</i> é da forma
+<i>W</i><tt>c</tt><i>M</i>.
+
+
+<li class="exr">
+<span class="smallcaps">Permutações 
+Produzidas Pelo Desempilhar.</span>&nbsp;&nbsp;
+Suponha que os inteiros 1,2,3,4 são colocados, nesta ordem,
+numa pilha inicialmente vazia.
+Depois de empilhar cada inteiro,
+você pode retirar zero ou mais elementos da pilha.
+Cada elemento desempilhado é impresso numa folha de papel.
+Por exemplo, a seqüência de operações
+empilha&nbsp;1, 
+empilha&nbsp;2, 
+desempilha, 
+empilha&nbsp;3, 
+desempilha,
+desempilha, 
+empilha&nbsp;4, 
+desempilha,
+produz a impressão da seqüência 2,3,1,4.
+Quais das
+ 
+24 permutações de 1,2,3,4 podem ser obtidas desta maneira?
+
+
+
+
+
+
+</ol>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h2>Pilha implementada em uma lista encadeada</h2>
+
+
+<p>Como implementar uma pilha em uma 
+<a href="lista.html">lista encadeada</a>?&nbsp;
+Digamos que as células da lista são do tipo <tt>celula</tt>:
+
+<pre class="ind">
+typedef struct cel {
+   int         conteudo; 
+   struct cel *prox;
+} celula;
+</pre>
+
+<p>Decisões de projeto:
+Vamos supor que nossa lista tem uma célula-cabeça
+(ou seja, vamos supor que a primeira célula da lista não faz parte da pilha).
+Vamos supor que o topo da pilha está na 
+<i>segunda</i> célula e não na última
+(por&nbsp;quê?).
+A pilha pode ser criada e inicializada assim:
+<pre class="ind">
+celula cabeca; 
+celula *tp;
+tp = &amp;cabeça;
+tp-&gt;prox = NULL; 
+</pre>
+
+<p>Para ter acesso à pilha, só preciso do ponteiro <tt>tp</tt>.
+De acordo com nossa decisão de projeto,
+teremos sempre <tt>tp</tt> == <tt>&amp;cabeca</tt>.
+A pilha está <i>vazia</i> se <tt>tp-&gt;prox</tt> == <tt>NULL</tt>.
+
+<pre class="hlt">
+<span class="comm">// Insere um elemento y na pilha tp.</span>
+
+void empilha (int y, celula *tp) { 
+   celula *nova;
+   nova = mallocX (sizeof (celula));
+   nova-&gt;conteudo = y;
+   nova-&gt;prox  = tp-&gt;prox;
+   tp-&gt;prox = nova; 
+}
+
+<span class="comm">// Remove um elemento da pilha tp.
+// Supõe que a pilha não está vazia. 
+// Devolve o elemento removido.</span>
+
+int desempilha (celula *tp) {
+   int x;
+   celula *p;
+   p = tp-&gt;prox;
+   x = p-&gt;conteudo;
+   tp-&gt;prox = p-&gt;prox;
+   free (p);
+   return x; 
+}
+</pre>
+<p>&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h2 class="exr" id="exr4">Exercícios</h2>
+
+<div class="exr">
+<ol start=15>
+
+<li class="exr">
+Implemente um pilha em uma lista encadeada <i>sem</i> célula-cabeça
+(só pra ver ver que dor de cabeça isso dá!).
+A pilha será dada pelo endereço da primeira célula da lista
+(que é também o topo da pilha).
+
+
+<li class="exr">
+Reescreva as funções 
+<a href="pilha.html#parenteses"><tt>bemFormada</tt></a> e 
+<a href="pilha.html#polonesa"><tt>infixaParaPosfixa</tt></a> 
+armazenando a pilha em uma lista encadeada.
+
+
+<li class="exr">
+Resolva o problem da intercalação 
+de duas listas ordenadas.
+
+
+<li class="exr">
+Suponha dada uma lista encadeada que armazena números inteiros.
+Cada célula da lista tema estrutura abaixo.
+<pre>
+struct cel {
+   int         conteudo;
+   struct cel *prox;
+};
+</pre>
+Escreva uma função que transforme a lista em duas:
+a primeira contendo as células cujo conteúdo é par e a
+segunda aquelas cujo conteúdo é ímpar.
+
+
+
+</ol>
+</div>
+
+
+
+
+
+
+
+
+
+
+<h2 id="pilhadeexecucao">Apêndice: A pilha de execução de um programa</h2>
+
+
+
+
+
+
+
+
+
+
+<p>Para executar um programa,
+o computador
+usa uma "pilha de execução".&nbsp;
+A operação pode ser descrita conceitualmente
+da seguinte maneira.
+
+
+<p>
+Todo programa C é composto por uma ou mais funções&nbsp;
+(sendo <tt>main</tt> a primeira função a ser executada).&nbsp;
+Ao encontrar a invocação de uma função,
+o computador cria um novo "espaço de trabalho",
+que contém todos os parâmetros
+e todas as variáveis locais da função.&nbsp;
+
+Esse espaço de trabalho é colocado na pilha de execução
+(sobre o espaço de trabalho que invocou a função)
+e a execução da função começa
+(confinada ao seu espaço de trabalho).&nbsp;
+Quando a execução da função termina,
+o seu espaço de trabalho é retirado da pilha e descartado.&nbsp;
+O espaço de trabalho que estiver agora no topo da pilha é reativado
+e a execução é retomada do ponto em que havia sido interrompida.
+
+
+
+
+<p>Considere o seguinte exemplo:
+
+<pre class="ind">
+   int G (int a, int b) {
+      int x;
+      x = a + b;
+      return x;
+   }
+
+   int F (int i, j, k) {
+      int x; 
+      x = /*2*/ G (i, j) /*3*/;
+      x = x + k;
+      return x;
+   }
+
+   int main (void) {
+      int i, j, k, y;
+      i = 111; j = 222; k = 444;
+      y = /*1*/ F (i, j, k) /*4*/;
+      printf ("%d\n", y);
+      return EXIT_SUCCESS;
+   }
+</pre>
+
+
+<p>A execução do programa prossegue da seguinte maneira:
+<ul>
+<li class="sspace">
+Um espaço de trabalho
+é criado para a função <tt>main</tt> e colocado na pilha de execução.&nbsp;
+O espaço contém as variáveis locais
+<tt>i</tt>, 
+<tt>j</tt>,
+<tt>k</tt> e&nbsp;<tt>y</tt>.&nbsp;
+A execução de <tt>main</tt> começa.
+  
+<li class="sspace">
+No ponto <tt>1</tt>,
+a execução de <tt>main</tt> é temporariamente interrompida
+e um espaço de trabalho para a função <tt>F</tt> é colocado na pilha.&nbsp;
+Esse espaço contém os parâmetros
+<tt>i</tt>, 
+<tt>j</tt>,
+<tt>k</tt>
+da função
+(com valores <tt>111</tt>, <tt>222</tt> e&nbsp;<tt>444</tt>
+respectivamente)
+e a variável local&nbsp;<tt>x</tt>.&nbsp;
+
+Começa então a execução de&nbsp;<tt>F</tt>.
+  
+<li class="sspace">
+No ponto&nbsp;<tt>2</tt>,
+a execução de <tt>F</tt> é interrompida
+e um espaço de trabalho para a função <tt>G</tt> é colocado na pilha.&nbsp;
+Esse espaço contém os parâmetros
+<tt>a</tt> e <tt>b</tt>
+da função
+(com valores <tt>111</tt> e <tt>222</tt>
+respectivamente)
+e a variável local&nbsp;<tt>x</tt>.&nbsp;
+
+Em seguida, começa a execução de&nbsp;<tt>G</tt>.
+
+<li class="sspace">
+Quando a execução de <tt>G</tt> termina, 
+a função devolve <tt>333</tt>.&nbsp;
+O espaço de trabalho de <tt>G</tt>
+é removido da pilha e descartado.&nbsp;
+O espaço de trabalho de <tt>F</tt>
+(que agora está no topo da pilha de execução)
+é reativado e a execução é retomada
+no ponto&nbsp;<tt>3</tt>.&nbsp;
+A primeira instrução executada é 
+&quot;<tt>x</tt>&nbsp;<tt>=</tt>&nbsp;<tt>333;</tt>&quot;.
+
+<li class="sspace">
+Quando a execução de <tt>F</tt> termina, 
+a função devolve&nbsp;<tt>777</tt>.
+O espaço de trabalho de <tt>F</tt>
+é removido da pilha e descartado.&nbsp;
+O espaço de trabalho de <tt>main</tt>
+(que agora está no topo da pilha)
+é reativado e a execução é retomada
+no ponto&nbsp;<tt>4</tt>.&nbsp;
+A primeira instrução executada é 
+&quot;<tt>y</tt>&nbsp;<tt>=</tt>&nbsp;<tt>777;</tt>&quot;.
+</ul>
+
+<p>
+No nosso exemplo, <tt>F</tt> e <tt>G</tt> são funções distintas.
+Mas tudo funcionaria da mesma maneira se <tt>F</tt> e <tt>G</tt>
+fossem idênticas,
+ou seja, se <tt>F</tt> fosse uma função recursiva.
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h2 class="exr">Exercícios</h2>
+
+<div class="exr">
+
+<ol start=19>
+
+<li class="exr">
+Considere a função recursiva abaixo.
+Escreva uma versão iterativa da função
+que simule
+
+o comportamento da versão recursiva.
+Use uma pilha.
+
+<pre>
+int TTT (int x[], int n) {
+   if (n == 0) return 0;
+   if (x[n] > 0) return x[n] + TTT (x, n-1);
+   else return TTT (x, n-1);
+}
+</pre>
+
+
+
+</ol>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<p>&nbsp;
+<div class="left">
+<hr>
+<small>
+
+1998 |
+
+Last modified: Mon Aug 25 07:59:33 BRT 2008
+
+<br>
+&nbsp;</small></div>
+
+</BODY>
+</HTML>

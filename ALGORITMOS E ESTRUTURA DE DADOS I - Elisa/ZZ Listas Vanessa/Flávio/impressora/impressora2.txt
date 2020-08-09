@@ -1,0 +1,5 @@
+7 Ivan 2
+8 Bete 4
+9 Adriana 4
+10 Juliao 1
+11 Kevin 1

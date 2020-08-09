@@ -1,0 +1,15 @@
+void funcaoC (usuario list[], int qtd)
+{
+    int i;
+    for (i=0; i<qtd; i++){
+        printf ("\n");
+        printf ("Digite o código: ");
+        scanf ("%d",&list[i].cod);
+        printf ("Digite login: ");
+        scanf (" %[^\n]",list[i].login);
+        printf ("Digite senha: ");
+        scanf (" %s",list[i].senha);
+        list[i].ponto = 0;
+    }
+    return ;
+}

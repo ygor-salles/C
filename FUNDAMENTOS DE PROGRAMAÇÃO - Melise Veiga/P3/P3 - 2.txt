@@ -1,0 +1,11 @@
+int funcao2 (char lista_nome[][101], char nome[])
+{
+    int i;
+    for (i=0; i<3; i++){
+        if (strcmp(lista_nome[i], nome)==0){
+            return 1;
+            break;
+        }
+    }
+    return 0;
+}

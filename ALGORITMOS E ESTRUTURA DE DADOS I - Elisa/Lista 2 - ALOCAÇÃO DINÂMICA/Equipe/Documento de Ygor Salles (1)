@@ -1,0 +1,87 @@
+#include <stdio.h>
+
+float **cria(int n);
+void atribui(int i, int j, float x, float **matriz, int n);
+float acessa(int i, int j, int n, float **matriz);
+void libera(int n, float **mat);
+
+int main() {
+int n, i, j; float **matriz, x;
+printf("Entre com o valor de n: \n");
+scanf ("%d",&n);
+matriz=cria(n);
+for (i=0;i<n;i++){
+    for (j=0;j<n;j++){
+          matriz[i][j]=0;
+          printf ("%.1f ",matriz[i][j]);
+        }
+        printf("\n");
+    }
+
+atribui (i,j,x,matriz,n);
+for (i=0;i<n;i++){
+    for (j=0;j<n;j++){
+          printf ("%.1f ",matriz[i][j]);
+        }
+        printf("\n");
+    }
+float valor = acessa(i, j, n, matriz);
+
+printf("\n\nValor: %.1f", valor);
+
+libera(n, matriz);
+    return 0;
+}
+
+
+float **cria(int n){
+int i;
+float **matriz;
+matriz=(float**) malloc (n*sizeof(float*));
+if (matriz==NULL){
+    printf ("Memoria insuficiente\n");
+    return NULL;
+        }
+for (i=0;i<n;i++){
+    matriz[i]=(float*) malloc (n*sizeof(float));
+    if (matriz==NULL){
+    printf ("Memoria insuficiente\n");
+    return NULL;
+        }
+    }
+return matriz;
+}
+
+void atribui(int i, int j, float x, float **matriz, int n){
+    for (i=0;i<n;i++){
+        for (j=0;j<n;j++){
+
+                printf ("Entre com o valor desejado: ");
+                scanf (" %f",&x);
+            if(i<j){
+                matriz[i][j]=x;
+            }
+        }
+    }
+    return;
+}
+
+float acessa(int i, int j, int n, float **matriz){
+        float valor;
+
+        printf("Digite a linha: ");
+        scanf(" %d", &i);
+
+        printf("Digite a coluna: ");
+        scanf(" %d", &j);
+
+        valor = matriz[i][j];
+
+        return valor;
+}
+
+void libera(int n, float **mat){
+    free(mat);
+    return;
+}
+

@@ -1,0 +1,394 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/paths.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:40 GMT -->
+<HEAD>
+<TITLE>Algoritmos para Grafos: Caminhos</TITLE>
+<META NAME="Author" CONTENT="Paulo Feofiloff">
+<META name="language" content="Portuguese">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1"> 
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<LINK rel="stylesheet" href="code.css" type="text/css">
+</HEAD>
+<BODY>
+
+
+
+
+
+
+
+
+<p class="top">
+<a href="../index.html#contents">Algoritmos em C para Grafos via Sedgewick</a>&nbsp;
+
+
+
+
+<h1>Caminhos em digrafos</h1>
+
+
+
+<p>As definição de caminho no 
+livro de Sedgewick
+(páginas&nbsp;10 a&nbsp;1)
+é um tanto tanto imprecisa.&nbsp;
+
+Esta página pretende esclarecer melhor esses conceitos.
+
+
+
+
+
+<h2 id="path">Caminhos</h2>
+
+<p>Um&nbsp; 
+<span class="dfn">caminho</span>&nbsp;
+(=&nbsp;<i>path</i>)&nbsp;
+num <a href="digraphs.html#digraph">digrafo</a> 
+é uma seqüência de vértices dotada 
+da seguinte propriedade:&nbsp;
+se <tt>v</tt> e <tt>w</tt> são vértices consecutivos na seqüência
+então <tt>v-w</tt> é um arco.&nbsp;&nbsp;
+Em&nbsp;geral, os vértices de um caminho não são todos distintos.
+
+<p>A <span class="dfn">origem</span>
+de um caminho é o primeiro vértice do caminho.
+O&nbsp;<span class="dfn">término</span>
+é o último vértice.&nbsp;
+Diz-se que um caminho com origem <tt>s</tt> e término&nbsp;<tt>t</tt>
+<span class="dfn">vai de <tt>s</tt> a&nbsp;<tt>t</tt></span>.
+
+
+<p id="directed">
+Dizemos que um arco <tt>v-w</tt> pertence a um caminho 
+se o vértice <tt>w</tt> é o sucessor de <tt>v</tt> 
+no caminho.&nbsp;&nbsp;
+Todos os arcos de um caminho apontam no mesmo sentido,
+de um vértice para o seu sucessor.&nbsp;
+Há quem goste de enfatizar esse fato dizendo "caminho dirigido"
+em lugar do nosso "caminho".
+
+
+<p id="length">
+O&nbsp; 
+<span class="dfn">comprimento</span>&nbsp;
+(=&nbsp;<i>length</i>)&nbsp;
+de um caminho é o número de termos da seqüência menos um.&nbsp;
+Em outras palavras, o comprimento de um caminho é  
+o número de arcos do caminho.
+
+<p>
+
+Em <a href="graphs.html#graph">grafos</a>,
+a existência de caminhos é uma propriedade simétrica:&nbsp;
+para quaisquer dois vértices <tt>s</tt> e <tt>t</tt>,
+existe caminho de <tt>s</tt> a <tt>t</tt> se e somente se 
+existe caminho de <tt>t</tt> a&nbsp;<tt>s</tt>.
+
+
+
+
+
+
+
+
+<h2 id="example">Exemplo</h2>
+
+<p>Considere, por exemplo, 
+o digrafo definido pelo conjunto de arcos
+
+<p class="display">
+<tt>0-1 0-5 1-0 1-5 2-4 3-1 5-3</tt>&nbsp;.
+
+<p>Eis alguns caminhos nesse digrafo:
+<ol type="none">
+<li><tt>3-1-0-1-0-5</tt>
+<li><tt>3-1-0-5</tt>
+<li><tt>2-4</tt>
+<li><tt>1</tt>
+</ol>
+
+<p>O primeiro desses caminhos tem comprimento <tt>5</tt> e 
+o último tem comprimento&nbsp;<tt>0</tt>.&nbsp;
+Eis algumas seqüências que não são caminhos:
+<ol type="none">
+<li><tt>1-5-0</tt>
+<li><tt>4-2</tt>
+<li><tt>2-5</tt>
+</ol>
+
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=1>
+
+<li class="exr">
+Escreva uma função que verifique se uma dada seqüência&nbsp; 
+<tt>seq[0..k]</tt>&nbsp;
+de vértices de um digrafo é um caminho.
+
+</ol>
+
+
+
+
+
+<h2>Procurando um caminho num digrafo</h2>
+
+<p>Considere o problema de decidir
+se existe ou não um caminho
+ligando dois vértices dados num digrafo.&nbsp;
+A&nbsp;função <tt>DIGRAPHpath</tt> abaixo
+resolve o problema 
+com uma <a href="dfs1.html">busca em profundidade</a>.
+
+<blockquote class="hlt">
+<p class="doc">
+/* A função supõe que o digrafo tem no máximo
+   <tt class="doc">maxV</tt> vértices.&nbsp;*/
+
+<pre class="codedim">
+<span class="k">static int</span> lbl[maxV];
+</pre>
+
+<p class="doc" id="DIGRAPHpath">
+/* A função abaixo recebe vértices <tt class="doc">s</tt> 
+   e <tt class="doc">t</tt> de um digrafo <tt class="doc">G</tt> e
+   devolve <tt class="doc">1</tt> se existe um caminho 
+   de <tt class="doc">s</tt> a <tt class="doc">t</tt> 
+   ou devolve <tt class="doc">0</tt> em caso contrário.&nbsp;*/
+
+<pre class="code">
+<span class="k">int</span> DIGRAPHpath (<span class="k">Digraph</span> G, <span class="k">Vertex</span> s, <span class="k">Vertex</span> t) { 
+   <span class="k">Vertex</span> v;
+   <span class="k">for</span> (v = 0; v < G->V; v++)
+      lbl[v] = -1;
+   pathR(G, s);
+   <span class="k">if</span> (lbl[t] == -1) <span class="k">return</span> 0;
+   <span class="k">else</span> <span class="k">return</span> 1;
+}
+</pre>
+
+<p class="doc">
+/* A função <tt class="doc">pathR</tt> visita todos os vértices 
+   que podem ser atingidos a partir de 
+   <tt class="doc">v</tt>,
+   ou seja, todos os términos de caminhos que têm 
+   origem&nbsp;<tt class="doc">v</tt>.&nbsp;*/
+
+<pre class="code">
+<span class="k">void</span> pathR (<span class="k">Digraph</span> G, <span class="k">Vertex</span> v) { 
+   <span class="k">Vertex</span> w;
+   lbl[v] = 0;
+   <span class="k">for</span> (w = 0; w < G->V; w++)
+      <span class="k">if</span> (G->adj[v][w] == 1)
+         <span class="k">if</span> (lbl[w] == -1)
+            pathR(G, w);
+}
+</pre>
+</blockquote>
+
+
+
+<p>Eis uma maneira ligeiramente diferente de organizar o código.
+Essa versão pára
+tão logo encontra um caminho de <tt>s</tt> a&nbsp;<tt>t</tt>.
+
+<blockquote class="hlt">
+<p class="doc" id="DIGRAPHpath2">
+/* (O&nbsp;código é uma adaptação do programa 17.11, p.52, 
+   de Sedgewick.)&nbsp;*/ 
+
+<pre class="codedim" id="pathR2">
+<span class="k">int</span> DIGRAPHpath (<span class="k">Digraph</span> G, <span class="k">Vertex</span> s, <span class="k">Vertex</span> t) { 
+   <span class="k">Vertex</span> v;
+   <span class="k">for</span> (v = 0; v < G->V; v++)
+      lbl[v] = -1;
+   <span class="k">return</span> pathR(G, s, t);
+}
+
+<span class="k">int</span> pathR (<span class="k">Digraph</span> G, <span class="k">Vertex</span> v, <span class="k">Vertex</span> t) { 
+   <span class="k">Vertex</span> w;
+   <span class="k">if</span> (v == t) <span class="k">return</span> 1;
+   lbl[v] = 0;
+   <span class="k">for</span> (w = 0; w < G->V; w++)
+      <span class="k">if</span> (G->adj[v][w] == 1)
+         <span class="k">if</span> (lbl[w] == -1)
+            <span class="k">if</span> (pathR(G, w, t) == 1)
+               <span class="k">return</span> 1;
+   <span class="k">return</span> 0;
+}
+</pre>
+</blockquote>
+
+
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=2>
+
+<li class="exr" id="doc-pathR">
+Escreva uma boa documentação para a 
+<a href="#pathR2">segunda versão da função recursiva <tt>pathR</tt></a>
+(ou seja, diga <i>o&nbsp;que</i> a função faz).&nbsp;
+[<a href="solutions/paths01.html">Solução</a>]
+
+<li class="exr" id="E17.89">
+Re-escreva <tt>DIGRAPHpath</tt> e <tt>pathR</tt>
+supondo que o digrafo está representado por um <a href="adjlists.html">vetor de listas de adjacência</a>.
+
+
+<li class="exr" id="E17.85">
+Modifique as funções 
+<tt>DIGRAPHpath</tt>
+e <tt>pathR</tt>
+de modo a imprimir um "trace" como o da figura 17.17, p.51,
+de Sedgewick.
+<pre class="small">
+     2-0 pathR(G,0,6)
+       0-1 pathR(G,1,6)
+         1-0
+         1-2
+       0-2
+       0-5 pathR(G,5,6)
+         5-0
+         5-4 pathR(G,4,6)
+           4-2
+           4-3 pathR(G,3,6)
+             3-2
+             3-4
+           4-6 pathR(G,6,6)
+</pre>
+<p>Essa figura representa a busca por um caminho 
+de <tt>2</tt> a <tt>6</tt> no grafo definido
+pelo conjunto de arestas abaixo.
+<center>
+<pre class="small">
+0-6 0-1 0-2 0-5 4-3 5-3 5-4 6-4 7-8 9-12 9-10 9-11 11-12
+</pre>
+</center>
+<p>(Sugestão: Use uma variável global  
+que é incrementada quando a execução entra em 
+<tt>pathR</tt>
+e decrementada quando a execução sai de <tt>pathR</tt>.)&nbsp;
+Compile e teste as funções modificadas.
+Use um <a href="random.html#E17.71">subgrafo aleatório da grade quadrada</a>
+para os testes.
+
+</ol>
+
+
+
+<h2 id="simple">Caminhos simples</h2>
+
+<p>Um caminho é&nbsp; 
+<span class="dfn">simples</span>&nbsp; 
+(=&nbsp;<i>simple path</i>)&nbsp;
+se não tem vértices repetidos.&nbsp;&nbsp;
+Não é difícil verificar que 
+a existência de um caminho 
+implica na existência de um caminho simples
+com mesma origem e mesmo término.
+
+<p>Eis alguns caminhos simples no digrafo
+do <a href="#example">exemplo acima</a>:
+<ol type="none">
+<li><tt>3-1-0-5</tt>
+<li><tt>1</tt>
+<li><tt>2-4</tt>
+</ol>
+<p>Nesse mesmo digrafo, o caminho&nbsp; <tt>1-0-1-5</tt>&nbsp;
+não é simples.
+
+<p id="openclosed">Um caminho é&nbsp; 
+<span class="dfn">fechado</span>&nbsp; 
+(=&nbsp;<i>closed</i> =&nbsp;<i>cyclic path</i>)&nbsp;
+se tem dois ou mais vértices e
+o primeiro vértice coincide com o último.&nbsp;
+É&nbsp;claro que caminhos fechados não são simples.
+
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=5>
+
+<li class="exr">
+Mostre que existe um caminho simples com 
+origem <tt>s</tt> e término <tt>t</tt>
+se e somente se 
+existe um caminho (não necessariamente simples)
+com origem <tt>s</tt> e término&nbsp;<tt>t</tt>.
+
+<li class="exr">
+Faça uma lista de todos os caminhos simples com exatamente 4 vértices
+no grafo definido pelas arestas abaixo. 
+<center>
+<pre class="small">
+3-7 1-4 7-8 0-5 5-2 3-8 2-9 0-6 4-9 2-6 6-4
+</pre>
+</center>
+
+<li class="exr" id="E17.88">
+Modifique 
+<tt>DIGRAPHpath</tt>
+de modo que 
+<tt>DIGRAPHpath(G,v,w,d)</tt>
+verifique a existência de um caminho simples
+de <tt>v</tt> a <tt>w</tt> 
+que tenha comprimento pelo menos&nbsp;<tt>d</tt>.
+
+</ol>
+
+
+
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=8>
+
+<li class="exr">
+Escreva uma função que verifique se uma seqüência 
+<tt>seq[0..k]</tt> de vértices 
+de um digrafo é um caminho.
+A função deve devolver&nbsp;
+<tt>0</tt>&nbsp; se a seqüência não é um caminho,&nbsp;
+<tt>1</tt>&nbsp; se a seqüência é um caminho simples,&nbsp;
+<tt>2</tt>&nbsp; se a seqüência é um caminho 
+mas não é simples.&nbsp;
+Faça duas versões da função:
+uma supõe que o digrafo é dado por sua <a href="adjmatrix.html">matriz de adjacência</a> 
+e outra supõe que o digrafo é dado por 
+<a href="adjlists.html">listas de adjacência</a>.
+
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+<p>&nbsp;
+<hr>
+<small>
+
+Last modified: Thu Feb 15 08:55:50 BRST 2007</small>
+
+</BODY>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/paths.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:40 GMT -->
+</HTML>

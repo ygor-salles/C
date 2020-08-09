@@ -1,0 +1,15 @@
+Links Programacao:
+
+Andre Backes - Liguagem C Descomplicada - 116 vídeos (you tube)
+
+https://gabrielbueno072.github.io/rea-aed/index.html
+
+http://linguagemc.com.br
+
+repl.it - compilador C online
+
+https://www.udemy.com/courses/it-and-software/all-courses/?lang=es%7Cpt&utm_source=adwords-intl&utm_medium=udemyads&utm_campaign=&utm_term=_._pl__._pd__._ti_kwd-310556426868_._kw_udemy&utm_content=&matchtype=e&k_clickid=&gclid=CjwKCAjw0ujYBRBDEiwAn7BKt5p9Wb4fdobMMM4IZ4VY_FkUYseIooPjdI9vAqWoKrA919pQQjOxeRoCbk4QAvD_BwE&price=price-free%7Cprice-paid
+
+https://www.urionlinejudge.com.br/judge/en/login
+
+

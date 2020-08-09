@@ -1,0 +1,14 @@
+void funcaoD (usuario list[], int qtd, int *cod_maior)
+{
+    int i, maior_ponto;
+    maior_ponto = list[0].ponto;
+    for (i=0; i<qtd; i++){
+        if (list[i].ponto > maior_ponto){
+            *cod_maior = list[i].cod;
+            maior_ponto = list[i].ponto;
+        }
+    }
+    if (maior_ponto == 0)
+        *cod_maior = 0;
+    return ;
+}

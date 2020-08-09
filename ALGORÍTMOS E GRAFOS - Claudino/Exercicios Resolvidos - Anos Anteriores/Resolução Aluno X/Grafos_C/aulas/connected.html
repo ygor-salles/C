@@ -1,0 +1,166 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/connected.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:39 GMT -->
+<HEAD>
+<TITLE>Algoritmos para Grafos: Conexao</TITLE>
+<META NAME="Author" CONTENT="Paulo Feofiloff">
+<META name="language" content="Portuguese">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1"> 
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<LINK rel="stylesheet" href="code.css" type="text/css">
+</HEAD>
+<BODY>
+
+
+
+
+
+
+
+<p class="top">
+<a href="../index.html#contents">Algoritmos em C para Grafos via Sedgewick</a>&nbsp;
+
+
+
+
+<h1>Conexão: digrafos conexos</h1>
+
+<p>A grosso modo, um digrafo é conexo se for
+"união disjunta" de dois digrafos menores.&nbsp;
+A definição precisa do conceito depende da idéia de corte.&nbsp;
+No caso de grafos (ou seja, digrafos simétricos),
+a caracterização da conexão <a href="components.html#connected">envolve a idéia de caminho</a>,
+a ser introduzida em outra página.
+
+
+
+
+<h2 id="cut">Cortes</h2>
+
+
+<p id="cut">Um <span class="dfn">corte</span> 
+(=&nbsp;<i>cut</i>)
+de um digrafo é uma <a href="footnotes/partition.html">bipartição</a> 
+do conjunto de vértices do digrafo.&nbsp;
+Em outras palavras, 
+um corte é um par de conjuntos de vértices,
+ambos não-vazios,
+tal que todo vértice do digrafo pertence a um e apenas um dos 
+conjuntos do par.
+
+<p id="crosses">Dado um corte <i>(X,Y)</i> de um digrafo,
+dizemos que um arco 
+<span class="dfn">pertence</span> 
+ao corte,
+
+ou <span class="dfn">atravessa</span> o corte,
+se tiver uma ponta em <i>X</i> e outra em&nbsp;<i>Y</i>.&nbsp;
+Um corte é
+<span class="dfn">vazio</span> 
+se não for atravessado por nenhum arco.
+
+
+<p>Considere, por exemplo, o digrafo definido pelos arcos abaixo.
+<p class="display">
+<tt>0-1 1-0 0-2 2-1 3-5 4-5</tt>
+
+<p>A tabela lista alguns cortes
+(com <i>X</i> na primeira coluna e <i>Y</i> na segunda) 
+e os arcos que atravessam esses cortes:
+<pre>
+         0      1 2 3 4 5    0-1 1-0 0-2                           
+         2 3      0 1 4 5    0-2 2-1 3-5
+         0 1 2      3 4 5   
+         0 1 2 5      3 4    3-5 4-5 
+</pre>
+<p>O segundo corte da tabela é vazio.
+
+
+
+
+
+<h2 id="weaklyconnected">Digrafos conexos</h2>
+
+<p>Um digrafo é&nbsp;
+<span class="dfn">fracamente conexo</span>&nbsp;
+(=&nbsp;<i>weakly connected</i>)&nbsp;
+se não tem cortes vazios.&nbsp;
+<span class="dim">[A&nbsp;propósito, 
+o conceito de digrafo <i>fortemente</i> conexo
+é mais complexo e será discutido em outra ocasião.]</span>&nbsp;
+Portanto, um digrafo é fracamente conexo se,
+para toda bipartição <i>(X,Y)</i> de seu conjunto de vértices,
+algum arco tem uma ponta em <i>X</i> e outra em&nbsp;<i>Y</i>.
+
+
+
+
+<h2 id="connected">Grafos conexos</h2>
+
+<p>O conceito de conexão é particularmente importante em
+digrafos simétricos.&nbsp;
+Nesse caso, o "fracamente" é omitido:&nbsp;
+se um <a href="graphs.html">grafo</a> não tem cortes vazios,
+dizemos simplesmente que ele é&nbsp; 
+<span class="dfn">conexo</span>&nbsp;
+(=&nbsp;<i>connected</i>).&nbsp;
+Assim, 
+se <i>X</i> é um conjunto de vértices de um grafo conexo <i>G</i>
+então alguma aresta de <i>G</i> 
+tem uma ponta em <i>X</i> e outra fora de&nbsp;<i>X</i>,
+a menos que <i>X</i> seja vazio 
+ou contenha todos os vértices de&nbsp;<i>G</i>.
+
+
+
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=1>
+
+<li class="exr">
+Faça uma lista de todos os cortes 
+do grafo definido pelas arestas abaixo.
+<p class="display">
+<tt>0-1 0-2 1-3 1-4 2-3 2-4 3-5 4-5</tt>
+<p>Para cada corte, diga quais arestas atravessam o corte.
+
+
+
+<li class="exr">
+Faça uma lista de todos os 
+<a href="footnotes/subgraph.html">subgrafos</a>
+conexos do grafo 
+definido pelo conjunto de arestas abaixo.
+<p class="display">
+<tt>0-1 0-2 0-3 1-3 2-3</tt>
+<p>Quais desses subgrafos são <a href="footnotes/subgraph.html">induzidos</a>?
+
+
+
+
+</ol>
+
+
+
+
+
+
+
+
+
+
+<p>&nbsp;
+<hr>
+<small>
+
+Last modified: Thu Feb 15 08:55:51 BRST 2007
+</small>
+
+</BODY>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/connected.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:39 GMT -->
+</HTML>

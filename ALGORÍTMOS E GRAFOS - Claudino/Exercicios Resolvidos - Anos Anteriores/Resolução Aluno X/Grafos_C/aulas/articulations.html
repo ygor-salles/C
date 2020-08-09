@@ -1,0 +1,206 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/articulations.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:40 GMT -->
+<HEAD>
+<TITLE>Algoritmos para Grafos: Articulacoes e biconexao</TITLE>
+<META NAME="Author" CONTENT="Paulo Feofiloff">
+<META name="language" content="Portuguese">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1"> 
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<LINK rel="stylesheet" href="code.css" type="text/css">
+</HEAD>
+<BODY>
+
+
+
+
+
+
+
+<p class="top">
+<a href="../index.html#contents">Algoritmos em C para Grafos via Sedgewick</a>&nbsp;
+
+
+
+
+
+<h1>Articulações e biconexão</h1>
+
+<p>Esta página trata de grafos que deixam de ser 
+<a href="connected.html#connected">conexos</a>
+quando perdem um de seus vértices.&nbsp;
+Ela se restringe a grafos
+(embora o conceito também faça sentido em 
+digrafos não-<a href="digraphs.html#symmetric">simétricos</a>).
+
+
+<p>(A página é um resumo da segunda parte da seção 18.6, p.106-114,
+do livro de Sedgewick.)
+
+
+
+
+<h2 id="articulation">Articulações em grafos</h2>
+
+<p>Uma&nbsp;
+<span class="dfn">articulação</span>&nbsp;
+(=&nbsp;<i>articulation point</i>)&nbsp; ou&nbsp;
+<span class="dfn">vértice de corte</span>&nbsp;
+(=&nbsp;<i>cut vertex</i>)&nbsp;
+de um grafo
+é um vértice cuja remoção aumenta 
+o número de <a href="components.html#component">componentes</a>
+do grafo.
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=1>
+<li class="exr">
+Seja <tt>v-w</tt> uma 
+<a href="bridges.html#bridge">ponte</a> em um grafo.&nbsp;
+Suponha que <tt>v</tt> tem outro vizinho além de&nbsp;<tt>w</tt>.&nbsp;
+Prove que <tt>v</tt> é uma articulação.
+
+<li class="exr">
+Prove ou desprove:
+em qualquer <a href="trees.html#tree">árvore</a>, 
+todos os vértices são articulações.
+
+<li class="exr" id="E18.40">
+Use uma variante da função
+<tt><a href="components.html#GRAPHcc">GRAPHcc</a></tt>
+para decidir se um grafo tem articulações.&nbsp;
+(Sugestão: Marcar um vértice <tt>x</tt> com <tt>lbl[x]=0</tt> 
+antes do início da busca
+tem o mesmo efeito que remover <tt>x</tt> do grafo.)&nbsp;
+Sua função consumirá tempo proporcional 
+a&nbsp;&nbsp;<tt>V&middot;(V+E)</tt>.
+
+<li class="exr" id="E18.36">
+Faça um desenho da arborescência de busca em profundidade 
+do grafo
+<p class="display">
+<tt>3-7 1-4 7-8 0-5 5-2 3-8 2-9 0-6 4-9 2-6 6-4</tt>&nbsp;.
+<p>(Adote a representação por listas de adjacência e insira as arestas,
+na ordem dada, num grafo inicialmente vazio.)&nbsp;
+Use a arborescência para encontrar as articulações do grafo.
+
+<li class="exr" id="E18.37">
+Repita o exercício anterior
+depois de representar o grafo por sua matriz de adjacência.
+
+
+</ol>
+
+
+
+
+<h2>Algoritmo eficiente</h2>
+
+<p>É possível encontrar todas as articulações de um grafo
+de maneira muito rápida:&nbsp;
+basta usar uma variante apropriada da função 
+<tt><a href="bridges.html#bridgeR">bridgeR</a></tt>
+que calcula as <a href="bridges.html#bridge">pontes</a>
+de um grafo.
+
+
+<h2>Exercício</h2>
+
+<ol start=6>
+
+<li class="exr" id="E18.42">
+Escreva uma função que imprima todas as articulações
+de um grafo dado.&nbsp;
+(Sugestão:
+Modifique a função <tt><a href="bridges.html#bridgeR">bridgeR</a></tt>.
+A raiz da arborescência de busca deve receber cuidado especial:
+ela é uma articulação 
+se e somente se tem dois ou mais filhos.)
+
+</ol>
+
+
+
+
+<h2 id="biconnected">Biconexão</h2>
+
+<p>Um grafo é&nbsp;
+<span class="dfn">biconexo</span>
+(=&nbsp;<i>biconnected</i>)&nbsp;
+ou&nbsp;
+<span class="dfn">2-conexo</span>&nbsp;
+se é <a href="connected.html#connected">conexo</a> e
+não tem articulações.&nbsp;
+
+Portanto,
+é preciso remover pelo menos 2 vértices de um grafo biconexo 
+para que ele deixe de ser conexo.
+
+<p><span class="sc">Fato básico importante</span>:&nbsp;
+Um grafo é biconexo 
+se e somente se,
+para cada par <i>(s,t)</i> de seus vértices,
+existem (pelo menos) dois caminhos de <i>s</i> e <i>t</i>
+sem vértices internos em comum&nbsp;
+(ou seja, <i>s</i> e&nbsp;<i>t</i>
+são os únicos vértices comuns aos dois caminhos).
+
+
+
+
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=7>
+
+<li class="exr">
+Prove que todo grafo biconexo é
+<a href="bridges.html#edge-connected">aresta-biconexo</a>.
+
+<li class="exr" id="E18.39">
+Seja <i>G</i> um grafo biconexo.
+Sejam <i>s</i> e <i>t</i> dois vértices de <i>G</i>.
+Prove que existem dois caminhos de <i>s</i> e <i>t</i>
+sem vértices internos em comum.
+(Sugestão:
+Tome um caminho de <i>s</i> a&nbsp;<i>t</i>.
+Os vértices internos desse caminho não são articulações.
+Use esse fato para construir dois caminhos de <i>s</i> a <i>t</i>
+sem vértices internos em comum.)
+
+
+<li class="exr" id="E18.44">
+Qual o número mínimo de arestas que um grafo biconexo
+com <tt>V</tt> vértices deve ter?
+
+
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+<p>&nbsp;
+<hr>
+<small>
+
+Last modified: Thu Feb 15 08:55:47 BRST 2007
+<br>
+&nbsp;</small>
+
+</BODY>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/articulations.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:40 GMT -->
+</HTML>

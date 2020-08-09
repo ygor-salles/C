@@ -1,0 +1,23 @@
+USO DE PONTEIRO SEM FUNÇÃO (APENAS UTILIZANDO A MAIN): Geralmente não é muito utilizado quando não possui 
+outras funções além da principal(main). Segue abaixo:
+
+int main(){
+int i = 5, j = 3, *p, *q;
+p = &i;
+q = &j;
+printf("%d %d \n", *p, (*p)++ + *q);
+}
+
+No algoritmo acima será exibido os valores do ponteiro do quais fazem referencia as suas variáveis.
+Para ser exibido o endereço de memória seria conforme abaixo:
+
+int main(){
+int i = 5, j = 3, *p, *q;
+p = &i;
+q = &j;
+printf("%p %p \n", p, p++ + q);
+}
+
+IMPORTANTE: No primeiro código será exibido os valores dos ponteiros, no segundo o endereço das variáveis.
+A diferença pode ser notada no printf. Note que o uso de ponteiro quando se tem só a função principal(main)
+é diferente quando se possui duas fuções ou mais, em relação a passagem de parâmetros.

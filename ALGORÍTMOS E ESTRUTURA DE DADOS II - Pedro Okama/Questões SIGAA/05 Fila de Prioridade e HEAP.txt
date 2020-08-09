@@ -1,0 +1,24 @@
+﻿COM111 - Questão multipla escolha
+
+Número: (deixe em branco)
+
+Enunciado:
+Dados a seguir sobre a estrutura de ordenação HEAP:
+
+I - [9][5][8][4][0] representa corretamente um heap
+II - O filho da direita é representado por 2i, o filho da esquerda 2i+1 e o pai por i/2
+III - As operações insere e retira em HEAP é representada por O(log n)
+IV - Dado o heap [1][4][3][5][6][0], a inserção do elemento 10 se dá através dos passos
+[1][4][3][5][6][0][10] --> [10][4][6][3][0][1][5]
+
+Marque a alternativa correta
+
+A - Apenas a I, está correto
+B - Apenas I e III, está correto
+C - Apenas I, II, III está correto
+D - Apenas I, III, IV está correto
+E - NDA
+
+
+Autores(as): 2017014382, 2017009453
+

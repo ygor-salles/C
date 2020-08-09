@@ -1,0 +1,307 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/random.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:38 GMT -->
+<HEAD>
+<TITLE>Algoritmos para Grafos: Grafos aleatorios</TITLE>
+<META NAME="Author" CONTENT="Paulo Feofiloff">
+<META name="language" content="Portuguese">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1"> 
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<LINK rel="stylesheet" href="code.css" type="text/css">
+</HEAD>
+<BODY>
+
+
+
+
+
+
+<p class="top">
+<a href="../index.html#contents">Algoritmos em C para Grafos via Sedgewick</a>&nbsp;
+
+
+
+
+<h1>Grafos aleatórios</h1>
+
+
+
+<p>As funções que discutiremos abaixo
+constroem grafos
+<a href="footnotes/random.html">aleatórios</a>
+com vértices&nbsp; 
+<tt>0..V-1</tt>.&nbsp;
+Poderíamos, igualmente bem, 
+discutir a construção de digrafos (não-simétricos) aleatórios,
+mas preferimos nos restringir aos grafos.
+
+<p>(Esta página é um resumo da seção&nbsp;17.6 (Graph Generators) 
+do capítulo&nbsp;17 (Graph Properties and Types)
+do Sedgewick.)
+
+
+
+
+
+<h2>Um gerador de grafos aleatórios</h2>
+
+
+<p>Nossa primeira função gera grafos aleatórios
+com exatamente <tt>E</tt> arestas.
+Do ponto vista do consumo de tempo,
+essa função não é muito apropriada para gerar 
+<a href="digraphs.html#dense">grafos densos</a>.
+
+
+<blockquote class="hlt">
+<p class="doc">
+/* Para ter acesso à função <tt class="doc">rand</tt> 
+   e à constante <tt class="doc">RAND_MAX</tt>,
+   preciso do arquivo-interface 
+  <tt class="doc"><a class="doc" 
+  href="http://www.ime.usp.br/~pf/algoritmos/apend/stdlib.h.html"
+  >stdlib.h</a></tt>.&nbsp;*/
+
+<pre class="codedim">
+<span class="k">#include</span> &lt;stdlib.h&gt;
+</pre>
+
+<p class="doc" id="GRAPHrand1">
+/* Gera grafo aleatório com vértices <tt class="doc">0..V-1</tt>
+   e exatamente <tt class="doc">E</tt> arestas.
+   
+   (Código copiado do Programa 17.7, p.41, de Sedgewick.)&nbsp;*/ 
+
+<pre class="code">
+<span class="k">Graph</span> GRAPHrand1 (<span class="k">int</span> V, <span class="k">int</span> E) { 
+   <span class="k">Graph</span> G = GRAPHinit(V);
+   <span class="k">while</span> (G->A < 2*E) {
+      <span class="k">Vertex</span> v = randV(G);
+      <span class="k">Vertex</span> w = randV(G);
+      GRAPHinsertE(G, v, w);
+   }
+   <span class="k">return</span> G;
+}
+</pre>
+<p class="doc">
+/* A função abaixo devolve um vértice aleatório do grafo 
+   <tt class="doc">G</tt>.
+   (Embora Sedgewick não diga isso, o código só está realmente correto se
+   <tt class="doc">G->V &le; 
+   <a class="doc" 
+   href="http://www.ime.usp.br/~pf/algoritmos/apend/stdlib.h.html"
+   >RAND_MAX</a>+1</tt>.  
+   Veja a página 
+   "<a class="doc" 
+    href="http://www.ime.usp.br/~pf/algoritmos/aulas/random.html"
+    >Números aleatórios</a>".)&nbsp;*/ 
+</p>
+<pre class="code">
+<span class="k">Vertex</span> randV (<span class="k">Graph</span> G) { 
+   <span class="k">return</span> G->V * (<a class="code" href="http://www.ime.usp.br/~pf/algoritmos/apend/stdlib.h.html">rand</a>() / (RAND_MAX + 1.0));
+}
+</pre>
+</blockquote>
+
+
+
+
+<p>
+
+A função <tt>GRAPHrand1</tt> só deve ser invocada com
+<tt class="doc">E</tt> bem menor que <tt class="doc">V*(V-1)/2</tt>.&nbsp;
+À&nbsp;medida que <tt>E</tt> se aproxima desse limite,
+a execução da função consumirá cada vez mais tempo.
+
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=1>
+
+<li class="exr" id="error-in-program-17.7">
+Que acontece se <tt>randV</tt>
+for chamada com <tt>G->V</tt> maior que <tt>RAND_MAX+1</tt>?
+
+<li class="exr">
+
+Que acontece se a função <tt>GRAPHrand1</tt> for chamada com
+<tt>E &gt; V*(V-1)/2)</tt>?
+
+
+<li class="exr" id="E17.61">
+Quando usamos a função
+<tt><a href="#GRAPHrand1">GRAPHrand1</a></tt>
+para gerar grafos de 
+<a href="graphs.html#density">grau médio</a>&nbsp;
+&alpha;V&nbsp;,
+que fração dos candidatos-a-aresta produzidos 
+tem as duas pontas iguais?
+
+
+
+</ol>
+
+
+
+
+<h2>Outro gerador de grafos aleatórios</h2>
+
+<p>A função abaixo gera grafos aleatórios
+que têm&nbsp; <tt>E</tt>&nbsp; arestas em média.
+
+
+<blockquote class="hlt">
+<p class="doc" id="GRAPHrand2">
+/* A função abaixo gera um grafo aleatório 
+   com vértices <tt class="doc">0..V-1</tt>.
+   
+   Cada uma das <tt class="doc">V*(V-1)/2</tt> possíveis arestas é gerada 
+   com probabilidade <tt class="doc">p</tt>, 
+   sendo <tt class="doc">p</tt> calculado de modo que 
+   o número esperado de arestas seja <tt class="doc">E</tt>
+   (desde que <tt class="doc">E &le; V*(V-1)/2</tt>).
+   A função supõe que <tt class="doc">V &ge; 2</tt>.
+   (Veja Sedgewick Program 17.8, p.42.)&nbsp;*/ 
+</p>
+<pre class="code">
+<span class="k">Graph</span> GRAPHrand2 (<span class="k">int</span> V, <span class="k">int</span> E) { 
+   <span class="k">Vertex</span> v, w;
+   <span class="k">double</span> p = 2.0 * E / V / (V-1);
+   <span class="k">Graph</span> G = GRAPHinit(V);
+   <span class="k">for</span> (v = 0; v < V; v++)
+      <span class="k">for</span> (w = 0; w < v; w++)
+         <span class="k">if</span> (v != w <span class="k">&amp;&amp;</span> <a class="code" href="http://www.ime.usp.br/~pf/algoritmos/apend/stdlib.h.html">rand</a>() <= p*RAND_MAX)
+            GRAPHinsertE(G, v, w);
+   <span class="k">return</span> G;
+}
+</pre>
+</blockquote>
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=4>
+
+<li class="exr">
+Sedgewick escreve&nbsp;
+"<tt>rand() < p*RAND_MAX</tt>"&nbsp;
+onde eu escrevi&nbsp;
+"<tt>rand() <= p*RAND_MAX</tt>".&nbsp;
+Na prática, isso não faz diferença,
+mas eu acho que minha redação está mais correta.
+O que você acha?
+
+<li class="exr">
+
+Que acontece se a função 
+<tt><a href="#GRAPHrand2">GRAPHrand2</a></tt> for chamada com
+<tt>E &gt; V*(V-1)/2)</tt>?
+
+</ol>
+
+
+
+
+
+
+<h2>Mais exercícios</h2>
+<ol start=6>
+
+<li class="exr" id="E17.69">
+Escreva uma programa que produza, com mesma probabilidade,
+cada um dos possíveis grafos com vértices <tt>0..V-1</tt>
+e (exatamente) <tt>E</tt> arestas.
+
+
+
+<li class="exr">
+Escreva uma função que gere um grafo com vértices 
+<tt>0..V-1</tt>
+em que cada aresta <tt>v-w</tt> é escolhida aleatoriamente
+da seguinte maneira: 
+primeiro, escolha <tt>v</tt> aleatoriamente em <tt>0..V-1</tt>;
+depois, escolha <tt>w</tt> aleatoriamente no intervalo 
+<tt>v-k..v+k</tt>,
+com <tt>v-k</tt> e <tt>v+k</tt> calculados módulo&nbsp;<tt>V</tt>.&nbsp;
+(Veja figura 17.13, p.43, do Sedgewick.)&nbsp;
+
+<li class="exr" id="E17.73">
+Escreva uma programa que gere <tt>V</tt> pontos aleatórios
+no produto cartesiano de intervalos <tt>[0,1]&times;[0,1]</tt>
+e em seguida construa um grafo
+ligando por uma aresta os pontos que estejam à 
+distância <tt>&le;</tt>&nbsp;<tt>d</tt>
+um do outro.
+(Veja figura 17.12, p.41, do Sedgewick.)&nbsp;
+Calcule <tt>d</tt> de modo que 
+o número esperado de arestas seja&nbsp;<tt>E</tt>.
+
+<li class="exr" id="E17.90">
+Determine empiricamente a probabilidade da
+existência de um <a href="paths.html#path">caminho</a> 
+entre dois vértices escolhidos aleatoriamente em 
+grafos aleatórios com <tt>V</tt> vértices
+e número esperado <tt>E</tt> de arestas.&nbsp;
+Faça experimentos com diversos valores de&nbsp;<tt>V</tt>.
+Para cada <tt>V</tt>,
+tente determinar o valor de <tt>E</tt>
+a partir do qual a probabilidade de existir um caminho 
+entre dois vértices aleatórios torna-se bastante alta.
+
+<li class="exr" id="E17.71">
+Escreva uma função que receba inteiros <tt>n</tt> e <tt>E</tt>
+e gere um 
+<a href="footnotes/subgraph.html">subgrafo</a>
+aleatório de uma 
+<a href="adjlists.html#grid">grade</a> quadrada
+com <tt>n&times;n</tt> vértices.&nbsp;
+Cada uma das arestas da grade deve ser incluída no grafo com 
+probabilidade <tt>p</tt>, 
+sendo <tt>p</tt> calculado 
+de modo que o número esperado de arestas seja <tt>E</tt>.
+
+
+<li class="exr" id="E17.71-plus">
+Faça testes da função do <a href="#E17.71">exercício anterior</a>.
+Sua função <tt>main</tt> deve aceitar valores de <tt>V</tt>  e <tt>E</tt>
+na linha de comando e 
+usar a função <tt>DIGRAPHshow</tt> para exibir o grafo gerado.
+
+<li class="exr">
+Escreva uma variante da 
+<a href="#E17.71">função anterior</a>
+que gere um 
+<a href="footnotes/subgraph.html">subgrafo</a>
+da grade descrito acima
+e acrescente a ele <tt>k</tt> 
+arestas aleatoriamente escolhidas dentre as "diagonais"
+dos pequenos quadrados da grade.
+(Basta escolher aleatoriamente <tt>k</tt> 
+"cantos superiores esquerdos"
+dos pequenos quadrados.)
+
+</ol>
+
+
+
+
+
+
+
+
+
+<p>&nbsp;
+<hr>
+<small>
+
+Last modified: Thu Feb 15 08:55:51 BRST 2007
+</small>
+
+</BODY>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/random.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:39 GMT -->
+</HTML>

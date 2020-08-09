@@ -1,0 +1,195 @@
+/******** MAIN/GRAFOS/algoritmos_para_grafos/front.css ********/
+BODY {
+/* background: #fff4e7; */
+/* background: #f8f4e7; between floralwhite and wheat */ 
+/* background: #f0d0a0; similar to wheat */
+   background: white; 
+/* color: #000060; blue, like 5770-2005 */
+   color: #004050; /* green */
+   margin-left: 3%;
+   margin-right: 3%;
+}
+
+/**************** menu ******************/
+p.top {
+  padding: 0.2ex; 
+  background: #f0d0a0;
+  text-align: right;
+  font-size: small;
+}
+p.top a:link {
+   color: #0000ff; /* default color for UNvisited */
+   text-decoration: none;
+} 
+p.top a:visited {
+   color: #0000ff;
+   text-decoration: none;
+}
+p.top a:hover { /* Must come after :link and :visited */
+   color: white;
+   text-decoration: none;
+}
+p.top a:active {
+   color: red;
+   text-decoration: none;
+} 
+
+/*** indexpage ***/
+a.indexpage:link {
+/* color: #102080; blue, like 5770-2005 */
+   color: #005050; /* green */
+   text-decoration: none;
+} 
+a.indexpage:visited {
+/* color: #102080; blue, like 5770-2005 */
+   color: #005050; /* green */
+   text-decoration: none;
+}
+a.indexpage:hover { /* Must come after :link and :visited */
+   color: #d05010; /* orange */
+   text-decoration: underline;
+}
+a.indexpage:active {
+   color: red;
+} 
+h1.indexpage { /* just for main title in index.html */
+/* color: #102080; almost dark blue */
+/* color: #003080; blue, like 5770-2005 */
+/* color: #004050; green */
+   color: #d05010; /* orange */
+   margin-top: 3em;
+   margin-bottom: 0.5em;
+   text-align: center;
+}
+h2.indexpage {
+/* color: #102080; blue, like 5770-2005 */
+   color: #006050; /* green */
+   margin-top: 1.5em;
+/* margin-bottom: 0em; bad on Explorer, inocuous on Netscape */
+   text-align: center;
+}
+h3.indexpage {
+   color: #006050; /* green */
+/* color: #102080; blue, like 5770-2005 */
+   margin-top: 1.5em;
+/* margin-bottom: 0em; bad on Explorer, inocuous on Netscape */
+   text-align: center;
+}
+
+/*** ordinary links ***/
+a:link {
+/* color: #cceeff; */
+/* color: #554433; brown? */
+/* color: #8000e0; light purple */
+   color: #0000ff; /* default color for UNvisited */
+   text-decoration: underline;
+} 
+a:visited {
+/* color: #00b0b0; */
+/* color: #0040a0; */
+/* color: #551a8b; default color */
+   color: #0000d0;
+   text-decoration: none;
+}
+a:hover { /* Must come after :link and :visited */
+   color: #d05010; /* orange */
+   text-decoration: underline;
+}
+a:active {
+   color: #d05010; /* orange */
+   text-decoration: underline;
+} 
+a.gray:link {
+/* color: #8050b0; gray-green */
+   color: #6060e0;
+/* text-decoration: none; */
+} 
+a.gray:visited {
+/* color: #8050b0; gray-green */
+   color: #6060c0;
+   text-decoration: none;
+}
+a.gray:hover { /* Must come after :link and :visited */
+   color: #d05010; /* orange */
+   text-decoration: underline;
+}
+a.gray:active {
+   color: #d05010; /* orange */
+} 
+
+/********* ordinary ****************/
+h1.center {
+/* color: #003080; blue, like 5770-2005 */
+/* color: #1060d0; light blue */
+/* color: #006070; green */
+   color: #0074a0; /* green */
+   margin-top: 1em;
+   margin-bottom: 1em;
+   text-align: center;
+}
+h2.center {
+/* color: #1060d0; blue, like 5770-2005 */
+   color: #007484; /* green */
+   margin-top: 1em; 
+/* margin-bottom: 0em; bad on Explorer, inocuous on Netscape */
+   text-align: center;
+}
+h3.center {
+/* color: #1060d0; blue, like 5770-2005 */
+   color: #007484; /* green */
+   margin-top: 1em; 
+   margin-bottom: 0.2em; /* 0em is bad on Explorer, inocuous on Netscape */
+   text-align: center;
+}
+
+
+p.bar {
+   padding: 0px;
+   height: 15px;
+   background: #80e0e0; /* green */
+}
+
+span.dim {
+/* color: #a0b0b0; */
+/* color: #6060d0; */
+   color: #608c80; /* greenish */
+}
+
+span.gray {
+   color: #80a0a0;
+}
+
+p.right {
+   text-align: right;
+}
+
+p.bib {
+   margin-top: 0.5em;
+}
+
+li.spaced {
+   margin-top: 0.2em;
+   margin-right: 0.5em;
+}
+
+span.hide { 
+   /* color: #00d000; */
+   color: black;
+   background-color: #d0ffd0;
+}
+p.hide { 
+   /* color: #00d000; */
+   color: black;
+   background-color: #d0ffd0;
+}
+div.hide { 
+   /* color: #00d000; */
+   color: black;
+   background-color: #d0ffd0;
+}
+
+
+
+
+
+

@@ -1,0 +1,6 @@
+1 Sandro 3
+2 Flavio 3
+3 Isabela 3
+4 Juliana 1
+5 Ruan 2
+6 Maycon 2

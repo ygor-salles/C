@@ -1,0 +1,32 @@
+PONTEIRO - São variáveis que apontam para outra com acréscimo do *, e captam o endereço da variável.
+é bem útil no uso de:
+Alocação dinâmica de memória
+Manipulação de arrays.
+Para retornar mais de um valor em uma função.
+Referência para listas, pilhas, árvores e grafos.. 
+
+Ex:Utilizaremos exemplo no uso de funções, onde na função converte, ela retorna mais de um valor:
+USO DE PONTEIRO EM FUNÇÃO:
+
+void converte (int *n, float *pdivisao)
+{
+    *pdivisao = (float)*n/10;
+    *n = *n%10;
+    return ;
+}
+
+int main ()
+{
+    int n;
+    float divisao;
+    printf ("Digite o valor de N: ");
+    scanf ("%d",&n);
+    
+    converte (&n, &divisao);
+    printf ("\nA divisao do numero por 10 eh: %.1f\n",divisao);
+    printf ("\nO resto da divisao do numero por 10 eh: %d\n",n);
+    return 0;
+}
+
+IMPORTANTE: Devemos passar o endereço da variável para a função {converte(&n, &divisao)} conforme
+código acima, e, printar com o nome da variável declarada na main.

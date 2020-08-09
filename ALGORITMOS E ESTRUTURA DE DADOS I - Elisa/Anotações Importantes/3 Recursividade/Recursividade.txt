@@ -1,0 +1,74 @@
+RECURSIVIDADE:
+Recursividade é quando uma função chama a si mesma entrando em um loop, e tendo um ponto base
+para que esse loop termine (não se torne infinito)
+
+Vantagens:
+Simplificação de código
+
+Desvantagens:
+Quando o loop recursivo é muito grande é consumida muita memória nas chamadas a diversos níveis de recursão
+Em muitos casos uma solução iterativa gasta menos memória, e torna-se mais eficiente em termos de performance do que usar recursão
+
+http://linguagemc.com.br/recursividade-em-c/
+
+https://gabrielbueno072.github.io/rea-aed/aula_rec.html
+
+EX's:
+
+#include<stdio.h>
+
+/* Realizar as funções de fibonachi, fatorial e preenchimento de vetor. Com recursividade*/
+
+int fib(int n)
+{
+    if (n==0)
+        return 0;
+    if (n==1)
+        return 1;
+    return fib(n-1) + fib(n-2);
+}
+
+int fatorial(int n)
+{
+    if (n==0 || n==1)
+        return 1;
+    return n*fatorial(n-1);
+}
+
+int soma(int n, int vetor[])
+{
+    if (n==1)
+        return vetor[n-1];
+    return n + soma(n-1, vetor);
+}
+
+int main ()
+{
+    int n, resultado, i;
+    printf ("Digite o valor de N: ");
+    scanf ("%d",&n);
+    int vetor[n];
+
+    resultado = fib(n);
+    printf ("%d",resultado);
+
+    resultado = fatorial(n);
+    printf ("\n%d\n",resultado);
+
+    printf ("\nPreenche vetor: \n");
+    for (i=0; i<n; i++)
+        scanf ("%d",&vetor[i]);
+
+    resultado = soma(n, vetor);
+    printf ("\n%d\n",resultado);
+
+
+    return 0;
+}
+
+
+
+
+
+
+}

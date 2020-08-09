@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+
+<HEAD>
+<TITLE>Algoritmos para Grafos: Solucoes: Busca em profundidade</TITLE>
+<META NAME="Author" CONTENT="Paulo Feofiloff">
+<META name="language" content="Portuguese">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1"> 
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<LINK rel="stylesheet" href="../code.css" type="text/css">
+</HEAD>
+<BODY>
+
+
+
+
+
+
+<p class="right">
+<a href="../dfs1.html#doc-dfsR">Enunciado</a>
+
+
+
+
+
+<h2>Documentação da função dfsR (busca em profundidade)</h2>
+
+<p>
+Eis uma documentação
+grosseira da função
+<tt><a href="../dfs1.html#dfsR">dfsR</a></tt>:
+
+
+<blockquote class="hlt">
+<p class="docdim">
+/* A função <tt>dfsR</tt> 
+   visita todos os vértices da componente do digrafo 
+   <tt>G</tt> que contém o vértice&nbsp;<tt>v</tt>.&nbsp;
+   A função registra a ordem em que os vértices são visitados
+   atribuindo um número <tt>lbl[x]</tt>
+   a cada vértice&nbsp;<tt>x</tt>&nbsp;
+   (se <tt>x</tt> é o <tt>k</tt>-ésimo vértice 
+   visitado então <tt>lbl[x] = k-1</tt>).&nbsp;*/
+</blockquote>
+
+
+<p>Eis a documentação completa e precisa da função 
+<tt><a href="../dfs1.html#dfsR">dfsR</a></tt>:
+
+
+<blockquote class="hlt" id="DIGRAPHpath">
+<p class="doc">
+/* A função <tt class="doc">dfsR</tt> 
+   recebe um digrafo <tt class="doc">G</tt> 
+   (representado por sua matriz de adjacências) e
+   um vértice <tt class="doc">v</tt>.&nbsp;
+   A função tem conhecimento de uma variável global 
+   <tt class="doc">cnt</tt> e um vetor global 
+   <tt class="doc">lbl[]</tt>,
+   indexado pelos vértices,
+   com valores no conjunto <tt class="doc">{-1,0,1,..,cnt-1}</tt>.&nbsp;
+   Digamos que <tt class="doc">X</tt> é o conjunto dos vértices 
+   que são término de algum caminho
+   que começa em <tt class="doc">v</tt>
+   e só usa vértices para os quais <tt class="doc">lbl[]</tt>
+   vale <tt class="doc">-1</tt>.&nbsp;
+   A&nbsp;função atribui números <tt class="doc">cnt,cnt+1,...</tt>&nbsp;
+   aos elementos de <tt class="doc">X</tt> na ordem em que eles são 
+   visitados.&nbsp;*/
+</blockquote>
+
+
+
+
+<p>&nbsp;
+<hr>
+<small>
+
+Last modified: Tue Jan  2 06:45:14 BRST 2007
+<br>
+&nbsp;</small>
+
+</BODY>
+
+</HTML>

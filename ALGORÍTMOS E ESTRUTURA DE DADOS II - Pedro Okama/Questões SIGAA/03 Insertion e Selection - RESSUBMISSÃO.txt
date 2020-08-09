@@ -1,0 +1,16 @@
+﻿COM112 - QuestÃ£o multipla escolha
+
+NÃºmero: (deixe em branco)
+
+Enunciado:
+(FGV - 2013 â€“ MPE/MS â€“ Analista de Sistemas) Assinale a alternativa que indica
+o algoritmo de ordenaÃ§Ã£o capaz de funcionar em tempo O(n) para alguns
+conjuntos de entrada.
+
+a) Selectionsort (seleÃ§Ã£o)
+b) Insertionsort (inserÃ§Ã£o)
+c) Merge sort
+d) Quicksort
+e) NDA 
+
+Autores(as): 2017014382, 2017009453, 2017014328

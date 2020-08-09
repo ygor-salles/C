@@ -1,0 +1,31 @@
+VARIÁVEIS DO TIPO CHAR
+
+Para Ler váriáveis do Tipo char deve-se colocar espaço nelas, pois se não quando for rodar o progama ele irá
+pular a opção que pede para o usuário digitar um valor do tipo char.
+Deve ser da seguinte maneira:
+
+char caracter;
+
+printf ("Entre com um caracter: ");
+scanf (" %c",&caracter);
+
+
+DIVISOES
+
+*Em divisões o denominador dever ser declarado como float, mesmo que seja um inteiro ou um contador,
+de preferencia colocar tudo como float ou da seguinte maneira:
+
+int a,b;
+float total;
+
+total = a/(float)b
+
+
+
+ELEVADO
+
+*O code blocks não reconhece o ^ como elevado. Para fazer um numero elevado é da seguinte maneira:
+
+a^b ==>  pow(base,expoente);   ou seja    pow (a,b); 
+
+OBS: Deve-se utilizar a biblioteca math.h 

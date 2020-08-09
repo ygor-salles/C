@@ -1,0 +1,7 @@
+BAIXAR TAD PRONTA:
+
+1 - Fazer o download de todos os arquivos desta pasta e deixá-los em uma única pasta
+da máquina
+OBS: arquivos .txt não são necessários
+
+2 - Executar o arquivos Projetos.cbp

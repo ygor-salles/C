@@ -1,0 +1,40 @@
+INTERVALO ABERTO E FECHADO
+
+ABERTO: não inclue o limite inferior e superior dentro da sequencia:
+
+#include <stdio.h>
+
+/*Elabore um programa que leia o limite superir e inferior de uma sequencia e escreva todos
+o numeros inteiros entre eles no intervalo aberto. */
+
+int main ()
+{
+    int inf, sup, i;
+    printf ("Digite o limite inferior e superior respectivamente: \n");
+    scanf ("%d %d",&inf, &sup);
+    for (i=inf+1; i<=sup-1; i++){
+        printf ("\n%d\n",i);
+    }
+    return 0;
+}
+
+############################################################################################
+
+FECHADO: inclue o limite inferior e superior dentro da sequencia:
+
+#include <stdio.h>
+
+/*Elabore um programa que leia o limite superir e inferior de uma sequencia e escreva todos
+o numeros inteiros entre eles no intervalo fechado ("ou inclusive"). */
+
+int main ()
+{
+    int inf, sup, i;
+    printf ("Digite o limite inferior e superior respectivamente: \n");
+    scanf ("%d %d",&inf, &sup);
+    for (i=inf; i<=sup; i++){
+        printf ("\n%d\n",i);
+    }
+    return 0;
+}
+

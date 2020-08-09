@@ -1,0 +1,313 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/dag-apps.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:42 GMT -->
+<HEAD>
+<TITLE>Algoritmos para Grafos: Aplicacoes de DAGs</TITLE>
+<META NAME="Author" CONTENT="Paulo Feofiloff">
+<META name="language" content="Portuguese">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1"> 
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<LINK rel="stylesheet" href="code.css" type="text/css">
+</HEAD>
+<BODY>
+
+
+
+
+
+
+
+
+<p class="top">
+<a href="../index.html#contents">Algoritmos em C para Grafos via Sedgewick</a>&nbsp;
+
+
+
+
+<h1>Aplicações de DAGs</h1>
+
+
+<p>Muitos problemas básicos sobre digrafos
+admitem solução bem mais eficiente 
+se restringirmos nosso universo aos <a href="dags.html#dag">DAGs</a> 
+(ou melhor, a digrafos dotados de 
+<a href="dags.html#toposort">ordenação topológica</a>).&nbsp; Freqüentemente as 
+soluções usam algoritmos de programação dinâmica .
+
+<p>
+(Esta página corresponde aproximadamente à
+seção&nbsp;19.6 (Topological Sorting)
+do capítulo&nbsp;19 (Digraphs and DAGs),
+p.183-193, do livro de Sedgewick.)
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h2>Caminhos mínimos em DAGs</h2>
+
+<p>Suponha que <tt>G</tt> é um DAG com custos não-negativos nos arcos.
+Sejam <tt>s</tt> e <tt>t</tt> dois vértices de&nbsp;<tt>G</tt>.
+Para encontrar um 
+<a href="cheapestpaths.html">caminho de custo mínimo</a>
+de <tt>s</tt> a <tt>t</tt>,
+podemos usar o <a href="dijkstra.html">algoritmo de Dijkstra</a>,
+que ignora o caráter acíclico de <tt>G</tt>.
+Esse algoritmo consome tempo proporcional 
+a <tt>(V+A)</tt>&nbsp;<tt>log(V)</tt> no pior caso
+(e&nbsp;é, portanto, um pouco pior que linear).&nbsp;&nbsp;
+Se tirarmos proveito do caráter acíclico de <tt>G</tt>,
+é possível resolver o problema em tempo linear,
+ou seja, tempo limitado por
+
+<p class="display">
+<tt>V + A</tt>
+
+<p>no pior caso.&nbsp;
+A&nbsp;função abaixo faz isso.&nbsp;
+Se não existe caminho algum de <tt>s</tt> a <tt>t</tt>,
+a função devolve um número <tt>maxCST</tt>
+que faz o papel de&nbsp;&infin;.
+
+
+<blockquote class="hlt">
+<p class="doc" id="DAGmin">
+/* A função <tt class="doc">DAGmin</tt> 
+   recebe um DAG <tt class="doc">G</tt> 
+   com custos não-negativos nos arcos
+   e uma ordenação topológica <tt class="doc">ts</tt> 
+   de&nbsp;<tt class="doc">G</tt>.
+   Recebe também um vértice&nbsp;<tt class="doc">s</tt>.&nbsp;
+   Para cada vértice <tt class="doc">t</tt>,
+   a função calcula o custo de um caminho de custo mínimo
+   de <tt class="doc">s</tt> a <tt class="doc">t</tt>.&nbsp;
+   Esse número é depositado em <tt class="doc">cst[t]</tt>.&nbsp;*/
+<p class="doc">
+/* A função supõe que a soma dos custos de todos os arcos 
+   é estritamente menor que <tt class="doc">maxCST</tt>.&nbsp;
+   (O&nbsp;código é uma versão modificada 
+   do programa 21.6, p.304, Sedgewick.&nbsp;*/
+
+<pre class="codedim">
+<span class="k">void</span> DAGmin (<span class="k">Digraph</span> G, <span class="k">Vertex</span> ts, <span class="k">Vertex</span> s, <span class="k">double</span> cst[]) { 
+   <span class="k">int</span> i; <span class="k">Vertex</span> v; <span class="k">link</span> p;
+   <span class="k">for</span> (v = 0; v < G->V; v++)
+      cst[v] = maxCST;
+   cst[s] = 0.0;
+   <span class="k">for</span> (v = ts[i = 0]; i < G->V; v = ts[i++])
+      <span class="k">for</span> (p = G->adj[v]; p != <span class="k">NULL</span>; p = p->next) 
+         <span class="k">if</span> (cst[p->w] > cst[v] + p->cst) 
+            cst[p->w] = cst[v] + p->cst; 
+}
+</pre>
+</blockquote>
+
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=1>
+
+<li class="exr">
+A varredura dos vértices em <tt>DAGmin</tt> 
+não precisa começar com <tt>v</tt>&nbsp;<tt>=</tt>&nbsp;<tt>0</tt>;&nbsp;
+bastaria começar com <tt>v</tt>&nbsp;<tt>=</tt>&nbsp;<tt>s</tt>.&nbsp;
+Escreva uma versão de <tt>DAGmin</tt> que faça isso.
+
+<li class="exr">
+Modifique o código de <tt>DAGmin</tt>
+para que a função calcule uma <a href="cheapestpaths.html#spt">SPT</a> 
+com raiz&nbsp;<tt>s</tt>.
+
+<li class="exr">
+[<span class="sc">Custos arbitrários</span>]&nbsp;
+Mostre que <tt>DAGmin</tt> pode ser usada com custos arbitrários
+(positivos, negativos, nulos), 
+desde que o vetor <tt>cst</tt> seja inicializado de maneira apropriada.
+
+<li class="exr" id="E21.56modified">
+Na função <tt><a href="#DAGmin">DAGmin</a></tt>,
+é mais eficiente calcular os caminhos mínimos
+ao mesmo tempo que se calcula a ordenação topológica.
+Escreva o código correspondente.
+
+</ol>
+
+
+
+
+<h2>Caminhos máximos em DAGs</h2>
+
+<p>Do ponto de vista computacional, 
+o problema de encontrar um caminho simples de custo <i>máximo</i> 
+num digrafos com custos nos arcos é difícil.&nbsp;
+O&nbsp;problema torna-se fácil, entretanto,
+quando restrito a&nbsp;DAGs.
+
+<p>Dados vértices <tt>s</tt> e <tt>t</tt> 
+de um DAG com custos não-negativos nos arcos,
+considere o problema de encontrar um caminho simples de custo máximo
+de <tt>s</tt> a&nbsp;<tt>t</tt>.&nbsp;
+(Na verdade, o requisito "simpes" é redundante,
+pois todos os caminhos num DAG são simples.)
+A função abaixo resolve o problema.&nbsp;
+Compare o código com o de <tt><a href="#DAGmin">DAGmin</a></tt>.
+
+
+<blockquote class="hlt">
+<p class="doc" id="DAGmax">
+/* A função <tt class="doc">DAGmax</tt> 
+   recebe um DAG <tt class="doc">G</tt> 
+   com custos não-negativos nos arcos
+   e uma ordenação topológica <tt class="doc">ts</tt> 
+   de&nbsp;<tt class="doc">G</tt>.
+   Recebe também um vértice&nbsp;<tt class="doc">s</tt>.&nbsp;
+   Para cada vértice <tt class="doc">t</tt>,
+   a função calcula o custo de um caminho de custo máximo
+   de <tt class="doc">s</tt> a&nbsp;<tt class="doc">t</tt>.&nbsp;
+   Esse número é depositado em <tt class="doc">cst[t]</tt>.&nbsp;*/
+<p class="doc">
+/* A função supõe que a soma dos custos de todos os arcos 
+   é estritamente menor que <tt class="doc">maxCST</tt>.&nbsp;
+   (O&nbsp;código é uma versão modificada 
+   do programa 21.6, p.304, Sedgewick,
+   que define a função 
+   <tt class="doc">DIGRAPHlpt</tt>.&nbsp;*/
+
+<pre class="code">
+<span class="k">void</span> DAGmax (<span class="k">Digraph</span> G, <span class="k">Vertex</span> ts, <span class="k">Vertex</span> s, <span class="k">double</span> cst[]) { 
+   <span class="k">int</span> i; <span class="k">Vertex</span> v; <span class="k">link</span> p;
+   <span class="k">for</span> (v = 0; v < G->V; v++)
+      cst[v] = -maxCST;
+   cst[s] = 0.0;
+   <span class="k">for</span> (v = ts[i = 0]; i < G->V; v = ts[i++])
+      <span class="k">for</span> (p = G->adj[v]; p != <span class="k">NULL</span>; p = p->next) 
+         <span class="k">if</span> (cst[p->w] <span class="red">&lt;</span> cst[v] + p->cst) { 
+            cst[p->w] = cst[v] + p->cst; 
+}
+</pre>
+</blockquote>
+
+
+
+
+
+
+
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=5>
+
+<li class="exr">
+Que acontece se trocarmos a inicialização&nbsp;
+"<tt>cst[v]</tt>&nbsp;<tt>=</tt>&nbsp;<tt>-maxCST</tt>"&nbsp;
+em <tt>DAGmax</tt> por&nbsp;
+"<tt>cst[v]</tt>&nbsp;<tt>=</tt>&nbsp;<tt>-1</tt>"?
+
+
+<li class="exr">
+A varredura dos vértices em <tt>DAGmax</tt> 
+não precisa começar com <tt>v</tt>&nbsp;<tt>=</tt>&nbsp;<tt>0</tt>;&nbsp;
+bastaria começar com <tt>v</tt>&nbsp;<tt>=</tt>&nbsp;<tt>s</tt>.&nbsp;
+Escreva uma versão de <tt>DAGmax</tt> que faça isso.
+
+<li class="exr">
+Modifique o código de <tt>DAGmax</tt>
+para que a função calcule os caminhos de custo máximo
+e não só os seus custos.
+
+<li class="exr">
+[<span class="sc">Custos arbitrários</span>]&nbsp;
+Mostre que <tt>DAGmax</tt> pode ser usada com custos arbitrários, 
+desde que o vetor <tt>cst</tt> seja inicializado de maneira apropriada.
+
+<li class="exr" id="E21.56">
+Na função <tt><a href="#DAGmax">DAGmax</a></tt>,
+é mais eficiente calcular os caminhos máximos
+ao mesmo tempo que a ordenação topológica.
+Escreva o código correspondente.
+
+<li class="exr" id="pert2">
+[PERT]&nbsp;
+O seguinte problema surge naturalmente 
+na administração de grandes projetos de engenharia.&nbsp;
+Dado um DAG com custos não-negativos nos arcos, 
+encontrar um caminho de custo máximo,
+quaisquer que sejam sua origem e seu término.
+(Um tal caminho necessariamente começa numa fonte 
+e termina num sorvedouro.)&nbsp;
+Adapte o código de <tt>DAGmax</tt> para resolver o problema.
+
+
+<li class="exr" id="E19.116">
+Escreva um programa que encontre um caminho máximo 
+num DAG sem custos nas arcos.
+(Um tal caminho necessariamente começa numa fonte 
+e termina num sorvedouro.)&nbsp;
+O consumo de tempo do seu programa deve ser 
+proporcional a <tt>V</tt> no máximo.
+
+<li class="exr" id="pert1">
+Seja <tt>G</tt> um DAG sem custos nos arcos
+e suponha que a permutação identidade&nbsp; 
+<tt>0,1,..,V-1</tt>&nbsp;
+é uma ordem topológica dos vértices de&nbsp;<tt>G</tt>.
+A seguinte função promete devolver o comprimento de um caminho máximo
+em&nbsp;<tt>G</tt>.
+Ela está correta?
+<pre class="small">
+   int maxpath (Digraph G) {
+      Vertex v;
+      link p;
+      int cst[maxV], x = 0;
+      for (v = 0; v < G->V; v++) cst[v] = 0;
+      for (v = 0; v < G->V; v++) 
+         for (p = G->adj[v]; p != NULL; p = p->next) {
+            cst[p->w] = cst[v] + 1;
+            if (x < cst[p->w]) x = cst[p->w];
+         }
+      return x;
+   }
+</pre>
+
+
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<p>&nbsp;
+<hr>
+<small>
+
+Last modified: Thu Feb 15 08:55:42 BRST 2007
+</small>
+
+</BODY>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/dag-apps.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:42 GMT -->
+</HTML>

@@ -1,0 +1,587 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+
+<HEAD>
+<TITLE>Algoritmos para Grafos: listas de adjacencia</TITLE>
+<META NAME="Author" CONTENT="Paulo Feofiloff">
+<META name="language" content="Portuguese">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1"> 
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<LINK rel="stylesheet" href="code.css" type="text/css">
+</HEAD>
+<BODY>
+
+
+
+
+
+
+<p class="top">
+<a href="../index.html#contents">Algoritmos em C para Grafos via Sedgewick</a>&nbsp;
+
+
+
+<h1>Vetor de listas de adjacência</h1>
+
+
+<p>O <span class="dfn">vetor de listas de adjacência</span> 
+de um digrafo tem uma <a href="lista.html">lista encadeada</a>
+(=&nbsp;<i>linked list</i>)
+para cada vértice do digrafo.&nbsp;
+A&nbsp;lista do vértice <tt>v</tt> 
+contém todos os vértices vizinhos de&nbsp;<tt>v</tt>.
+
+
+
+
+
+<p>(Esta página foi inspirada 
+na seção 17.4 (Adjacency-Lists Representation),
+em particular no programa 17.6 (p.28),
+do livro de Sedgewick.)
+
+
+
+<h2>Exemplo</h2>
+
+<p>Eis um digrafo e seu vetor de listas de adjacência:
+<p>
+<table align="center" cellspacing=0 cellpadding=1 border=0>
+<tr>
+<td valign="middle">
+<pre>
+0-1 0-5 1-0 1-5 2-4 3-1 5-3
+</pre>
+<td valign="top">
+<pre>
+        0: <b>5 1</b>
+        1: <b>5 0</b>
+        2: <b>4</b>
+        3: <b>1</b>
+        4: <b></b>
+        5: <b>3</b>
+</pre>
+</table>
+
+<p>Eis o conjunto de arestas de um grafo e 
+o vetor de listas de adjacência do grafo:
+
+<p>
+<table align="center" cellspacing=0 cellpadding=1 border=0>
+<tr>
+<td valign="middle">
+<pre>
+0-1 0-5 1-5 2-4 3-1 5-3
+</pre>
+<td valign="top">
+<pre>
+        0: <b>5 1</b>
+        1: <b>3 5 0</b>
+        2: <b>4</b>
+        3: <b>5 1</b>
+        4: <b>2</b>
+        5: <b>3 1 0</b>
+</pre>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+<h2>Estruturas</h2>
+
+<p>Um digrafo é representado por uma struct <tt>digraph</tt>
+que contém o número de vértices, 
+o número de arcos 
+e o vetor de listas de adjacência do digrafo.
+
+
+<blockquote class="hlt">
+<p class="doc" id="digraph">
+/* A estrutura <tt class="doc">digraph</tt> representa um digrafo.
+   O&nbsp;campo <tt>adj</tt> 
+   é um ponteiro para o vetor de listas de adjacência do digrafo,
+   o campo <tt class="doc">V</tt> contém o número de vértices
+   e o campo <tt>A</tt> contém o número de arcos do digrafo.&nbsp;*/
+
+
+<pre class="code">
+<span class="k">struct</span> digraph {
+   <span class="k">int</span> V; 
+   <span class="k">int</span> A; 
+   <span class="k">int</span> *adj; 
+};
+</pre>
+
+<p class="doc">
+/* Um objeto do tipo <tt class="doc">Digraph</tt> contém o endereço
+   de um <tt class="doc">digraph</tt>.&nbsp;*/
+</p>
+<pre class="code">
+<span class="k">typedef struct</span> digraph *Digraph;
+</pre>
+
+
+<p class="doc" id="node">
+/* A lista de adjacência de um vértice <tt class="doc">v</tt>
+   é composta por nós do tipo <tt class="doc">node</tt>. 
+   Um <tt class="doc">link</tt> é um ponteiro para um 
+   <tt class="doc">node</tt>.
+   Cada nó da lista contém um vizinho <tt class="doc">w</tt>
+   de <tt class="doc">v</tt> e o endereço do nó seguinte da lista.&nbsp;*/
+
+<pre class="code">
+<span class="k">typedef</span> <span class="k">struct</span> node *link;
+<span class="k">struct</span> node { 
+   <span class="k">Vertex</span> w; 
+   <span class="k">link</span> next; 
+};
+</pre>
+
+<p class="doc" id="NEW">
+/* A função <tt class="doc">NEW</tt>
+   recebe um vértice <tt class="doc">w</tt> 
+   e o endereço <tt class="doc">next</tt> de um nó
+   e devolve um novo nó <tt class="doc">x</tt>
+   com <tt class="doc">x.w</tt> = <tt class="doc">w</tt>
+   e <tt class="doc">x.next</tt> = <tt class="doc">next</tt>.&nbsp;*/
+
+<pre class="code">
+<span class="k">link</span> NEW (<span class="k">Vertex</span> w, <span class="k">link</span> next) { 
+   <span class="k">link</span> x = <span class="k">malloc</span>(<span class="k">sizeof</span> *x);
+   x->w = w; 
+   x->next = next;     
+   <span class="k">return</span> x;                         
+}
+</pre>
+
+</blockquote>
+
+
+<p><span class="dim">[No livro de Sedgewick,
+o nome do primeiro campo de um <tt>node</tt> é&nbsp; <tt>v</tt>&nbsp;
+e não <tt>w</tt>.&nbsp;
+Por vezes, isso torna o código um pouco confuso.
+Além disso, Sedgewick escreve 
+"<tt>E</tt>" no lugar de&nbsp;"<tt>A</tt>".]</span>
+
+
+
+<p>Essa mesma estrutura será usada para representar grafos,
+mas nesse caso escreveremos "<tt>graph</tt>" e "<tt>Graph</tt>"
+no lugar de "<tt>digraph</tt>" e "<tt>Digraph</tt>":
+
+<blockquote class="hlt" id="graph">
+<pre class="code">
+<span class="k">#define</span> graph <span class="k">digraph</span>
+<span class="k">#define</span> Graph <span class="k">Digraph</span>
+</pre>
+</blockquote>
+
+
+<p>É apropriado lembrar que,
+o número de arestas de um grafo é mais significativo que 
+o seu número de arcos.&nbsp;
+O número de arestas de um grafo <tt>G</tt> é&nbsp;<tt>(G->A)/2</tt>.
+
+
+
+<p>Essas estruturas não devem ser consideradas definitivas. 
+Elas poderão ser modificadas e adaptadas adiante,
+conforme as necessidades.
+
+
+
+
+
+<h2>Algumas funções básicas</h2>
+
+<p>Eis algumas funções básicas de construção e 
+manipulação de digrafos representados por 
+listas de adjacência:
+
+
+<blockquote class="hlt">
+<p class="doc" id="DIGRAPHinit">
+/* Esta função devolve (o endereço de) um novo digrafo com 
+   vértices <tt class="doc">0,..,V-1</tt> e nenhum arco.&nbsp;*/
+
+<pre class="code">
+<span class="k">Digraph</span> DIGRAPHinit (<span class="k">int</span> V) { 
+   <span class="k">Digraph</span> G = <span class="k">malloc</span>(<span class="k">sizeof</span> *G);
+   G->V = V; 
+   G->A = 0;
+   G->adj = <span class="k">malloc</span>(V * <span class="k">sizeof</span>(<span class="k">link</span>));
+   <span class="k">for</span> (v = 0; v < V; v++) 
+      G->adj[v] = <span class="k">NULL</span>;
+   <span class="k">return</span> G;
+}
+</pre>
+
+<p class="doc" id="DIGRAPHinsertA">
+/* A função abaixo insere um arco <tt class="doc">v-w</tt> 
+   no digrafo <tt class="doc">G</tt>.
+   
+   Se <tt class="doc">v</tt>&nbsp;==&nbsp;<tt class="doc">w</tt>
+   ou o digrafo já tem
+   arco <tt class="doc">v-w</tt>,
+   a função não faz nada.&nbsp;*/
+
+<pre class="code">
+<span class="k">void</span> DIGRAPHinsertA (<span class="k">Digraph</span> G, <span class="k">Vertex</span> v, <span class="k">Vertex</span> w) { 
+   <span class="k">link</span> p;
+   <span class="k">if</span> (v == w) <span class="k">return</span>;
+   <span class="k">for</span> (p = G->adj[v]; p != <span class="k">NULL</span>; p = p->next) 
+      <span class="k">if</span> (p->w == w) <span class="k">return</span>;
+   G->adj[v] = NEW(w, G->adj[v]);
+   G->A++;
+}
+</pre>
+
+</blockquote>
+
+
+
+<p>A execução da função <tt>DIGRAPHinsertA</tt> consome muito tempo, 
+pois percorre toda a lista de vizinhos de&nbsp;<tt>v</tt>.&nbsp;
+Talvez seja melhor substituir o código pelo que está abaixo
+e transferir a responsabilidade
+de evitar <a href="digraphs.html#loop">laços</a> e 
+<a href="digraphs.html#parallel">arcos paralelos</a>
+ao cliente/usuário,
+que provavelmente tem condições de fazer isso de maneira eficiente.
+
+<pre class="code">
+   void DIGRAPHinsertA (Digraph G, Vertex v, Vertex w) { 
+      if (v == w) return;
+      G->adj[v] = NEW(w, G->adj[v]);
+      G->A++;
+   }
+</pre>
+
+<p>Para tratar de grafos, é conveniente adaptar os nomes das funções.
+Também é conveniente 
+escrever uma função específica para inserção de arestas:
+
+
+<blockquote class="hlt">
+<pre class="code" id="GRAPHinit">
+<span class="k">#define</span> GRAPHinit <span class="k">DIGRAPHinit</span>
+</pre>
+
+<p class="doc" id="GRAPHinsertE">
+/* A função abaixo insere uma aresta <tt class="doc">v-w</tt> 
+   no grafo <tt class="doc">G</tt>.
+   
+   Se <tt class="doc">v</tt>&nbsp;==&nbsp;<tt class="doc">w</tt>
+   ou o grafo já tem aresta <tt class="doc">v-w</tt>,
+   a função não faz nada.&nbsp;*/
+
+<pre class="code">
+<span class="k">void</span> GRAPHinsertE (<span class="k">Graph</span> G, <span class="k">Vertex</span> v, <span class="k">Vertex</span> w) { 
+   DIGRAPHinsertA(G, v, w);
+   DIGRAPHinsertA(G, w, v);
+}
+</pre>
+</blockquote>
+
+
+
+
+
+
+
+
+<h2>Exercícios</h2>
+
+<p>A maior parte dos exercícios abaixo envolve grafos.
+Convido o leitor a refazer todos os exercícios
+depois de trocar "grafo simétrico" e "aresta" por 
+"digrafos" e "arco" respectivamente.
+
+<ol start=1>
+
+
+<li class="exr" id="E17.26">
+[<span class="sc">Importante</span>]&nbsp;
+Considere o grafo definido pelas arestas abaixo.&nbsp;
+Faça uma figura do vetor de listas de adjacência do grafo
+quando as arestas acima são inseridas por
+<tt><a href="#GRAPHinsertE">GRAPHinsertE</a></tt>,
+na ordem dada acima, 
+em um grafo inicialmente vazio.
+<p class="display">
+<tt>3-7 1-4 7-8 0-5 5-2 3-8 2-9 0-6 4-9 2-6 6-4</tt>
+
+
+<li class="exr" id="E17.27">
+Escreva uma versão da função 
+<tt><a href="adjmatrix.html#DIGRAPHshow">DIGRAPHshow</a></tt>
+apropriada para listas de adjacência.
+(Veja a função que escrevemos para matriz de adjacência.)
+
+
+
+<li class="exr">
+Escreva uma função que confira a consistência 
+da representação de um grafo por listas de adjacência.&nbsp;
+Ao receber um grafo <tt>G</tt>,
+a função deve devolver <tt>1</tt> 
+se o grafo é simétrico,
+as listas de adjacência não contêm laços nem arestas paralelas,
+e o valor de <tt>G->A</tt> é consistente com 
+o vetor <tt>G->adj</tt>.&nbsp;
+Caso contrário, a função deve devolver&nbsp;<tt>0</tt>.
+
+
+<li class="exr" id="E17.40">
+Escreva uma função <tt>GRAPHdeg</tt>
+que receba um grafo representado por listas de adjacência
+e um vértice <tt>v</tt>
+e devolva o grau de&nbsp;<tt>v</tt>.
+
+<li class="exr" id="E17.40modified">
+Escreva uma função <tt>DIGRAPHindeg</tt>
+que devolva o grau de entrada de um vértice <tt>v</tt> 
+num digrafo representado por listas de adjacência.
+
+
+<li class="exr" id="E17.28">
+Escreva uma função <tt>GRAPHremoveE</tt>
+que remova uma aresta <tt>v-w</tt> de um grafo <tt>G</tt>
+dado por suas listas de adjacência.
+(Veja <tt><a href="adjmatrix.html#DIGRAPHremoveA">DIGRAPHremoveA</a></tt>.)
+Se <tt>v-w</tt> não for aresta de <tt>G</tt>, 
+a função não deve fazer nada.
+
+<li class="exr" id="E17.29">
+Escreva uma função <tt>DIGRAPHcopy</tt>
+que receba um digrafo <tt>G</tt>,
+crie uma cópia de <tt>G</tt>,
+e devolva (o endereço d)a cópia.
+Suponha que <tt>G</tt> representado por um 
+vetor de listas de adjacência.
+
+<li class="exr" id="E17.24B">
+Escreva uma função de <tt>DIGRAPHdestoy</tt>
+que destrua um digrafo representado por suas listas de adjacência
+(ou seja, libere o espaço que o digrafo ocupa na memória).
+
+<li class="exr" id="E17.30">
+Dê um exemplo simples de um vetor de listas de adjacência
+de um grafo
+que não pode ser gerado, a partir do grafo vazio,
+pelo uso repetido da função <tt><a href="#GRAPHinsertE">GRAPHinsertE</a></tt>.&nbsp;&nbsp;
+
+
+
+<li class="exr">
+A figura abaixo sugere o vetor de listas de adjacência 
+de um grafo.&nbsp;
+De quantas maneiras diferentes essas listas poderiam ser reescritas
+sem deixar de representar o mesmo grafo?
+<pre class="small">
+      0: 6 5 1 2
+      1: 0
+      2: 0
+      3: 5 4
+      4: 6 5 3
+      5: 3 0 4
+      6: 0 4
+      7: 8
+      8: 7
+      9: 12 11 10
+     10: 9
+     11: 12 9
+     12: 9 11
+</pre>
+
+
+
+
+<li class="exr" id="E17.13">
+Escreva uma função que receba um vetor de arestas 
+e devolva a representação por listas de adjacência 
+do grafo definido por essas arestas.
+
+
+<li class="exr" id="DIGRAPHarcs">
+Escreva uma função <tt>DIGRAPHarcs</tt>
+que armazene os arcos de um digrafo 
+num vetor fornecido pelo usuário.
+
+<li class="exr" id="GRAPHedges">
+Escreva uma função <tt>GRAPHedges</tt>
+que armazene as arestas de um grafo
+num vetor fornecido pelo usuário.
+
+<li class="exr" id="invertlist">
+[<span class="sc">Bom</span>!]&nbsp;
+Escreva uma função que receba um grafo 
+representado por suas listas de adjacência
+e inverta todas essas listas.&nbsp;
+Por exemplo,
+suponha que os 4 vizinhos de um certo vértice <tt>u</tt>
+aparecem na lista <tt>adj[u]</tt> na ordem 
+<tt>v</tt>,
+<tt>w</tt>,
+<tt>x</tt>,
+<tt>y</tt>.&nbsp;
+Depois da aplicação da função, 
+a lista deve conter os mesmos vértices na ordem
+<tt>y</tt>,
+<tt>x</tt>,
+<tt>w</tt>,
+<tt>v</tt>.
+
+</ol>
+
+
+
+
+
+
+<h2>Mais exercícios</h2>
+
+<p>A maior parte dos exercícios abaixo envolve grafos.
+Convido o leitor a refazer todos os exercícios
+depois de trocar "grafo" e "aresta" por 
+"digrafo" e "arco" respectivamente.
+
+<ol start=15>
+
+<li class="exr">
+Escreva uma função que receba um grafo representado por 
+<a href="adjmatrix.html">matriz de adjacência</a>
+e construa a correspondente representação por listas de adjacência.
+
+<li class="exr">
+Escreva uma função que receba um grafo representado por 
+listas de adjacência 
+e construa a correspondente representação por
+<a href="adjmatrix.html">matriz de adjacência</a>.
+
+<li class="exr">
+Considere o problema de decidir se dois vértices 
+são adjacentes num grafo representado por suas listas de adjacência.
+Quanto tempo consome a solução do problema?
+Dê sua resposta em função do número de vértices.
+
+<li class="exr">
+Escreva uma função que receba dois grafos,
+digamos <tt>G1</tt> e <tt>G2</tt>,
+e decida se eles são iguais.
+
+<li class="exr">
+Considere o problema de decidir se um vértice
+é isolado num grafo 
+representado por suas listas de adjacência.
+Quanto tempo consome a solução do problema?
+Dê sua resposta em função do número de vértices.
+
+<li class="exr" id="E17.25">
+Uma <span class="dfn">clique</span> num grafo 
+é um conjunto de vértices dois-a-dois adjacentes.&nbsp;
+Uma <i>panela</i> 
+é uma clique formada por vértices "consecutivos",
+ou seja, uma clique da forma <tt>{i+1,i+2,..,i+k}</tt>.&nbsp;
+Escreva uma função que encontre uma panela máxima.&nbsp;
+Faça duas versões de sua função:
+uma para matriz de adjacência e outra para listas de adjacência.
+Sua função deve consumir tempo proporcional a <tt>V&sup2;</tt> 
+no máximo.
+
+</ol>
+
+
+
+<h2>Construção de grafos e digrafos</h2>
+
+
+<ol start=21>
+
+<li class="exr" id="E17.49">
+Digamos que um arquivo é <i>gráfico</i>
+se sua primeira linha contém um inteiro <tt>V</tt> 
+e cada uma das demais linha contém dois inteiros 
+pertencentes ao intervalo <tt>[0..V-1]</tt>
+separados por um caracter '<tt>-</tt>'.&nbsp;
+Eis um exemplo:
+<pre>
+       6
+       0-1 
+       0-5 
+       1-0 
+       1-5 
+       2-4 
+       3-1
+</pre>
+<p>Se interpretarmos cada linha do arquivo como um arco,
+podemos dizer que o arquivo define um digrafo com 
+vértices <tt>0..V-1</tt>.&nbsp;
+Escreva uma função <tt>DIGRAPHconstruct</tt>
+que receba um arquivo gráfico
+e construa a representação do digrafo por listas de adjacência.
+Use as funções <tt>DIGRAPHinit</tt> e <tt>DIGRAPHinsertA</tt>.&nbsp;&nbsp;
+Repita o exercício supondo que o arquivo representa um grafo. 
+
+<li class="exr" id="grid">
+Uma <span class="dfn">grade</span> <tt>m</tt>-por-<tt>n</tt>
+é um grafo com <tt>m&times;n</tt> vértices 
+distribuídos em <tt>m</tt> linhas e <tt>n</tt> colunas
+com arestas ligando vértices "vizinhos" na horizontal e na vertical
+da maneira óbvia.&nbsp;
+A figura abaixo sugere uma grade <tt>3</tt>-por-<tt>4</tt>.
+<pre class="small">
+                 o--o--o--o
+                 |  |  |  |
+                 o--o--o--o
+                 |  |  |  |
+                 o--o--o--o
+</pre>
+<p>Escreva uma função que construa uma grade <tt>m&times;n</tt>.
+Faça duas versões: uma gera uma representação por 
+matriz de adjacência
+e outra gera uma representação por listas de adjacência.
+
+<li class="exr">
+Dado um grafo <tt>G</tt>,
+o grafo <tt>L(G)</tt> é definido assim:&nbsp;
+cada vértice de <tt>L(G)</tt> representa uma aresta de <tt>G</tt>
+e dois vértices de <tt>L(G)</tt> são adjacentes se 
+as correspondentes arestas de <tt>G</tt> têm uma ponta em comum.&nbsp;
+O&nbsp;grafo <tt>L(G)</tt> é conhecido como 
+<span class="dfn">grafos das arestas</span> 
+(=&nbsp;<i>line graph</i>) de <tt>G</tt>.&nbsp;
+Escreva uma função que receba um grafo <tt>G</tt> 
+e construa o grafo das arestas de <tt>G</tt>.
+
+
+
+
+
+
+
+</ol>
+
+
+
+
+
+
+<p>&nbsp;
+<hr>
+<small>
+
+Last modified: Thu Feb 15 08:55:51 BRST 2007
+</small>
+
+</BODY>
+
+</HTML>

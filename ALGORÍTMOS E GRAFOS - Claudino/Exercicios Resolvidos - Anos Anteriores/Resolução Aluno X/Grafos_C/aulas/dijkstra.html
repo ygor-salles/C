@@ -1,0 +1,731 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/dijkstra.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:42 GMT -->
+<HEAD>
+<TITLE>Algoritmos para Grafos: algoritmo de Dijkstra</TITLE>
+<META NAME="Author" CONTENT="Paulo Feofiloff">
+<META name="language" content="Portuguese">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1"> 
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<LINK rel="stylesheet" href="code.css" type="text/css">
+</HEAD>
+<BODY>
+
+
+
+
+
+
+
+<p class="top">
+<a href="../index.html#contents">Algoritmos em C para Grafos via Sedgewick</a>&nbsp;
+
+
+
+
+
+<h1>Algoritmo de Dijkstra</h1>
+
+
+<p align="right">
+<small>&quot;Computer science is no more about computers<br> 
+than astronomy is about telescopes.&quot;<br><br>
+&mdash;
+<a href="http://www.cs.utexas.edu/users/EWD/welcome.html">Edsger W. Dijkstra</a><br>
+</small>
+
+
+
+
+
+
+<p>Esta página discute um algoritmo eficiente 
+para o <a href="cheapestpaths.html#sptproblem"
+>Problema da SPT</a>:
+
+<blockquote class="display">
+Dado um digrafo com custos não-negativos nos arcos
+e um vértice&nbsp;<i>s</i>,
+encontrar uma 
+<a href="cheapestpaths.html#spt">SPT</a> com raiz <i>s</i> no digrafo.
+</blockquote>
+
+<p>O algoritmo foi inventado por 
+<a href="http://en.wikipedia.org/wiki/Dijkstra">Dijkstra</a>
+[pronuncie algo entre "Dêcstra" e "Dêicstra"]
+e 
+<a href="http://en.wikipedia.org/wiki/Dijkstra's_algorithm"
+>publicado em 1959</a>.&nbsp;
+O&nbsp;algoritmo pode ser usado, em particular,
+para <a href="cheapestpaths.html#sourcesink"
+>encontrar um caminho de custo mínimo de um dado vértice a outro</a>.
+
+<p>
+(Esta página é um resumo 
+das seções 
+21.1 (Underlying Principles) e
+21.2 (Dijkstra's Algorithm),
+p.273-290 do livro de Sedgewick.)
+
+
+
+
+<h2>O algoritmo</h2>
+
+<p id="weightofvertex">
+A estrutura do algoritmo de Dijkstra é 
+muito parecida com a do 
+<a href="prim.html">algoritmo de Prim</a>.&nbsp;
+(Embora o algoritmo de Dijkstra,
+ao contrário do algoritmo de Prim, 
+só se aplique a custos não-negativos.)
+
+<p id="conceitual">No início de cada iteração,
+temos uma arborescência <i>T</i> 
+com raiz <i>s</i>.&nbsp;
+Para qualquer vértice <i>w</i> fora de&nbsp;<i>T</i>,
+o <span class="dfn">custo de&nbsp;<i>w</i></span>
+em relação a&nbsp;<i>T</i> é, 
+por definição,
+
+<p class="display">
+a <a href="cheapestpaths.html#distance">distância</a>
+de&nbsp; <i>s</i>&nbsp; a&nbsp; <i>w</i>&nbsp;
+no digrafo&nbsp; <i>T</i>+<i>F</i>,
+
+<p>sendo&nbsp; <i>F</i>&nbsp; a franja de&nbsp;<i>T</i>.&nbsp;
+Aqui, a <span class="dfn">franja</span> de <i>T</i> 
+é o conjunto de todos os arcos que saem de&nbsp;<i>T</i>.&nbsp;
+
+Em outras palavras,
+o custo de um vértice <i>w</i> que está fora de <i>T</i>
+é o custo de um caminho mínimo 
+dentre os que começam em <i>s</i>, terminam em <i>w</i>,
+e só têm um arco &mdash; o último &mdash;
+fora de&nbsp;<i>T</i>.&nbsp;
+Diremos que o último arco de um tal caminho mínimo 
+é o <span class="dfn">arco-pai</span> de&nbsp;<i>w</i>.&nbsp;
+
+
+
+<p>Cada iteração do algoritmo de Dijkstra consiste no seguinte:
+<ol type="none" id="dijkstraalgorithm">
+<li class="spaced">
+<b>se</b>&nbsp; a franja de <i>T</i> não é vazia
+  <ol type ="none">
+
+  <li class="spaced"><b>então</b>&nbsp; 
+    seja&nbsp; <i>w</i>&nbsp; um vértice
+    fora de <i>T</i> que tem custo mínimo
+
+  <li class="spaced"><span class="invis"><b>então</b>&nbsp;</span> 
+    seja&nbsp; <i>e</i>&nbsp; o arco-pai de <i>w</i>
+
+  <li class="spaced"><span class="invis"><b>então</b>&nbsp;</span>
+     comece nova iteração com&nbsp; 
+          <i>T</i>+<i>e</i>&nbsp; no papel de <i>T</i>
+
+  <li class="spaced"><b>senão</b>&nbsp;
+      pare
+  </ol>
+</ol>
+
+
+<p>Nas implementações abaixo,
+a arborescência <i>T</i> será representada por um vetor&nbsp;<tt>parnt</tt>.&nbsp;
+O&nbsp;custo de cada vértice <tt>w</tt> será armazenado em&nbsp;
+<tt>cst[w]</tt>&nbsp;
+e a ponta inicial do arco-pai de <tt>w</tt> 
+será armazenada em&nbsp;&nbsp;<tt>fr[w]</tt>.
+
+<p>As implementações que examinaremos abaixo
+têm uma peculiaridade:&nbsp;
+no início da primeira iteração,
+a árvore (representada pelo vetor <tt>parnt</tt>) está vazia.&nbsp;
+Somente a partir do início da segunda iteração
+a implementação passa a se comportar 
+de acordo com o algoritmo.
+
+
+
+
+
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=1>
+
+<li class="exr" id="Property21.12">
+Prove que o algoritmo de Dijkstra de fato produz uma SPT
+com origem&nbsp;<i>s</i>.
+
+<li class="exr">
+Aplique o algoritmo de Dijkstra ao digrafo abaixo
+começando com o vértice&nbsp;<tt>1</tt>.&nbsp;
+No começo de cada iteração, dê o custo
+de cada vértice.&nbsp;
+No fim da última iteração,
+exiba a SPT com origem&nbsp;<tt>1</tt>.
+
+<pre class="small">
+          arco  0-1 0-4 1-5 2-0 2-3 2-4 4-3 5-0 5-2 
+         custo   1   3   1   1   6   5   1   4   2         
+</pre>
+
+
+
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h2>Implementação para digrafos densos</h2>
+
+
+<p>Suponha que nosso digrafo está representado por sua 
+<a href="weightedgraphs.html#matrix">matriz de adjacência</a>.
+Como de hábito, se <tt>v-w</tt> não é arco então
+<tt>adj[v][w]</tt> vale 
+<tt><a href="weightedgraphs.html#maxCST">maxCST</a></tt>.&nbsp;
+Supõe-se que o valor de <tt>maxCST</tt>
+é tão grande que não se confunde com 
+o custo de um caminho simples.
+
+
+
+
+
+
+
+
+
+
+<blockquote class="hlt" id="DIGRAPHsptD1">
+<p class="doc">
+/* Recebe digrafo <tt class="doc">G</tt> com custos não-negativos
+   nos arcos e um vértice&nbsp;<tt class="doc">s</tt>.
+   Calcula uma 
+   <a class="doc" href="cheapestpaths.html#spt"
+   >arborescência de caminhos mínimos</a>
+   com raiz&nbsp;<tt class="doc">s</tt>.
+   A&nbsp;arborescência é armazenada 
+   no vetor&nbsp;<tt class="doc">parnt</tt>.
+   As distâncias em relação a <tt class="doc">s</tt> são armazenadas 
+   no vetor&nbsp;<tt class="doc">cst</tt>.&nbsp;*/
+<p class="doc">
+/* A função supõe que a soma dos custos de todas os arcos 
+   é estritamente menor que <tt class="doc">maxCST</tt>.&nbsp;
+   Supõe também que o digrafo tem no máximo
+   <tt class="doc">maxV</tt> vértices.
+   (O&nbsp;código abaixo é uma versão modificada
+   do Programa 20.3, p.238, de Sedgewick.)&nbsp;*/
+<pre class="code">
+<span class="k">void</span> 
+DIGRAPHsptD1 (<span class="k">Digraph</span> G, <span class="k">Vertex</span> s, <span class="k">Vertex</span> parnt[], <span class="k">double</span> cst[]) { 
+   <span class="k">Vertex</span> w, w0, fr[maxV];
+   <span class="k">for</span> (w = 0; w < G->V; w++) { 
+      parnt[w] = -1; 
+      cst[w] = maxCST; 
+   }
+   fr[s] = s;
+   cst[s] = 0.0;
+   <span class="k">while</span> (1) {
+      <span class="k">double</span> mincst = maxCST;
+      <span class="k">for</span> (w = 0; w < G->V; w++) {
+         <span class="k">if</span> (parnt[w] == -1 <span class="k">&amp;&amp;</span> mincst > cst[w])
+               mincst = cst[w0=w]; 
+      <span class="k">if</span> (mincst == maxCST) <span class="k">break</span>;
+      parnt[w0] = fr[w0];
+      <span class="k">for</span> (w = 0; w < G->V; w++) 
+         <span class="k">if</span> (cst[w] > cst[w0] + G->adj[w0][w]) {
+            cst[w] = cst[w0] + G->adj[w0][w]; 
+            fr[w] = w0; 
+         }
+   }
+}
+</pre>
+</blockquote>
+
+
+
+
+<p>Note que essa implementação é quase idêntica à 
+<a href="prim.html#GRAPHmstP1">implementação correspondente 
+do algoritmo de Prim</a>.
+
+<p>(Duas observações técnicas:&nbsp;
+1.&nbsp;Observe como a comparação de 
+<tt>cst[w]</tt> com 
+<tt>cst[w0]</tt>&nbsp;<tt>+</tt>&nbsp;<tt>G->adj[w0][w]</tt>
+trata corretamente do caso em que <tt>w0</tt> e <tt>w</tt> 
+não são adjacentes e portanto 
+<tt>G->adj[w0][w]</tt> vale <tt>maxCST</tt>.&nbsp;
+2.&nbsp;Estamos supondo, implicitamente, que 
+<tt>maxCST</tt> é menor que 
+a metade de 
+<tt><a href="limits_h.htm">DBL_MAX</a></tt>,
+de modo que a expressão&nbsp;
+<tt>cst[w0]</tt>&nbsp;<tt>+</tt>&nbsp;<tt>G->adj[w0][w]</tt>
+não produz overflow.)
+
+<p>No começo de cada iteração (a partir da segunda)
+temos uma arborescência com raiz&nbsp;<tt>s</tt>,
+representada pelo vetor&nbsp;<tt>parnt</tt>.&nbsp;
+
+No início de cada iteração,
+as seguinte propriedades valem 
+para cada vértice&nbsp;<tt>v</tt>:
+
+<ol>
+<li class="sspaced">
+se <tt>v</tt> está na arborescência então
+<tt>cst[v]</tt> é a distância de <tt>s</tt> a&nbsp;<tt>v</tt>,<br>
+senão, <tt> cst[v]</tt> é o <a href="#weightofvertex">custo</a> 
+do vértice&nbsp;<tt>v</tt> em relação à arborescência;
+
+<li class="sspaced">
+se <tt>v</tt> está fora da arborescência 
+e <tt>cst[v]</tt> <tt>&lt;</tt> <tt>maxCST</tt> então<br>
+<tt>fr[v]</tt> é o penúltimo vértice de um caminho simples
+de custo&nbsp;<tt>cst[v]</tt>
+que liga <tt>s</tt> a&nbsp;<tt>v</tt>.
+</ol>
+
+
+
+
+<p>A operação mais característica do algoritmo de Dijkstra
+é a <span class="dfn">relaxação</span> de um arco:
+<pre>
+         if (cst[w] > cst[w0] + G->adj[w0][w]) {
+             cst[w] = cst[w0] + G->adj[w0][w]; 
+         }
+</pre>
+<p>Essa operação aparece em toda implementação do algoritmo.
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=3>
+
+<li class="exr" id="E21.17">
+Considere o grafo cujos vértices são pontos no plano:
+<pre class="small">
+           vértice    0     1     2     3     4     5
+       coordenadas  (1,3) (2,1) (6,5) (3,4) (3,7) (5,3)
+</pre>
+<p>Suponha que as arestas do grafo são
+<center>
+<pre class="small">
+1-0 3-5 5-2 3-4 5-1 0-3 0-4 4-2 2-3
+</pre>
+</center>
+<p>e o custo de cada aresta é igual ao 
+comprimento do segmento de reta 
+que liga as pontas da aresta.&nbsp;
+Submeta o grafo ao algoritmo de Dijkstra com 
+origem <tt>s</tt>&nbsp;<tt>=</tt>&nbsp;<tt>0</tt>.&nbsp;
+Exiba o estado dos vetores <tt>parnt</tt> e <tt>cst</tt> 
+no início de cada iteração.
+
+
+<li class="exr" id="justdistances">
+Escreva uma variante do algoritmo de Dijkstra 
+que receba dois vértices <tt>s</tt> e <tt>t</tt>
+e devolva a distância de <tt>s</tt> a&nbsp;<tt>t</tt>.
+Escreva código simples, sem variáveis e operações supérfluas.
+
+<li class="exr">
+[<span class="sc">Desempenho</span>]&nbsp;
+Qual o consumo tempo da função 
+<tt><a href="#DIGRAPHsptD1">DIGRAPHsptD1</a></tt> 
+no pior caso?
+
+<li class="exr">
+A primeira iteração de 
+<tt><a href="#DIGRAPHsptD1">DIGRAPHsptD1</a></tt>
+tem um caráter um pouco diferente das demais,
+pois não há arborescência alguma nessa ocasião.
+Mostre como é possível corrigir essa anomalia
+com a alteração apropriada do código que precede 
+o processo iterativo.
+
+
+<li class="exr" id="negativearc">
+Mostre que o algoritmo de Dijkstra pode produzir resultados errados 
+se o digrafo tiver arcos de custo negativo.
+
+
+
+<li class="exr" id="longestpath">
+Digamos que a "anti-distância"
+de um vértice <tt>s</tt> a um vértice&nbsp;<tt>t</tt> 
+é o custo de um caminho <i>simples</i> 
+de custo <i>máximo</i> dentre os que vão de <tt>s</tt> a&nbsp;<tt>t</tt>.
+O código abaixo introduz alterações óbvias 
+no algoritmo de Dijkstra
+para que ele passe a calcular "anti-distância"
+de um vértice <tt>s</tt> e cada um dos demais vértices
+do digrafo.&nbsp;
+Essa versão modificada produz os resultados esperados
+em qualquer digrafo com custos não-negativos nos arcos?
+<pre class="small">
+   void MaxDijkstra(Digraph G, Vertex s, Vertex parnt[], double cst[]) { 
+      Vertex v, w;
+      int parnt[maxV]
+      for (v = 0; v < G->V; v++) { 
+         parnt[v] = -1; 
+         cst[v] = <b>-1.0</b>;
+      }
+      fr[s] = s;
+      cst[s] = 0.0;
+      while (1) {
+         Vertex <b>max</b>;
+         double <b>maxcst = -1.0</b>;
+         for (w = 0; w < G->V; w++) {
+            if (parnt[w] == -1 &amp;&amp; <b>maxcst &lt;</b> cst[w])
+               <b>maxcst</b> = cst[<b>max</b> = w]; 
+         if (<b>maxcst</b> == <b>-1.0</b>) break;
+         parnt[<b>max</b>] = <b>0</b>;
+         for (w = 0; w < G->V; w++) 
+            if (parnt[w] == -1)
+               if (cst[w] <span class="red"><b>&lt;</b></span> cst[max] + G->adj[max][w]) 
+                  cst[w] = cst[max] + G->adj[max][w]; 
+      }
+   }
+</pre>
+
+</ol>
+
+
+
+
+
+
+
+
+
+<h2>Implementação para digrafos esparsos</h2>
+
+<p>A implementação para digrafos representados 
+por vetor de listas de adjacência usa uma fila de prioridades,
+tal como a
+<a href="prim.html#GRAPHmstP2">correspondente implementação 
+do algoritmo de Prim</a>.
+
+
+
+
+
+<blockquote class="hlt" id="DIGRAPHsptD2">
+<p class="doc">
+/* Recebe digrafo <tt class="doc">G</tt> 
+   com custos não-negativos
+   nos arcos e um vértice&nbsp;<tt class="doc">s</tt>.
+   Calcula uma 
+   <a class="doc" href="cheapestpaths.html#spt">SPT</a>
+   com origem&nbsp;<tt class="doc">s</tt>.
+   A&nbsp;SPT é armazenada 
+   no vetor&nbsp;<tt class="doc">parnt</tt>.
+   As distâncias em relação a <tt class="doc">s</tt> são armazenadas 
+   no vetor&nbsp;<tt class="doc">cst</tt>.&nbsp;*/
+<p class="doc">
+/* A implementação supõe que a
+   soma dos custos de todos os arcos é estritamente menor que 
+   <tt class="doc">maxCST</tt>.&nbsp;
+   Supõe também que o digrafo tem no máximo
+   <tt class="doc">maxV</tt> vértices.&nbsp;
+   (O&nbsp;código abaixo é uma versão modificada
+   dos Programas 20.4, p.242, e 21.1, p.284, 
+   de Sedgewick.)&nbsp;*/
+<pre class="code">
+<span class="k">void</span> 
+DIGRAPHsptD2 (<span class="k">Digraph</span> G, <span class="k">Vertex</span> s, <span class="k">Vertex</span> parnt[], <span class="k">double</span> cst[]) { 
+   <span class="k">link</span> p; <span class="k">Vertex</span> w, w0, fr[maxV];
+   PQinit(); 
+   <span class="k">for</span> (w = 0; w < G->V; w++) 
+      parnt[w] = fr[w] = -1; 
+   fr[s] = s; 
+   cst[s] = 0.0; 
+   PQinsert(s);
+   <span class="k">while</span> (!PQempty()) {
+      w0 = PQdelmin(); 
+      parnt[w0] = fr[w0]; 
+      <span class="k">for</span> (p = G->adj[w0]; p != <span class="k">NULL</span>; p = p->next) {
+         w = p->w;
+         <span class="k">if</span> (fr[w] == -1) { 
+            cst[w] = cst[w0] + p->cst; 
+            PQinsert(w); 
+            fr[w] = w0; 
+         } 
+         <span class="k">else if</span> (cst[w] > cst[w0] + p->cst) {
+            cst[w] = cst[w0] + p->cst; 
+            PQdec(w); 
+            fr[w] = w0; 
+         }
+      }
+   }
+}
+</pre>
+</blockquote>
+
+
+
+
+<p>(Note a operação de relaxação&nbsp;
+<tt>if (cst[w] > cst[w0]+p->cst) 
+{</tt> <tt>cst[w] = cst[w0]+p->cst;</tt> <tt>}</tt>&nbsp;
+característica do algoritmo de Dijkstra.)
+
+<p>A função <tt>DIGRAPHsptD2</tt>
+usa uma fila de vértices
+com prioridades definidas pelo vetor&nbsp;<tt>cst</tt>.&nbsp;
+A fila é manipulada pelas seguintes funções:
+<ul>
+<li>
+<tt>PQinit()</tt>:&nbsp; inicializa uma fila de vértices 
+em que todo vértice <tt>v</tt> tem prioridade&nbsp;<tt>cst[v]</tt>.
+<li>
+<tt>PQempty()</tt>:&nbsp; devolve <tt>1</tt> se a fila 
+estiver vazia e <tt>0</tt> em caso contrário.
+<li>
+<tt>PQinsert(v)</tt>:&nbsp; insere o vértice <tt>v</tt> na fila.
+<li>
+<tt>PQdelmin()</tt>:&nbsp; retira da fila 
+um vértice de prioridade mínima.
+<li>
+<tt>PQdec(v)</tt>:&nbsp; reorganiza a fila depois que 
+o valor de <tt>cst[v]</tt> foi decrementado.
+</ul>
+
+<p>A implementação clássica da fila de prioridades usa uma
+estrutura de <a href="prim.html#heap"><i>heap</i></a>.
+
+
+
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=9>
+
+<li class="exr">
+[<span class="sc">Desempenho</span>]&nbsp;
+Qual o consumo tempo da função 
+<tt><a href="#DIGRAPHsptD2">DIGRAPHsptD2</a></tt> 
+no pior caso?&nbsp;
+Suponha que a fila de prioridades é implementada em um heap.
+
+</ol>
+
+
+
+
+
+
+
+
+<h2>Outra implementação para digrafos esparsos</h2>
+
+<p>Tal como fizemos com o 
+<a href="prim.html#GRAPHmstP3">algoritmo de Prim</a>,
+podemos organizar a implementação do algoritmo 
+de Dijkstra de maneira um pouco diferente,
+inserindo todos os vértices 
+na fila de prioridades antes mesmo do 
+início do processo iterativo:
+
+
+
+
+
+
+
+<blockquote class="hlt" id="DIGRAPHsptD3">
+<p class="doc">
+/* (Código inspirado no Programa 21.1, p.284, de Sedgewick.)&nbsp;*/
+
+<pre class="code">
+<span class="k">void</span> 
+DIGRAPHsptD3 (<span class="k">Digraph</span> G, <span class="k">Vertex</span> s, <span class="k">Vertex</span> parnt[], <span class="k">double</span> cst[]) { 
+   <span class="k">Vertex</span> w, w0; <span class="k">link</span> p;
+   PQinit(); 
+   <span class="k">for</span> (w = 0; w < G->V; w++) { 
+      parnt[w] = -1; 
+      cst[w] = maxCST; 
+      PQinsert(w); 
+   }
+   parnt[s] = s;
+   cst[s] = 0.0; 
+   PQdec(s);
+   <span class="k">while</span> (!PQempty()) {
+      w0 = PQdelmin();
+      <span class="k">if</span> (cst[w0] == maxCST) <span class="k">break</span>;
+      <span class="k">for</span> (p = G->adj[w0]; p != <span class="k">NULL</span>; p = p->next) {
+         w = p->w;
+         <span class="k">if</span> (cst[w] > cst[w0] + p->cst) { 
+            cst[w] = cst[w0] + p->cst; 
+            PQdec(w); 
+            parnt[w] = w0; 
+         }
+      }
+   }
+}
+</pre>
+</blockquote>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=10>
+
+<li class="exr">
+No código da função <tt>DIGRAPHsptD3</tt>,
+não deveríamos fazer&nbsp;
+"<tt>if (cst[w] > cst[w0] + p->cst)</tt> { }"&nbsp;
+somente se <tt>w</tt> está na fila? 
+
+</ol>
+
+
+
+
+
+
+
+
+<h2>Mais exercícios</h2>
+
+<ol start=11>
+
+<li class="exr" id="E21.20">
+O <span class="dfn">diâmetro</span> 
+de um grafo é o máximo das distâncias entre dois vértices.
+Escreva código que usa o algoritmo de Dijkstra para calcular 
+o diâmetro de um grafo.
+
+<li class="exr" id="E21.26">
+Escreva um algoritmo que encontre um arco cuja remoção
+causa o maior aumento na distância de um vértice <i>s</i> 
+a um vértice&nbsp;<i>t</i>.
+
+<li class="exr" id="E21.27">
+
+Escreva uma função que faça a <i>análise de sensibilidade</i>
+em relação a um par <tt>(s,t)</tt> de vértices.&nbsp;
+Sua função deve preencher uma matriz <tt>M</tt>
+indexada pelos vértices de tal modo que 
+<tt>M[v][w]</tt> valha <tt>1</tt> se 
+<tt>v-w</tt> é um arco cujo custo pode ser aumentado 
+sem que isso aumente a distância de <tt>s</tt> a&nbsp;<tt>t</tt>.
+Nos demais casos, <tt>M[v][w]</tt> deve valer&nbsp;<tt>0</tt>.
+
+<li class="exr" id="E21.28">
+Escreva uma função que 
+receba conjuntos <i>S</i> e <i>T</i> de vértices
+e calcule a distância de <i>S</i> a&nbsp;<i>T</i>.&nbsp;
+(Basta introduzir uma pequena modificação no 
+algoritmo de Dijkstra.)&nbsp;
+
+ 
+<li class="exr" id="E21.8">
+Escreva um programa que gere <tt>V</tt> pontos aleatórios no plano
+e construa um grafo que tem esses pontos por vértices.
+Dois vértices <tt>v</tt> e <tt>w</tt> são adjacentes
+se a distância euclidiana entre <tt>v</tt> e <tt>w</tt> 
+é no máximo&nbsp;<tt>d</tt>.&nbsp;
+(Veja o <a href="random.html#E17.73">exercício 17.73</a>.)&nbsp;
+O custo de cada arco <tt>v-w</tt>
+é a distância euclidiana entre <tt>v</tt> e&nbsp;<tt>w</tt>.
+Depois de gerar o digrafo,
+o seu programa deve calcular a distância
+do primeiro vértice gerado a todos os demais.
+
+<li class="exr">
+[<span class="sc">Todos os pares</span>]&nbsp;
+
+Escreva uma função que receba um digrafo <tt>G</tt>
+com custos não-negativos nos arcos 
+e preencha uma matriz <tt>d[0..V-1][0..V-1]</tt>
+com as distância entre todos os pares de vértices:&nbsp;
+<tt>d[v][w]</tt> deve ser a distância de <tt>v</tt> a&nbsp;<tt>w</tt>.
+
+<li class="exr" id="E21.52">
+Suponha dado um digrafo com custos não-negativos associados aos vértices
+(e não aos arcos).
+O custo de um caminho num tal digrafo é a soma dos custos
+dos vértices do caminho.
+Quero encontrar um caminho de custo mínimo
+dentre os que começam num vértice <i>s</i> e terminam num 
+vértice&nbsp;<i>t</i>.&nbsp;
+Adapte o algoritmo de Dijkstra para resolver esse problema.
+
+<li class="exr">
+Escreva uma função que encontre um caminho de custo mínimo
+num tabuleiro com <tt>n</tt> linhas e <tt>n</tt> colunas.
+Cada casa do tabuleiro tem um custo não-negativo.
+O seu caminho deve começar na casa que está no cruzamento da 
+linha&nbsp;<tt>1</tt> com coluna&nbsp;<tt>1</tt>
+e terminar na casa que está no cruzamento da
+linha&nbsp;<tt>n</tt> com a coluna&nbsp;<tt>n</tt>.
+O caminho só pode passar de um casa para a casa vizinha
+na horizontal ou vertical (não na diagonal).
+O custo de um caminho é a soma dos custos dos casas por onde o 
+caminho passa.
+
+
+
+</ol>
+
+
+
+
+
+
+
+
+
+<p>&nbsp;
+<hr>
+<small>
+
+Last modified: Thu Feb 15 08:55:43 BRST 2007
+</small>
+
+</BODY>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/dijkstra.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:42 GMT -->
+</HTML>

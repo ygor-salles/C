@@ -1,0 +1,31 @@
+
+"Passagem de parâmetro por valor, para funções que retorna valor (Variavel simples para int, char ou float...)"
+
+int funcao (int var, int vet[], int mat[][5], char c, char str[], char mat_str[][6], int *pont)
+{
+    [Cód ...];
+    return var+1;  "Exemplo";
+}
+
+int main ()
+{
+    int variavel, vetor[10], matriz[5][5], ponteiro, retorna, i, j;
+    char caracter, string[11], matriz_string[5][6];
+    
+    [Código ...];
+    
+    retorna = funcao (variavel, vetor, matriz, caracter, string, matriz_string, &ponteiro);
+    
+    "Retorna apenas os valores abaixo, (os valores são alterados)"
+    
+    printf (" %d %d %s",retorna, ponteiro, string);
+    
+    for (i=0; i<10; i++){
+        printf (" %d %s",vetor[i], matriz_string[i]);
+        for (j=0; j<10; j++){
+            printf (" %d",matriz[i][j]);
+        }
+        printf ("\n");
+    }
+    return 0;
+}

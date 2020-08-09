@@ -1,0 +1,301 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/toposorting.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:42 GMT -->
+<HEAD>
+<TITLE>Algoritmos para Grafos: Algoritmos de ordenacao topologica</TITLE>
+<META NAME="Author" CONTENT="Paulo Feofiloff">
+<META name="language" content="Portuguese">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1"> 
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<LINK rel="stylesheet" href="code.css" type="text/css">
+</HEAD>
+<BODY>
+
+
+
+
+
+
+
+
+<p class="top">
+<a href="../index.html#contents">Algoritmos em C para Grafos via Sedgewick</a>&nbsp;
+
+
+
+
+<h1>Algoritmos de ordenação topológica</h1>
+
+
+<p>Esta página discute algoritmos que produzem 
+<a href="dags.html#toposort">ordenação topológica</a> 
+de <a href="dags.html#dag">DAGs</a>.&nbsp;
+Ao receber um digrafo&nbsp;<i>G</i>,
+um tal algoritmo deveria devolver 
+(1)&nbsp;uma ordenação topológica de <i>G</i> ou
+(2)&nbsp;um ciclo em&nbsp;<i>G</i>.
+
+<p>
+(Esta página corresponde aproximadamente à
+seção&nbsp;19.6 (Topological Sorting)
+do capítulo&nbsp;19 (Digraphs and DAGs),
+p.183-193, do livro de Sedgewick.)
+
+
+
+
+<h2>Algoritmo de eliminação de fontes</h2>
+
+<p>A seguinte função
+produz uma ordenação topológica&nbsp; <tt>ts[0..V-1]</tt>&nbsp;
+de um digrafo desde que o digrafo seja um DAG.
+Se o digrafo não for um DAG,
+ela desiste da tarefa&nbsp;
+(mas <a href="#producecycle">poderia</a>,
+com um pouco mais de esforço,
+exibir um ciclo).
+
+
+<blockquote class="hlt">
+<p class="doc">
+/* Armazena em <tt class="doc">ts[0..i-1]</tt> uma permutação de
+   um subconjunto do conjunto de vértices de <tt class="doc">G</tt>
+   e devolve o valor de <tt class="doc">i</tt>.&nbsp;
+   Se&nbsp;<tt class="doc">i</tt> <tt class="doc">=</tt> 
+   <tt class="doc">G->V</tt> então 
+   <tt class="doc">ts[0..i-1]</tt> é uma 
+   ordenação topológica de <tt class="doc">G</tt>.&nbsp;
+   Caso contrário, <tt class="doc">G</tt> não é um DAG
+   (e&nbsp;há um ciclo cujos vértices não estão 
+   em <tt class="doc">ts[0..i-1]</tt>).&nbsp;*/
+<p class="doc">
+/* (O&nbsp;código é uma versão ligeiramente modificada
+   do Programa 19.8, p.190, de Sedgewick.)&nbsp;*/
+
+<pre class="code" id="DAGts1">
+<span class="k">int</span> DAGts1 (<span class="k">Digraph</span> G, <span class="k">Vertex</span> ts[]) { 
+   <span class="k">int</span> i, in[maxV]; <span class="k">Vertex</span> v; <span class="k">link</span> p;
+   <span class="k">for</span> (v = 0; v < G->V; v++) 
+      in[v] = 0; 
+   <span class="k">for</span> (v = 0; v < G->V; v++) 
+      <span class="k">for</span> (p = G->adj[v]; p != <span class="k">NULL</span>; p = p->next)
+         in[p->w]++;
+   <span class="doc">/* A */</span>
+   QUEUEinit(G->V);
+   <span class="k">for</span> (v = 0; v < G->V; v++)
+      <span class="k">if</span> (in[v] == 0) 
+         QUEUEput(v);
+   <span class="doc">/* B */</span>
+   <span class="k">for</span> (i = 0; <span class="doc">/* C */</span> !QUEUEempty(); i++) {
+      ts[i] = v = QUEUEget();
+      <span class="k">for</span> (p = G->adj[v]; p != <span class="k">NULL</span>; p = p->next)
+         <span class="k">if</span> (--in[p->w] == 0) 
+            QUEUEput(p->w);
+   }
+   <span class="k">return</span> i;
+}
+</pre>
+</blockquote>
+
+
+<p>No ponto <span class="doc">A</span>,
+para cada vértice <tt>v</tt>,
+o número <tt>in[v]</tt> é o grau de entrada de&nbsp;<tt>v</tt>.&nbsp;
+No ponto <span class="doc">B</span>,
+a fila (<i>queue</i>)
+armazena todos os vértices que têm grau de entrada nulo.
+
+<p>No processo iterativo final,
+é relevante o subdigrafo de <tt>G</tt> 
+<a href="footnotes/subgraph.html">induzido</a>
+pelos conjunto de vértices
+que não estão no vetor <tt>ts[0..i-1]</tt>.&nbsp;
+Digamos que esse subdigrafo induzido é <tt>H</tt>.&nbsp;
+Podemos dizer então que,
+a cada passagem pelo ponto <span class="doc">C</span>,
+a fila contém exatamente os vértices de <tt>H</tt> 
+que têm grau de entrada <tt>0</tt> em&nbsp;<tt>H</tt>.
+
+<p>Exemplo:&nbsp;
+O utilitário <tt>make</tt> do 
+sistema <tt>UNIX</tt> 
+executa uma função semelhante à <tt>DAGts1</tt>
+para decidir se as regras de precedência especificadas 
+no arquivo <tt>Makefile</tt>
+são consistentes.
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=1>
+
+<li class="exr" id="E19.97repeated">
+Construa as listas de adjacência do digrafo abaixo 
+inserindo os arcos, na ordem dada, num digrafo inicialmente vazio.
+<center>
+<pre class="small">
+3-7 1-4 7-8 0-5 5-2 3-8 2-9 0-6 4-9 2-6 6-4 4-3 2-3
+</pre>
+</center>
+<p>Depois, submeta o digrafo à função 
+<tt><a href="#DAGts1">DAGts1</a></tt>.
+
+<li class="exr" id="E19.103">
+Que acontece se usarmos uma pilha no lugar da fila
+que usamos na função <tt><a href="#DAGts1">DAGts1</a></tt>
+de ordenação topológica?&nbsp;
+
+<li class="exr" id="E19.106">
+Escreva uma função que receba uma digrafo <tt>G</tt> 
+e diga se <tt>G</tt> é ou não um DAG.
+
+<li class="exr" id="producecycle">
+Escreva uma função que receba um digrafo 
+sem <a href="digraphs.html#sourceandsink">fontes</a>
+e imprima um ciclo do digrafo.
+
+<li class="exr" id="E19.107">
+Escreva uma variante da função <tt><a href="#DAGts1">DAGts1</a></tt>
+que recebe um DAG <tt>G</tt> representado por sua matriz de adjacência e
+produz uma ordenação topológica "inversa" de <tt>G</tt>
+(ou seja, uma ordenação que começa pelos vértices de grau de saída nulo).
+
+<li class="exr" id="E19.107B">
+Escreva uma variante da função <tt><a href="#DAGts1">DAGts1</a></tt>
+que recebe um DAG <tt>G</tt> representado por listas de adjacência e
+produz uma ordenação topológica "inversa" dos vértices de <tt>G</tt>
+(ou seja, uma ordenação que começa pelos vértices de grau de saída nulo).
+
+<li class="exr">
+Escreva uma variante da função <tt><a href="#DAGts1">DAGts1</a></tt>
+que recebe um DAG <tt>G</tt>
+e produz um vetor  <tt>st</tt> indexado pelos vértices
+<a href="dags.html#relabel">tal que</a> 
+<tt>st[v]</tt>&nbsp;&lt;&nbsp;<tt>st[w]</tt>
+para todo arco&nbsp;<tt>v-w</tt>.
+
+<li class="exr">
+Escreva uma função que gere um DAG aleatório 
+com <tt>V</tt> vértices e <tt>A</tt> arcos.
+
+
+<li class="exr" id="E19.113">
+Modifique o código de <tt><a href="#DAGts1">DAGts1</a></tt>
+de ordenação topológica de modo que ela calcule,
+para cada vértice&nbsp;<tt>w</tt>,
+o número de caminhos que começam em alguma 
+fonte e terminam em&nbsp;<tt>w</tt>.&nbsp;
+
+</ol>
+
+
+
+
+
+<h2>Algoritmo DFS</h2>
+
+<p>O algoritmo de <a href="dfs1.html">busca em profundidade</a>
+calcula, naturalmente uma ordenação topológica.&nbsp;
+Basta que registrar os vértices visitados 
+"<a href="arborescences.html#postorder">em pós-ordem</a>".&nbsp;
+A&nbsp;versão abaixo só funciona se o digrafo for um DAG.
+Mas não é difícil modificá-la de modo que receba 
+qualquer digrafo e devolva um ordenação topológica ou um ciclo.
+
+
+
+
+
+<blockquote class="hlt">
+<pre class="code">
+<span class="k">static int</span> cnt;
+<span class="k">static int</span> lbl[maxV];
+</pre>
+
+<p class="doc">
+/* Recebe um DAG <tt class="doc">G</tt> e
+   armazena em <tt class="doc">ts[0..V-1]</tt> uma 
+   ordenação topológica de <tt class="doc">G</tt>.&nbsp;
+   (O&nbsp;código é cópia do Programa 19.6, p.187, 
+   de Sedgewick.)&nbsp;*/
+
+<pre class="code" id="DAGts2">
+<span class="k">void</span> DAGts2 (<span class="k">Digraph</span> G, <span class="k">Vertex</span> ts[]) { 
+   <span class="k">Vertex</span> v; 
+   cnt = G->V-1;
+   <span class="k">for</span> (v = 0; v < G->V; v++)  
+      ts[v] = lbl[v] = -1; 
+   <span class="k">for</span> (v = 0; v < G->V; v++)
+      <span class="k">if</span> (lbl[v] == -1) 
+         TSdfsR(G, v, ts);
+}
+
+<span class="k">void</span> TSdfsR (<span class="k">Digraph</span> G, <span class="k">Vertex</span> v, <span class="k">Vertex</span> ts[]) { 
+   <span class="k">link</span> p; 
+   lbl[v] = 0; 
+   <span class="k">for</span> (p = G->adj[v]; p != <span class="k">NULL</span>; p = p->next)
+      <span class="k">if</span> (lbl[p->w] == -1) 
+         TSdfsR(G, p->v, ts); 
+   ts[cnt--] = v;
+}
+</pre>
+</blockquote>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=10>
+
+<li class="exr">
+Escreva uma variante da função <tt><a href="#DAGts2">DAGts2</a></tt>
+que receba um digrafo <tt>G</tt> 
+e produza uma ordenação topológica de <tt>G</tt>
+ou imprima um ciclo de&nbsp;<tt>G</tt>.
+
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<p>&nbsp;
+<hr>
+<small>
+
+Last modified: Thu Feb 15 08:55:42 BRST 2007
+</small>
+
+</BODY>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/toposorting.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:42 GMT -->
+</HTML>

@@ -1,0 +1,19 @@
+﻿Arvore n termos -> altura = log n
+
+Condição de HEAP:
+
+HEAP > encontrar os filhos:
+direita = 2*i (2i)
+esquerda = 2*i + 1 (2i+1)
+
+HEAP > encontrar pai
+i/2 -> se for ímpar desconsidera a casa decimal
+Ex: 5/2 => Pai é 2
+
+Os que não possui filhos respeitam a condição de HEAP
+
+
+HEAP
+Constroi O(n)
+Insere/retira O(log n)
+Array que respeita a condição de Heap

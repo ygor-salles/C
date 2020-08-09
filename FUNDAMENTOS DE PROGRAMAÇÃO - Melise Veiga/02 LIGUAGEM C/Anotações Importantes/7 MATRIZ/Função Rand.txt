@@ -1,0 +1,28 @@
+FUNÇÃO RAND EM C: A função Rand tem como objetivo o preenchimento de vetores e matrizes
+com números aleatórios gerados pelo compilador, ou seja o usuário não precisa entrar com 
+os números necessários para exibir o resultado do código.
+
+Para matriz: 
+m[i][j] = rand() % 100;
+printf (" %d",m[i][j]);
+
+EX: 
+for (i=0; i<6; i++){
+        for (j=0; j<3; j++){
+            m[i][j] = rand() % 100;
+            printf ("%d ",m[i][j]);
+        }
+        printf ("\n");
+    }
+
+
+
+Para vetor: 
+v[i] = rand() % 100;
+printf (" %d",v[i]);
+
+EX:
+for (i=0; i<3; i++){
+            v[i] = rand() % 100;
+            printf ("%d ",v[i]);
+        }

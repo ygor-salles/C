@@ -1,0 +1,46 @@
+TAD
+
+A TAD serve para criar novas bibliotecas no seu código deixando em oculto as funções dessas bibliotecas para o programador
+
+Para utilização da TAD deve-se usar 3 arquivos separados: tad.c, tad.h, main.c (Onde o programador possui acesso)
+Esses nomes podem ser nomeados de outra maneira porém a tad.c e tad.h devem possuir o mesmo nome. Ou seja, 2 extensões
+em .c e uma .h, sendo uma .c com o mesmo nome da .h.
+
+Cabeçalho dos arquivos:
+
+#############################################################################
+MAIN.C: /* Declaração das variáveis e chama a função */
+
+//Declara as bibliotecas necessárias
+#include "tad.h"
+
+int main ()
+{
+    //declara as variáveis e chama as funções
+    return 0;
+}
+
+##############################################################################
+TAD.C: /* struct, funções e processamento de dados */
+
+//Declara as bibliotecas necessárias
+#include "tad.h"
+
+struct estrutura
+{
+   //declara as variáveis a estrutura
+};
+
+//cria as funções (processamento de dados)
+
+##############################################################################
+TAD.H: /* Escopo das Funções */
+
+#ifndef TAD_H
+#define TAD_H
+
+typedef struct estrutura Estrutura;
+
+//Escopo das funções
+
+#endif

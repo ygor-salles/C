@@ -1,0 +1,447 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/mst.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:40 GMT -->
+<HEAD>
+<TITLE>Algoritmos para Grafos: arvores geradoras de custo minimo</TITLE>
+<META NAME="Author" CONTENT="Paulo Feofiloff">
+<META name="language" content="Portuguese">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1"> 
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<LINK rel="stylesheet" href="code.css" type="text/css">
+</HEAD>
+<BODY>
+
+
+
+
+
+
+
+
+
+
+
+<p class="top">
+<a href="../index.html#contents">Algoritmos em C para Grafos via Sedgewick</a>&nbsp;
+
+
+
+
+
+<h1>Árvores geradoras de custo mínimo</h1>
+
+<p>Esta página se aplica apenas a grafos:
+o problema aqui discutido 
+não faz sentido em digrafos não-simétricos.&nbsp;
+(Há um problema semelhante em digrafos,
+
+mas ele é muito mais difícil.)
+
+
+<p>(Esta página é um resumo da introdução do capítulo&nbsp;20 
+(Minimum Spanning Trees)
+e das seções 20.1 (Representations)
+e 20.2 (Underlying Principles of MST Algorithms), 
+p.219-234,
+do livro de Sedgewick.)
+
+
+
+<h2>Subgrafo de custo mínimo</h2>
+
+<p>Seja <i>G</i> um 
+<a href="weightedgraphs.html#undirected"
+>grafo com custos nas arestas</a>
+(os custos podem ser positivos, negativos, ou nulos).&nbsp;
+O&nbsp;<span class="dfn">custo</span>
+de um 
+<a href="footnotes/subgraph.html">subgrafo</a> <i>T</i> 
+de <i>G</i> 
+é a soma dos custos das arestas de&nbsp;<i>T</i>.&nbsp;
+Se <b>U</b> é uma coleção de subgrafos de&nbsp;<i>G</i>,
+um elemento <i>T</i> de <b>U</b>&nbsp;
+<span class="dfn">tem custo mínimo</span>&nbsp;
+se o custo de <i>T</i> é menor ou igual 
+<span class="dim">[note o "ou igual"]</span>
+que o custo de qualquer outro elemento de&nbsp;<b>U</b>.
+
+<p>Em outras palavras, 
+<i>T</i> tem custo mínimo
+se nenhum elemento de <b>U</b> 
+tem custo estritamente menor que o de&nbsp;<i>T</i>.
+
+
+
+<h2>Árvore geradora mínima</h2>
+
+<p id="mst">Uma <span class="dfn">árvore geradora mínima</span> 
+(=&nbsp;<a href="http://en.wikipedia.org/wiki/Minimum_spanning_tree"
+><i>minimum spanning tree</i></a>),
+ou <span class="dfn">MST</span>,
+de um grafo com custos nas arestas
+é qualquer <a href="spanningtrees.html">árvore geradora</a> 
+do grafo que tenha custo mínimo.&nbsp;&nbsp;
+Esta página estuda o seguinte:
+
+
+
+<blockquote class="display">
+<span class="sc">Problema:</span>&nbsp;
+Encontrar uma MST de
+um grafo <i>G</i>
+com custos nas arestas.
+</blockquote>
+
+
+
+
+<p>É claro que o problema tem solução se e somente se
+o grafo <i>G</i> é 
+<a href="connected.html#connected">conexo</a>.&nbsp;&nbsp;
+Boa pergunta:&nbsp;
+como encontrar uma MST de um grafo conexo
+se todas as suas arestas têm o mesmo custo?
+
+
+
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=1>
+
+<li class="exr" id="fig20.1">
+Encontre uma MST no grafo descrito a seguir
+(trata-se do grafo da figura&nbsp;20.1, p.219, de Sedgewick):
+
+<pre class="small">
+     0-6  0-1  0-2  4-3  5-3  7-4  5-4  0-5  6-4  7-0  7-6  7-1
+     .51  .32  .29  .34  .18  .46  .40  .60  .51  .31  .25  .21
+</pre>
+
+
+<li class="exr" id="E20.1">
+Seja <i>G</i> um grafo conexo com custos nas arestas.
+Seja <i>T</i> uma MST de&nbsp;<i>G</i>.&nbsp;
+Mostre que <i>T</i> continua sendo uma MST 
+de <i>G</i> se o custo de cada aresta for multiplicado 
+por um mesmo número <i>c</i>&nbsp;&ge;&nbsp;0.&nbsp;
+Mostre que <i>T</i> continua sendo uma MST 
+de <i>G</i> se somarmos um mesmo número <i>s</i> 
+(positivo ou negativo)
+ao custo de cada aresta.&nbsp;
+
+<li class="exr" id="E20.2">
+Suponha que os custos das arestas de um 
+grafo conexo <i>G</i>
+são todos estritamente positivos.&nbsp;
+Seja <i>H</i> um grafo de custo mínimo
+dentre todos os subgrafos conexos de&nbsp;<i>G</i> 
+que contêm todos os vértices de&nbsp;<i>G</i>.&nbsp;
+Mostre que <i>H</i> é uma MST de&nbsp;<i>G</i>.
+
+<li class="exr" id="E20.3">
+Repita o <a href="#E20.2">exercício anterior</a>
+sob uma hipótese mais fraca:&nbsp;
+todo ciclo não-trivial de <i>G</i>
+tem pelo menos uma aresta de custo estritamente positivo.
+
+<li class="exr" id="E20.5">
+Suponha que os custos das arestas de um grafo são dois a dois distintos
+(ou seja, não há duas arestas com o mesmo custo).
+Mostre que o grafo tem uma única MST.
+
+<li class="exr" id="E20.6">
+Considere a seguinte afirmação:
+Se um grafo tem uma única MST
+então os custos de suas arestas são distintos dois a dois.&nbsp;
+Prove a afirmação ou dê um contraexemplo.
+
+<li class="exr" id="E20.21">
+Considere o grafo cujos vértices são pontos no plano:
+
+<pre class="small">
+       vértices    0     1     2     3     4     5
+    coordenadas  (1,3) (2,1) (6,5) (3,4) (3,7) (5,3)
+</pre>
+<p>Suponha que as arestas do grafo são
+<center>
+<pre class="small">
+1-0 3-5 5-2 3-4 5-1 0-3 0-4 4-2 2-3
+</pre>
+</center>
+<p>e o custo de cada aresta <tt>v-w</tt> é igual ao 
+comprimento do segmento de reta 
+que liga os pontos <tt>v</tt> e&nbsp;<tt>w</tt> no plano.&nbsp;
+Exiba uma MST desse grafo.
+
+<li class="exr" id="E20.4">
+Como encontrar uma árvore geradora de custo <i>máximo</i>?
+
+
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+<h2 id="property20.2">A propriedade dos ciclos</h2>
+
+
+<p>A Primeira Propriedade da Troca,
+<a href="spanningtrees.html#exchange1">discutida na página anterior</a>,
+leva à seguinte condição de otimalidade:
+
+<blockquote id="optimality1">
+<span class="sc">Condição de Otimalidade</span>:&nbsp;
+Se <i>T</i> é uma MST de um grafo&nbsp;
+então&nbsp; 
+toda aresta <i>e</i> fora de <i>T</i>
+tem custo máximo dentre as arestas do único ciclo não-trivial
+em&nbsp;&nbsp;<i>T</i>+<i>e</i>.
+</blockquote>
+
+<p>(A&nbsp;recíproca dessa proposição é verdadeira,
+mas sua demonstração é um pouco mais complexa.)
+
+
+<p><span class="sc">Exemplo:</span>&nbsp;
+Seja <i>T</i> a árvore geradora definida 
+pelas 5 arestas "internas" da figura.
+Seja <i>e</i> a aresta "horizontal" "superior".
+Como <i>e</i> não é máxima no ciclo não-trivial
+de&nbsp;<i>T</i>+<i>e</i>,
+a árvore <i>T</i> não é uma MST.
+<pre class="small">
+                              o-------2-------o
+                              |\             /|
+                              | 1           1 |
+                              |  \         /  |
+                              2   o---3---o   2
+                              |  /         \  |
+                              | 1           1 |
+                              |/             \|
+                              o-------4-------o
+</pre>        
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h2 id="property20.1">A propriedade dos cortes</h2>
+
+
+<p>A Segunda Propriedade da Troca,
+<a href="spanningtrees.html#exchange2">discutida na página anterior</a>,
+leva à seguinte condição de otimalidade:
+
+<blockquote id="optimality2">
+<span class="sc">Condição de Otimalidade</span>:&nbsp;
+Se <i>T</i> é uma MST de um grafo&nbsp;
+então&nbsp;
+cada aresta <i>t</i> de <i>T</i>
+é uma aresta mínima dentre as que atravessam 
+o corte determinado por <i>T&ndash;t</i>.
+</blockquote>
+
+<p>(A&nbsp;recíproca dessa proposição é verdadeira,
+mas sua demonstração é um pouco mais complexa.)
+
+
+
+
+<p><span class="sc">Exemplo:</span>&nbsp;
+Seja <i>T</i> a árvore geradora definida pelas cinco arestas "internas"
+da figura.
+Seja <i>t</i> a aresta "horizontal" no meio da figura.
+Como <i>t</i> não é mínima no corte determinado por <i>T&ndash;t</i>,
+a árvore <i>T</i> não é uma MST.
+<pre class="small">
+                              o-------2-------o
+                              |\             /|
+                              | 1           1 |
+                              |  \         /  |
+                              2   o---3---o   2
+                              |  /         \  |
+                              | 1           1 |
+                              |/             \|
+                              o-------4-------o
+</pre>        
+
+
+
+
+
+
+
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=9>
+
+<li class="exr" id="maxweightedge">
+Seja <i>C</i> um ciclo não-trivial 
+em um grafo conexo&nbsp;<i>G</i> com custos nas arestas.
+Suponha que o custo de uma aresta <i>e</i> de <i>C</i>
+é estritamente maior 
+que o custo de qualquer outra aresta de&nbsp;<i>C</i>.&nbsp;
+É&nbsp;verdade que nenhuma MST de <i>G</i> contém&nbsp;<i>e</i>?
+
+<li class="exr">
+Seja <i>G</i> um grafo conexo com custos nas arestas.
+Suponha que o custo de uma aresta <i>e</i> de <i>G</i>
+é estritamente maior 
+que o custo de qualquer outra aresta de&nbsp;<i>G</i>.&nbsp;
+É&nbsp;verdade que nenhuma MST de <i>G</i> contém&nbsp;<i>e</i>?
+
+<li class="exr" id="E20.22">
+Suponha que os custos das arestas de um grafo são distintos dois a dois.
+É&nbsp;verdade que a aresta de custo mínimo pertence à MST?&nbsp;
+
+<li class="exr" id="E20.25">
+Suponha que os custos das arestas de um grafo conexo 
+são distintos dois a dois.
+É&nbsp;verdade que, em todo ciclo não-trivial,
+a aresta de custo mínimo pertence à (única) MST do grafo?&nbsp;
+
+<li class="exr" id="E20.26">
+Seja <i>T</i> uma MST de um grafo <i>G</i>.
+Suponha agora que uma das arestas de <i>T</i> é retirada
+de&nbsp;<i>G</i>.
+Mostre como encontrar uma MST do novo grafo
+em tempo no pior caso proporcional
+ao número de arestas de&nbsp;<i>G</i>.
+
+<li class="exr">
+Seja <i>T</i> uma MST de um grafo com custos nas arestas.
+Suponha que um corte <i>(X,Y)</i> tem uma única aresta de custo mínimo.
+É&nbsp;verdade que <i>T</i> tem uma única aresta no corte?
+
+<li class="exr" id="E20.27">
+Considere o grafo de 
+<a href="#fig20.1">um dos exercício acima</a>.
+Encontre uma MST do grafo 
+tomando as arestas na ordem dada
+e aplicando a <a href="#property20.2">propriedade dos ciclos</a>
+repetidamente.
+
+
+<li class="exr" id="E20.28">
+Mostre que o seguinte algoritmo produz uma MST:&nbsp;
+Comece com árvore geradora <i>T</i> qualquer.
+Acrescente a <i>T</i> as demais arestas do grafo uma a uma.
+Para cada aresta acrescentada,
+retire de <i>T</i> uma aresta máxima do ciclo não-trivial que se forma.
+
+
+<li class="exr">
+Mostre que o seguinte algoritmo produz uma MST:&nbsp;
+Comece com árvore geradora <i>T</i> qualquer.
+Para cada aresta <i>t</i> de <i>T</i>,
+retire <i>t</i> de <i>T</i> e coloque 
+em seu lugar uma aresta mínima do corte determinado 
+por&nbsp;<i>T&ndash;t</i>.
+
+</ol>
+
+
+
+
+
+
+
+
+ 
+
+
+
+<h2>Mais exercícios</h2>
+
+<ol start=18>
+
+<li class="exr" id="E20.15">
+Considere o seguinte grafo com custos nas arestas
+(trata-se do grafo da figura&nbsp;20.1, p.219, de Sedgewick):
+<blockquote>
+<pre class="small">
+     0   1   2   3   4   5   6   7
+
+0    *  .32 .29  *   *  .60 .51 .31
+1   .32  *   *   *   *   *   *  .21
+2   .29  *   *   *   *   *   *   *
+3    *   *   *   *  .34 .18  *   *
+4    *   *   *  .34  *  .40 .51 .46
+5   .60  *   *  .18 .40  *   *   *
+6   .51  *   *   *  .51  *   *  .25
+7   .31 .21  *   *  .46  *  .25  * 
+</pre>
+</blockquote>
+<p>Agora considere a árvore geradora 
+<p class="display">
+<tt>0-2 4-3 5-3 7-4 7-0 7-6 7-1 </tt>
+<p>Para cada vértice <tt>v</tt>,
+escreva o vetor que dá o pai de cada vértice da árvore
+em relação à raiz&nbsp;<tt>v</tt>.
+
+<li class="exr" id="E20.18">
+Suponha dada uma função <tt>GRAPHmstE</tt> 
+que coloca num vetor <tt>mst</tt> as arestas de uma árvore.&nbsp;
+Escreva uma função <tt>GRAPHmst</tt> que
+invoque <tt>GRAPHmstE</tt> e em seguida
+armazene num vetor <tt>parnt</tt> 
+o vetor de pais da árvore <tt>mst</tt>
+produzida por <tt>GRAPHmstE</tt>.
+
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<p>&nbsp;
+<hr>
+<small>
+
+Last modified: Thu Feb 15 08:55:45 BRST 2007
+</small>
+
+</BODY>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/mst.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:40 GMT -->
+</HTML>

@@ -1,0 +1,22 @@
+﻿COM 112 - QuestÃ£o multipla escolha
+
+Enunciado:
+
+Julgue os itens a seguir, acerca de algoritmos para ordenaÃ§Ã£o.
+
+    I) O algoritmo de ordenaÃ§Ã£o por inserÃ§Ã£o tem complexidade O(nÃ—logn).
+    II) Um algoritmo de ordenaÃ§Ã£o Ã© dito estÃ¡vel caso ele nÃ£o altere a posiÃ§Ã£o relativa de elementos de mesmo valor.
+    III) No algoritmo quicksort, a escolha do elemento pivÃ´ influencia o desempenho do algoritmo.
+    IV) O bubble-sort e o algoritmo de ordenaÃ§Ã£o por inserÃ§Ã£o fazem, em mÃ©dia, o mesmo nÃºmero de comparaÃ§Ãµes.
+
+EstÃ£o certos apenas os itens
+
+    (A) I e II
+    (B) I e III
+    (C) II e IV
+    (D) II, III e IV
+    (E) N.D.A
+
+Fonte: ENADE de 2005 de ComputaÃ§Ã£o.
+
+Autores: 2017014328, 2017009453, 2017014382

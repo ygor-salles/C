@@ -1,0 +1,25 @@
+﻿COM112 - Questão Múltipla escolha
+
+[ENADE 2014 - SISTEMAS DE INFORMAÇÃO] A área de complexidade de algoritmos abrange a medição
+da eficiência de um algoritmo frente a quantidade de operações realizadas até que ele encontre 
+seu resultado final.
+
+A respeito desse contexto, suponha que um arquivo texto contenha o nome de N ciades de 
+determinado estado, que cada nome de cidade esteja separado do seguinte por um caracter especial
+de fim de linha e classificado em ordem alfabética crescente. Considere um programa que realize 
+a leitura linha a linha desse arquivo, a proucura de nome e cidade.
+
+Com base nessa descrição, verifica-se que a complexidade desse programa é:
+
+A - O(1), em caso de busca sequencial
+
+B - O(N), em caso de busca sequencial
+
+C - O(log_2⁡N), em caso de busca binária
+
+D - O(N), em caso de tranferência dos nomes para uma árvore binária e, então, realizar a busca
+
+E - O(log_2⁡N), em caso de transferência dos nomes para uma árvore binária, e então realizar a busca
+
+Autores: 2017014382, 2017009453
+

@@ -1,0 +1,32 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+/* Exercicio 4 - P2 */
+
+void troca (float *px, float *py)
+{
+    int aux;
+    if (*px <= *py){
+        *px = (*px)*(*py);
+        *py = (*px)/(*py);
+    }
+    else{
+        aux = *px;
+        *px = *py;
+    }
+    return ;
+}
+
+int main ()
+{
+    float x, y;
+    printf ("Digite o valor de X: ");
+    scanf ("%f",&x);
+    printf ("Digite o valor de Y: ");
+    scanf ("%f",&y);
+
+    troca (&x, &y);
+    printf ("\n X = %.1f  e  Y = %.1f \n",x, y);
+
+    return 0;
+}

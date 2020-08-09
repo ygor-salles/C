@@ -1,0 +1,409 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/cycles.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:40 GMT -->
+<HEAD>
+<TITLE>Algoritmos para Grafos: Ciclos</TITLE>
+<META NAME="Author" CONTENT="Paulo Feofiloff">
+<META name="language" content="Portuguese">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1"> 
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<LINK rel="stylesheet" href="code.css" type="text/css">
+</HEAD>
+<BODY>
+
+
+
+
+
+
+
+
+<p class="top">
+<a href="../index.html#contents">Algoritmos em C para Grafos via Sedgewick</a>&nbsp;
+
+
+
+
+<h1>Ciclos em grafos e digrafos</h1>
+
+
+<p>Ciclos são caminhos fechados
+quase <a href="paths.html#simple">simples</a>
+de comprimento pelo menos&nbsp;2.&nbsp;
+Em grafos, 
+os ciclos de comprimento&nbsp;2 não são considerados "válidos".
+
+
+<h2 id="cycle">Ciclos</h2>
+
+<p>Um&nbsp; <span class="dfn">ciclo</span>&nbsp;
+(=&nbsp;<i>cycle</i>)&nbsp;
+num digrafo é um 
+<a href="paths.html#path">caminho</a>
+<a href="paths.html#openclosed">fechado</a>
+de <a href="paths.html#length">comprimento</a> pelo menos&nbsp;2,
+sem vértices repetidos,
+exceto o último (que coincide com o primeiro).
+
+<p id="directed">
+Dizemos que um arco <tt>v-w</tt> pertence a um dado ciclo
+se o vértice <tt>w</tt> é o sucessor de <tt>v</tt> no ciclo.&nbsp;&nbsp;
+Todos os arcos de um ciclo apontam no mesmo sentido,
+de um vértice do ciclo para o seu sucessor.&nbsp;
+Há quem goste de enfatizar esse fato dizendo "ciclo dirigido"
+em lugar do nosso "ciclo".
+
+
+<p>No digrafo&nbsp;
+<tt>0-1 0-5 1-0 1-5 2-4 3-1 5-3</tt>,&nbsp;
+os caminhos 
+<ol type="none">
+<li><tt>1-5-3-1</tt>
+<li><tt>0-1-0</tt>
+</ol>
+<p>são ciclos.&nbsp;&nbsp;
+Já os caminhos abaixo, embora fechados, não são ciclos:
+<ol type="none">
+<li><tt>1-5-3-1-0-1</tt>
+<li><tt>1</tt>
+</ol>
+
+
+<h2 id="undirected">Ciclos em grafos</h2>
+
+<p>Um ciclo é&nbsp; <span class="dfn">trivial</span>&nbsp;
+se tem comprimento&nbsp;2.&nbsp;
+Num <a href="graphs.html#graph">grafo</a>,
+ciclos triviais são ignorados,
+pois usam os dois arcos de uma mesma aresta.
+
+
+
+
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=1>
+
+<li class="exr">
+Escreva uma função que verifique se uma seqüência 
+<tt>seq[0..k]</tt> de vértices 
+de um digrafo é um ciclo.
+A função deve devolver&nbsp;
+<tt>1</tt>&nbsp; se a seqüência é um ciclo e&nbsp;
+<tt>0</tt>&nbsp; em caso contrário.&nbsp;
+Faça duas versões da função:
+uma supõe que o digrafo é dado por sua 
+<a href="adjmatrix.html">matriz de adjacência</a> 
+e outra supõe que o digrafo é dado por 
+<a href="adjlists.html">listas de adjacência</a>.
+
+<li class="exr">
+Repita o exercício anterior com "grafo" 
+no lugar de "digrafo".
+
+
+<li class="exr">
+[<span class="sc">Bom</span>!]&nbsp;
+Escreva uma função que receba um digrafo 
+sem <a href="digraphs.html#sourceandsink">sorvedouros</a>
+e imprima um ciclo do digrafo.
+
+<li class="exr" id="E17.3modified">
+Digamos que dois ciclos são <i>equivalentes</i>
+se têm o mesmo conjunto de vértices e o mesmo conjunto de arcos.&nbsp;
+(Por exemplo, o ciclo <tt>4-3-5-4</tt> 
+é equivalente a <tt>3-5-4-3</tt>.)
+
+Faça uma lista de todos os ciclos dois-a-dois 
+não-equivalentes do digrafo abaixo.
+<p class="display">
+<tt>0-5 5-4 7-8 4-3 0-2 9-11 0-1 11-12 3-5 9-12 9-10 10-9 6-4 0-6</tt>
+
+<li class="exr" id="E17.3">
+Faça uma lista de todos os ciclos não-triviais dois-a-dois 
+não-<a href="#E17.3modified">equivalentes</a>
+do grafo definido pelo conjunto de arestas abaixo.
+<p class="display">
+<tt>0-5 5-4 7-8 4-3 0-2 9-11 0-1 11-12 3-5 9-12 9-10 6-4 0-6</tt>
+
+
+<li class="exr" id="E17.4">
+Faça uma lista de todos os ciclos não-triviais dois-a-dois 
+não-<a href="#E17.3modified">equivalentes</a>
+do grafo definido pelo conjunto de arestas abaixo.
+<p class="display">
+<tt>3-7 1-4 7-8 0-5 5-2 3-8 2-9 0-6 4-9 2-6 6-4</tt>&nbsp;.
+<p>
+
+</ol>
+
+
+
+
+
+<h2>Procurando ciclos: primeiro algoritmo</h2>
+
+<p>A seguinte função implementa uma maneira óbvia
+mas pouco eficiente de encontrar um ciclo num digrafo.
+A&nbsp;idéia é procurar, para cada arco <tt>v-w</tt>,
+um ciclo que passe por&nbsp;<tt>v-w</tt>.
+
+
+<blockquote class="hlt">
+<p class="doc">
+/* A função abaixo 
+   devolve <tt class="doc">1</tt> se existe um ciclo
+   no digrafo&nbsp;<tt class="doc">G</tt>
+   e devolve <tt class="doc">0</tt> em caso contrário.&nbsp;*/
+
+<pre class="codedim">
+<span class="k">int</span> digraphcycle (<span class="k">Digraph</span> G) { 
+   <span class="k">Vertex</span> v; <span class="k">link</span> p; <span class="k">int</span> output;
+   <span class="k">for</span> (v = 0; v < G->V; v++) 
+      <span class="k">for</span> (p = G->adj[v]; p != <span class="k">NULL</span>; p = p->next) {
+         output = <a href="paths.html#DIGRAPHpath">DIGRAPHpath</a>(G, p->w, v);
+         <span class="k">if</span> (output == 1) <span class="k">return</span> 1; 
+      }
+   <span class="k">return</span> 0;
+}
+</pre>
+</blockquote>
+
+
+<p>A função análoga para grafos 
+é bem mais complexa porque é preciso evitar os ciclos triviais.
+
+<blockquote class="hlt">
+<p class="doc">
+/* A função abaixo 
+   devolve <tt class="doc">1</tt> se existe um ciclo não-trivial
+   no grafo&nbsp;<tt class="doc">G</tt>
+   e devolve <tt class="doc">0</tt> em caso contrário.&nbsp;*/
+
+<pre class="codedim">
+<span class="k">int</span> graphcycle (<span class="k">Graph</span> G) { 
+   <span class="k">Vertex</span> v, w; <span class="k">link</span> p; <span class="k">int</span> output;
+   <span class="k">for</span> (v = 0; v < G->V; v++)
+      <span class="k">for</span> (p = G->adj[v]; p != <span class="k">NULL</span>; p = p->next) {
+         w = p->w;
+         <span class="k">if</span> (v < w) {
+            <a href="adjlists.html#E17.28">GRAPHremoveE</a>(G, w, v);
+            output = <a href="paths.html#DIGRAPHpath">DIGRAPHpath</a>(G, w, v);
+            <a href="adjlists.html#GRAPHinsertE">GRAPHinsertE</a>(G, w, v);
+            <span class="k">if</span> (output == 1) <span class="k">return</span> 1;
+         }
+      }
+   <span class="k">return</span> 0;
+}
+</pre>
+</blockquote>
+
+
+
+
+<h2>Procurando ciclos: algoritmo eficiente</h2>
+
+
+
+
+<p>A estratégia da 
+<a href="dfs1.html">busca em profundidade</a>
+permite encontrar ciclos de maneira muito eficiente.<br>
+O&nbsp;algoritmo abaixo tem por base a seguinte observação:&nbsp;
+em relação a qualquer <a href="dfs2.html#dfstree"
+>floresta de busca em profundidade</a>,&nbsp;
+todo <a href="dfs2.html#backarc">arco de retorno</a>
+pertence a um ciclo e
+todo ciclo tem um arco de retorno.
+
+
+
+<blockquote class="hlt">
+<p class="doc">
+/* Vamos supor que nossos digrafos têm no máximo
+   <tt class="doc">maxV</tt> vértices.&nbsp;*/
+
+<pre class="code">
+<span class="k">static int</span> cnt, lbl[maxV];
+</pre>
+
+<p class="doc" id="DIGRAPHcycle">
+/* A função abaixo 
+   devolve <tt class="doc">1</tt> se 
+   o digrafo <tt class="doc">G</tt> tem um ciclo
+   e devolve&nbsp;<tt class="doc">0</tt> em caso contrário.&nbsp;*/
+
+<pre class="code">
+<span class="k">int</span> DIGRAPHcycle (<span class="k">Digraph</span> G) { 
+   <span class="k">Vertex</span> v;
+   <span class="k">for</span> (v = 0; v < G->V; v++) lbl[v] = -1;
+   cnt = 0;
+   <span class="k">for</span> (v = 0; v < G->V; v++)
+      <span class="k">if</span> (lbl[v] == -1) 
+         <span class="k">if</span> (cycleR(G, v) == 1) <span class="k">return</span> 1;
+   <span class="k">return</span> 0;
+}
+</pre>
+
+<p class="doc">
+/* A função <tt class="doc">cycleR</tt>
+   devolve <tt class="doc">1</tt>
+   quando encontra um ciclo ao percorrer <tt class="doc">G</tt>
+   a partir do vértice <tt class="doc">v</tt>.&nbsp;*/
+
+<pre class="code">
+<span class="k">int</span> cycleR (<span class="k">Digraph</span> G, <span class="k">Vertex</span> v) { 
+   <span class="k">link</span> p;
+   lbl[v] = cnt++;
+   <span class="k">for</span> (p = G->adj[v]; p != <span class="k">NULL</span>; p = p->next) {
+      <span class="k">Vertex</span> w = p->w;
+      <span class="k">if</span> (lbl[w] == -1) {
+         <span class="k">if</span> (cycleR(G, w) == 1) <span class="k">return</span> 1;
+      }
+      <span class="k">else</span> <span class="k">if</span> (lbl[w] < lbl[v]) <span class="k">return</span> 1;
+   }
+   <span class="k">return</span> 0;
+}
+</pre>
+</blockquote>
+
+
+<p>A função <tt>GRAPHcycle</tt> abaixo 
+procura ciclos não-triviais em grafos.
+Para evitar ciclos triviais, a função precisa ter acesso à 
+<a href="dfs2.html#dfstree">floresta DFS</a>.
+
+<blockquote class="hlt">
+<pre class="codesim">
+<span class="k">static int</span> cnt, lbl[maxV];
+<b><span class="k">static Vertex</span> parnt[maxV];</b>
+</pre>
+
+<p class="doc" id="GRAPHcycle">
+/* A função abaixo 
+   devolve <tt class="doc">1</tt> se 
+   o grafo <tt class="doc">G</tt> tem um ciclo não-trivial
+   e devolve <tt class="doc">0</tt> em caso contrário.&nbsp;*/
+
+<pre class="codesim">
+<span class="k">int</span> GRAPHcycle (<span class="k">Graph</span> G) { 
+   <span class="k">Vertex</span> v;
+   <span class="k">for</span> (v = 0; v < G->V; v++) lbl[v] = -1;
+   cnt = 0;
+   <span class="k">for</span> (v = 0; v < G->V; v++)
+      <span class="k">if</span> (lbl[v] == -1) {
+         <b>parnt[v] = v;</b>
+         <span class="k">if</span> (cycle3R(G, v) == 1) <span class="k">return</span> 1;
+      }
+   <span class="k">return</span> 0;
+}
+</pre>
+
+<p class="doc">
+/* A função <tt class="doc">cycle3R</tt>
+   devolve <tt class="doc">1</tt>
+   quando encontra um ciclo não-trivial 
+   ao percorrer <tt class="doc">G</tt>
+   a partir do vértice <tt class="doc">v</tt>.&nbsp;*/
+
+<pre class="codesim">
+<span class="k">int</span> cycle3R (<span class="k">Graph</span> G, <span class="k">Vertex</span> v) { 
+   <span class="k">link</span> p;
+   lbl[v] = cnt++;
+   <span class="k">for</span> (p = G->adj[v]; p != <span class="k">NULL</span>; p = p->next) {
+      <span class="k">Vertex</span> w = p->w;
+      <span class="k">if</span> (lbl[w] == -1) {
+         <b>parnt[w] = v;</b>
+         <span class="k">if</span> (cycle3R(G, w) == 1) <span class="k">return</span> 1;
+      }
+      <span class="k">else</span> <span class="k">if</span> (lbl[w] < lbl[v] <b><span class="k">&amp;&amp;</span> w != parnt[v]</b>)
+         <span class="k">return</span> 1;
+   }
+   <span class="k">return</span> 0;
+}
+</pre>
+</blockquote>
+
+
+
+
+
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=7>
+
+<li class="exr">
+Que acontece se suprimirmos&nbsp;
+"<tt>if (lbl[v] < lbl[w])</tt>"&nbsp;
+no código de <tt>DIGRAPHcycle</tt>?&nbsp;
+Mesma pergunta para <tt>GRAPHcycle</tt>.
+
+
+<li class="exr">
+A função <tt>GRAPHcycle</tt>
+é capaz de encontrar um ciclo não-trivial num 
+digrafo não-simétrico?
+
+
+<li class="exr" id="E18.21b">
+Escreva uma versão de <tt>GRAPHcycle</tt>
+que não usa o vetor de pais <tt>parnt</tt> 
+mas compensa isso adotando o protótipo
+<p class="display">
+<tt>int cycle3R (Graph G, Arc e);</tt>
+<p>para a função <tt>cycle3R</tt>.&nbsp;
+
+
+<li class="exr" id="E18.21modified">
+Escreva uma versão de <tt>DIGRAPHcycle</tt>
+que imprima um ciclo 
+imediatamente antes de devolver&nbsp;<tt>1</tt>.&nbsp;
+
+Compile e teste sua função.&nbsp;
+
+
+<li class="exr" id="E18.21">
+Escreva uma versão de <tt>GRAPHcycle</tt>
+que imprima um ciclo não-trivial
+imediatamente antes de devolver&nbsp;<tt>1</tt>.&nbsp;
+
+Compile e teste sua função.&nbsp;
+
+<li class="exr">
+Escreva uma função que conte o número de ciclos em um grafo.
+
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<p>&nbsp;
+<hr>
+<small>
+
+Last modified: Thu Feb 15 08:55:49 BRST 2007
+</small>
+
+</BODY>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/cycles.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:40 GMT -->
+</HTML>

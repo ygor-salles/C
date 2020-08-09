@@ -1,0 +1,1030 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/prim.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:40 GMT -->
+<HEAD>
+<TITLE>Algoritmos para Grafos: Algoritmo de Prim</TITLE>
+<META NAME="Author" CONTENT="Paulo Feofiloff">
+<META name="language" content="Portuguese">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1"> 
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<LINK rel="stylesheet" href="code.css" type="text/css">
+</HEAD>
+<BODY>
+
+
+
+
+
+
+
+
+
+
+<p class="top">
+<a href="../index.html#contents">Algoritmos em C para Grafos via Sedgewick</a>&nbsp;
+
+
+
+
+
+<h1>Algoritmo de Prim</h1>
+
+<p>Nosso problema nesta página é o mesmo da página anterior:&nbsp;
+encontrar uma <a href="mst.html#mst">MST</a> 
+(árvore geradora mínima)
+de um grafo <i>G</i> com custos nas arestas.
+
+<p>(Esta página é um resumo 
+da seção 20.3 (Prim's Algorithm and Priority-First Search),
+p.235-245,
+do livro de Sedgewick.)
+
+
+
+
+
+<h2>O algoritmo</h2>
+
+
+
+<p>
+O <a href="http://en.wikipedia.org/wiki/Prim's_algorithm"
+>algoritmo de Prim</a> 
+(publicado em&nbsp;1961) 
+
+se apoia nas 
+<a href="mst.html#optimality2">condições de otimalidade de MSTs</a>
+para encontrar uma MST de um grafo <i>G</i>
+com custos nas arestas.
+
+<p id="fringe">Para descrever o algoritmo, 
+convém recorrer ao conceito de franja.&nbsp;
+A&nbsp; <span class="dfn">franja</span>&nbsp;
+(=&nbsp;<i>fringe</i>)
+de uma <a href="spanningtrees.html#subtree">subárvore</a> não-geradora 
+<i>T</i> de&nbsp;<i>G</i>
+é o conjunto de todas as arestas de <i>G</i> que
+têm uma ponta em <i>T</i> e outra ponta fora.&nbsp;&nbsp;
+Se denotarmos por 
+<i>X</i> o conjunto dos vértices de <i>T</i>
+e por <i>Y</i> o conjunto dos vértices fora de&nbsp;<i>X</i>,
+podemos dizer que a franja é o conjunto das arestas que pertencem 
+ao <a href="connected.html#cut">corte</a>&nbsp;<i>(X,Y)</i>.
+
+
+
+<p id="conceitual">No início de cada iteração do algoritmo de Prim
+temos uma árvore&nbsp;<i>T</i>.&nbsp;
+(No início da primeira iteração, 
+<i>T</i> consiste em um único vértice.)&nbsp;
+Cada iteração consiste no seguinte:
+
+<ol type ="none" id="primalgorithm">
+<li class="spaced">
+<b>se</b> a franja de <i>T</i> não é vazia 
+  <ol type ="none">
+  <li class="spaced"><b>então</b>&nbsp; seja <i>e</i> uma aresta de custo mínimo na franja
+  <li class="spaced"><span class="invis"><b>então</b>&nbsp;</span> comece 
+       nova iteração com&nbsp; <i>T</i>+<i>e</i>&nbsp; no papel de <i>T</i>
+  <li class="spaced"><b>senão</b>&nbsp; pare
+  </ol>
+</ol>
+
+<p>Se <i>G</i> for conexo, o algoritmo produz uma MST de&nbsp;<i>G</i>.
+Caso contrário, o algoritmo produz uma MST
+de uma das <a href="components.html#component">componentes</a> 
+de&nbsp;<i>G</i>.
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=1>
+
+<li class="exr" id="primiscorrect">
+[<span class="sc">Importante</span>]&nbsp;
+Prove que o algoritmo de Prim
+produz uma MST de qualquer grafo conexo 
+com custos nas arestas.
+(Sugestão: 
+use as <a href="spanningtrees.html#exchange1"
+>propriedades da troca de arestas</a>.&nbsp;
+
+<li class="exr" id="E20.24">
+Mostre que a seguinte estratégia pode não 
+encontrar uma MST de um grafo&nbsp;<i>G</i>.&nbsp;
+Cada iteração começa com uma subárvore 
+(não necessariamente geradora) <i>T</i> de&nbsp;<i>G</i>.
+Cada iteração consiste no seguinte:&nbsp;
+(1)&nbsp;tome o vértice <i>v</i>
+que foi acrescentado a <i>T</i> mais recentemente 
+e escolha uma aresta de custo mínimo <i>e</i> 
+dentre as que incidem em <i>v</i> e estão na franja de&nbsp;<i>T</i>;
+(2)&nbsp;comece nova iteração com <i>T</i>+<i>e</i>
+no papel de&nbsp;<i>T</i>.
+
+
+</ol>
+
+
+
+
+
+
+
+
+<h2>Implementação grosseira do algoritmo</h2>
+
+<p>Nossa primeira implementação do algoritmo de Prim
+é simples e óbvia mas ineficiente.&nbsp;&nbsp;
+A função abaixo recebe um grafo <tt>G</tt> com custos nas arestas
+e calcula uma MST da componente de <tt>G</tt> 
+que contém o vértice&nbsp;<tt>0</tt>.&nbsp;
+A&nbsp;MST é <a href="spanningtrees.html#arborescencia"
+>tratada como uma arborescência</a>
+com raiz <tt>0</tt>
+e armazenada no 
+<a href="arborescences.html#parnt-array"
+>vetor de pais</a>&nbsp;<tt>parnt</tt>.
+
+<p>A função supõe que 
+o grafo é representado por sua 
+<a href="weightedgraphs.html#matrix">matriz de adjacência</a> 
+e o custo de cada aresta é estritamente menor 
+que <tt><a href="weightedgraphs.html#maxCST"
+>maxCST</a></tt>.
+
+
+
+
+
+<blockquote class="hlt" id="bruteforce">
+<pre class="codedim">
+void <b>bruteforcePrim</b> (Graph G, Vertex parnt[]) { 
+   Vertex v, w; 
+   for (w = 0; w < G->V; w++) parnt[w] = -1; 
+   parnt[0] = 0; 
+   while (1) {
+      double mincst = maxCST;
+      Vertex v0, w0;
+      for (w = 0; w < G->V; w++) 
+         if (parnt[w] == -1) 
+            for (v = 0; v < G->V; v++)
+               if (parnt[v] != -1 &amp;&amp; mincst > G->adj[v][w]) 
+                  mincst = G->adj[v0=v][w0=w];
+      if (mincst == maxCST) break; 
+      <span class="docdim">/* A */</span>
+      parnt[w0] = v0;
+   }
+}
+</pre>
+</blockquote>
+
+<p>
+No ponto&nbsp; <span class="docdim">A</span>,&nbsp; 
+<tt class="docdim">v0-w0</tt> 
+   é uma aresta de custo mínimo
+   dentre as que estão na franja da árvore.
+   O custo da aresta <tt class="docdim">v0-w0</tt>  
+   é <tt class="docdim">mincst</tt>.
+
+
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=3>
+
+<li class="exr">
+Qual o consumo de tempo da função
+<a href="#bruteforce">bruteforcePrim</a>?
+
+<li class="exr" id="E20.30">
+Quanto tempo consome a função
+<a href="#bruteforce">bruteforcePrim</a>
+quando aplicada a um 
+<a href="graphs.html#complete">grafo completo</a> 
+com custos nas arestas?
+
+
+<li class="exr">
+Qual o custo de uma MST do grafo descrito a seguir?&nbsp;
+<pre class="small">
+     0-6  0-1  0-2  4-3  5-3  7-4  5-4  0-5  6-4  7-0  7-6  7-1
+     .51  .32  .29  .34  .18  .46  .40  .60  .51  .31  .25  .21
+</pre>
+
+
+<li class="exr" id="E20.33">
+Considere o grafo cujos vértices são os seguintes pontos no plano:
+<pre class="small">
+        vértice    0     1     2     3     4     5
+    coordenadas  (1,3) (2,1) (6,5) (3,4) (3,7) (5,3)
+</pre>
+<p>Suponha que as arestas do grafo são
+<center>
+<pre class="small">
+1-0 3-5 5-2 3-4 5-1 0-3 0-4 4-2 2-3
+</pre>
+</center>
+<p>e o custo de cada aresta é igual ao 
+comprimento do segmento de reta que liga as pontas da aresta.&nbsp;
+Aplique o algoritmo de Prim a esse grafo.
+Exiba uma figura do grafo e da árvore no início de cada iteração.
+
+
+
+<li class="exr" id="E20.54">
+Escreva uma implementação do algoritmo de Prim
+que começa por colocar as arestas do grafo em 
+<a href="footnotes/increasing.html">ordem crescente</a> 
+de custo e depois tira proveito dessa ordem.
+
+
+
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+<h2 id="weightofvertex">Implementações eficientes</h2>
+
+<p>Toda 
+implementação eficiente do algoritmo de Prim
+depende do conceito de custo de um vértice em relação a uma árvore.&nbsp;
+Dada uma árvore não-geradora do grafo,
+o <span class="dfn">custo de um vértice</span> <tt>w</tt>
+que está fora da árvore 
+é o custo de uma aresta mínima 
+dentre as que incidem em&nbsp;<tt>w</tt> e 
+estão na franja da árvore.&nbsp;&nbsp;
+Em outras palavras, o custo de <tt>w</tt> 
+é o custo de uma aresta mínima dentre as que 
+têm uma ponta na árvore e outra em&nbsp;<tt>w</tt>.&nbsp;
+Se nenhuma aresta da franja incide em&nbsp;<tt>w</tt>,
+o custo de <tt>w</tt> é <tt>maxCST</tt>
+(que é maior que o custo de qualquer aresta
+e portanto tem o sabor de&nbsp;&infin;).
+
+<p>Nas implementações que examinaremos abaixo,
+os custos dos vértices e as arestas que justificam esses custos
+são representados pelos vetores
+
+<p class="display">
+<tt>cst</tt>&nbsp;&nbsp; e&nbsp;&nbsp;  <tt>fr</tt>.
+
+<p>O custo do vértice <tt>w</tt> em relação à árvore 
+é&nbsp;<tt>cst[w]</tt>.&nbsp;&nbsp;
+Para cada vértice <tt>w</tt> fora da árvore,
+o vértice <tt>fr[w]</tt> está na árvore 
+e a aresta que liga <tt>w</tt> a <tt>fr[w]</tt> 
+tem custo&nbsp;<tt>cst[w]</tt>.&nbsp;&nbsp;
+Cada iteração do algoritmo de Prim
+escolhe um vértice <tt>w</tt> fora da árvore
+e adota <tt>fr[w]</tt> como valor de&nbsp;<tt>parnt[w]</tt>.
+
+<p>As implementações que examinaremos abaixo
+têm uma peculiaridade:&nbsp;
+no início da primeira iteração,
+a árvore (representada pelo vetor <tt>parnt</tt>) está vazia.&nbsp;
+Durante a primeira iteração a árvore adquire seu primeiro vértice
+e a partir da segunda iteração a implementação passa a se comportar 
+como o <a href="#conceitual">algoritmo descrito acima</a>.
+
+
+
+
+
+
+
+
+
+
+<h2>Implementação eficiente para grafos densos</h2>
+
+<p>A implementação abaixo é ótima para grafos 
+<a href="digraphs.html#dense">densos</a>.&nbsp;
+É apropriado, portanto,
+representar o grafo por uma matriz de adjacência:
+ 
+
+
+
+
+
+<blockquote class="hlt" id="GRAPHmstP1">
+<p class="doc">
+/* Recebe grafo <tt class="doc">G</tt> com custos nas arestas
+   e calcula uma MST da componente de <tt class="doc">G</tt> 
+   que contém o vértice <tt class="doc">0</tt>.&nbsp;
+   A função armazena a MST no vetor&nbsp;<tt class="doc">parnt</tt>,
+   tratando-a como uma arborescência com 
+   raiz&nbsp;<tt class="doc">0</tt>.&nbsp;*/
+<p class="doc">
+/* O&nbsp;grafo <tt class="doc">G</tt> é representado por sua 
+   <a class="doc" href="weightedgraphs.html#matrix"
+   >matriz de adjacência</a>.
+   A função supõe que <tt class="doc">e.cst</tt>&nbsp;<tt class="doc"
+   >&lt;</tt>&nbsp;<tt class="doc"><a href="weightedgraphs.html#maxCST"
+   >maxCST</a></tt>
+   para cada aresta <tt class="doc">e</tt>.&nbsp;
+   Supõe também que o grafo tem no máximo
+   <tt class="doc">maxV</tt> vértices.&nbsp;
+   O&nbsp;código abaixo é uma versão melhorada
+   do Programa 20.3, p.238, de Sedgewick.&nbsp;*/
+<pre class="code">
+<span class="k">void</span> GRAPHmstP1 (<span class="k">Graph</span> G, <span class="k">Vertex</span> parnt[]) { 
+   <span class="k">double</span> cst[maxV]; <span class="k">Vertex</span> v0, w, fr[maxV];
+   <span class="k">for</span> (w = 0; w < G->V; w++) {
+      parnt[w] = -1; 
+      cst[w] = maxCST; 
+   }
+   v0 = 0;
+   fr[v0] = v0;
+   cst[v0] = 0.0;
+   <span class="k">while</span> (1) {
+      <span class="k">double</span> mincst = maxCST; 
+      <span class="k">for</span> (w = 0; w < G->V; w++) 
+         <span class="k">if</span> (parnt[w] == -1 <span class="k">&amp;&amp;</span> mincst > cst[w]) 
+            mincst = cst[v0=w]; 
+      <span class="k">if</span> (mincst == maxCST) <span class="k">break</span>;
+      parnt[v0] = fr[v0];
+      <span class="k">for</span> (w = 0; w < G->V; w++) 
+         <span class="k">if</span> (parnt[w] == -1 <span class="k">&amp;&amp;</span> cst[w] > G->adj[v0][w]) {
+            cst[w] = G->adj[v0][w]; 
+            fr[w] = v0; 
+         }
+   }
+}
+</pre>
+</blockquote>
+
+
+
+
+
+<p>O fragmento de código
+<pre>
+            if (cst[w] > G->adj[v0][w]) {
+                cst[w] = G->adj[v0][w]; 
+            }
+</pre>
+<p>é característico do algoritmo de Prim.
+A operação que ele executa é conhecida como 
+<span class="dfn">relaxação</span> (da aresta&nbsp;<tt>v0-w</tt>).&nbsp;
+Essa operação aparece em toda implementação do algoritmo.
+
+
+
+<p class="inlineH3" id="performanceGRAPHmstP1">
+<span class="inlineH3">Desempenho.</span>&nbsp;
+No pior caso, o consumo tempo 
+da função <tt>GRAPHmstP1</tt> é
+proporcional&nbsp;a
+
+<p class="display">
+<tt>V<sup>2</sup></tt>.
+
+<p>
+Portanto, a função <tt>GRAPHmstP1</tt> é linear para grafos densos
+(pois o tamanho de tais grafos é proporcional 
+a&nbsp;<tt>V&sup2;</tt>).
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=8>
+
+<li class="exr">
+[<span class="sc">Bom</span>!]&nbsp;
+Considere o grafo com custos nas arestas definido abaixo:
+<center>
+<pre class="small">
+0-1 0-2 1-2 3-4 3-5 3-6 4-1 4-2 4-6 5-1 6-0 6-1 6-2
+1.5 1.5 2.5 2.5 1.5 1.5 3.5 2.5 1.5 4.5 2.5 4.5 6.5
+</pre>
+</center>
+<p>Suponha que certa iteração de <tt>GRAPHmstP1</tt>
+começa com a árvore cujas aresta são <tt>0-1</tt> e <tt>0-2</tt>.&nbsp;
+Dê o estado dos vetores <tt>fr</tt> e&nbsp;<tt>cst</tt>.&nbsp;
+(Dica:
+Não é preciso executar a função passo a passo;
+basta conhecer as propriedades de <tt>fr</tt> e&nbsp;<tt>cst</tt>.)&nbsp;
+
+
+<li class="exr" id="firstiteration">
+A primeira iteração de 
+<tt><a href="#GRAPHmstP1">GRAPHmstP1</a></tt>
+tem um caráter um pouco diferente das demais
+pois ainda não temos uma árvore nessa ocasião.
+Mostre como é possível corrigir essa anomalia
+alterando o código que precede o processo iterativo.
+
+
+<li class="exr">
+Discuta e critique a seguinte variante da função 
+<tt>GRAPHmstP1</tt>:
+<pre class="small">
+     void GRAPHmstP1(Graph G, Vertex parnt[]) { 
+        double cst[maxV], mincst;
+        Vertex v, w, v0, fr[maxV];
+        for (v = 0; v < G->V; v++) { 
+           parnt[v] = -1; 
+           cst[v] = maxCST; 
+        }
+        v0 = 0; parnt[v0] = v0;
+        while (1) {
+           for (w = 0; w < G->V; w++) 
+              if (parnt[w] == -1)  
+                 if (cst[w] > G->adj[v0][w]) {
+                    cst[w] = G->adj[v0][w]; 
+                    fr[w] = v0; 
+                 }
+           mincst = maxCST;
+           for (w = 0; w < G->V; w++) 
+              if (parnt[w] == -1 &amp;&amp; mincst > cst[w]) 
+                 mincst = cst[v0=w]; 
+           if (mincst == maxCST) break;
+           parnt[v0] = fr[v0];
+        }
+     }
+</pre>
+
+
+<li class="exr">
+Discuta e critique o programa&nbsp;20.3, p.238, de Sedgewick,
+reproduzido abaixo.
+Trata-se de uma redação alternativa da função <tt>GRAPHmstP1</tt>
+da seção anterior.&nbsp;
+(O&nbsp;código trata <tt>G->V</tt> como um vértice fictício
+e define <tt>cst[G->V]</tt> <tt>==</tt>&nbsp;<tt>maxCST</tt>.)
+<pre class="small">
+     static Vertex fr[maxV];
+     void GRAPHmstP(Graph G, Vertex parnt[], double cst[]) { 
+        Vertex v, w, v0; 
+        for (v = 0; v < G->V; v++) { 
+           parnt[v] = -1; 
+           fr[v] = v; 
+           cst[v] = maxCST; 
+        }
+        parnt[0] = 0; 
+        cst[G->V] = maxCST;
+        for (v0 = 0; v0 != G->V; ) {
+           parnt[v0] = fr[v0];
+           v = v0; 
+           for (w = 0, v0 = G->V; w < G->V; w++)
+              if (parnt[w] == -1) { 
+                 if (G->adj[v][w] < cst[w]) { 
+                    cst[w] = G->adj[v][w]; 
+                    fr[w] = v; 
+                 }
+                 if (cst[w] < cst[v0]) v0 = w; 
+              }
+        }
+     }
+</pre>
+
+
+
+<li class="exr" id="GRAPHmstP1weight">
+Escreva uma versão simplificada da função
+<tt><a href="#GRAPHmstP1">GRAPHmstP1</a></tt>
+que receba um grafo conexo e 
+devolva o custo de uma MST do grafo
+sem construir a MST explicitamente.&nbsp;
+Escreva código "enxuto", sem variáveis supérfluas.&nbsp;
+
+<li class="exr" id="GRAPHmstP1invariants">
+[<span class="sc">Invariantes</span>]&nbsp;
+Enuncie as propriedades que valem no início de cada iteração
+
+de <tt><a href="#GRAPHmstP1">GRAPHmstP1</a></tt>
+e explicam o funcionamento da função.&nbsp;
+Prove essas propriedades.&nbsp;
+
+
+
+
+<li class="exr" id="GRAPHmstP1-for-lists">
+Escreva uma versão da função <tt><a href="#GRAPHmstP1">GRAPHmstP1</a></tt>
+para grafos representados por listas de adjacência.
+
+</ol>
+
+
+
+
+
+
+
+<h2>Implementação eficiente para grafos esparsos</h2>
+
+<p>Esta seção discute uma implementação mais sofisticada 
+do algoritmo de Prim.
+Ela usa uma fila de prioridades 
+(=&nbsp;<i>priority queue</i>)
+para escolher, eficientemente,
+a próxima aresta a ser acrescentada à árvore.&nbsp;
+
+
+
+
+
+
+
+
+
+<blockquote class="hlt">
+<pre class="code">
+<span class="k">static double</span> cst[maxV];
+</pre>
+
+<p class="doc" id="GRAPHmstP2">
+/* Recebe grafo <tt class="doc">G</tt> com custos nas arestas
+   e calcula uma MST da componente de <tt class="doc">G</tt> 
+   que contém o vértice <tt class="doc">0</tt>.&nbsp;
+   A função armazena a MST no vetor&nbsp;<tt class="doc">parnt</tt>,
+   tratando-a como uma arborescência com 
+   raiz&nbsp;<tt class="doc">0</tt>.&nbsp;*/
+<p class="doc">
+/* O&nbsp;grafo <tt class="doc">G</tt> é representado por  
+   <a class="doc" href="weightedgraphs.html#lists"
+   >listas de adjacência</a>.&nbsp;
+   (O&nbsp;código abaixo foi copiado do Programa 20.4, p.242, 
+   de Sedgewick.)&nbsp;*/
+<pre class="code">
+<span class="k">void</span> GRAPHmstP2 (<span class="k">Graph</span> G, <span class="k">Vertex</span> parnt[]) { 
+   <span class="k">Vertex</span> v0, w, fr[maxV]; <span class="k">link</span> p; 
+   PQinit(); 
+   <span class="k">for</span> (w = 0; w < G->V; w++) 
+      parnt[w] = fr[w] = -1; 
+   v0 = 0;
+   fr[v0] = v0; 
+   cst[v0] = 0.0; 
+   PQinsert(v0);
+   <span class="k">while</span> (!PQempty()) {
+      v0 = PQdelmin(); 
+      parnt[v0] = fr[v0]; 
+      <span class="k">for</span> (p = G->adj[v0]; p != <span class="k">NULL</span>; p = p->next) {
+         w = p->w;
+         <span class="k">if</span> (parnt[w] == -1) {
+            <span class="k">if</span> (fr[w] == -1) { 
+               cst[w] = p->cst; 
+               PQinsert(w); 
+               fr[w] = v0; 
+            } 
+            <span class="k">else if</span> (cst[w] > p->cst) {
+               cst[w] = p->cst; 
+               PQdec(w); 
+               fr[w] = v0; 
+            }
+         }
+      }
+   }
+}
+</pre>
+</blockquote>
+
+
+
+
+<p>(Note a operação de relaxação&nbsp;
+<tt>if (cst[w] > p->cst) {</tt> <tt>cst[w] = p->cst;</tt> <tt>}</tt>&nbsp;
+característica do algoritmo de Prim.)
+
+
+<p>A função <tt>GRAPHmstP2</tt>
+usa uma fila com prioridades.&nbsp;
+(Veja capítulo&nbsp;9 (Priority Queues and Heapsort), 
+p.389,
+do volume&nbsp;1 do livro de Sedgewick.)&nbsp;
+A fila é manipulada pelas seguintes funções:
+<ul>
+<li>
+<tt>PQinit()</tt>:&nbsp; inicializa uma fila de vértices 
+em que cada vértice <tt>v</tt> tem prioridade&nbsp;<tt>cst[v]</tt>.
+<li>
+<tt>PQempty()</tt>:&nbsp; devolve <tt>1</tt> se a fila 
+estiver vazia e <tt>0</tt> em caso contrário.
+<li>
+<tt>PQinsert(v)</tt>:&nbsp; insere o vértice <tt>v</tt> na fila.
+<li>
+<tt>PQdelmin()</tt>:&nbsp; retira da fila 
+um vértice de prioridade mínima.
+<li>
+<tt>PQdec(w)</tt>:&nbsp; reorganiza a fila depois que 
+o valor de <tt>cst[w]</tt> foi decrementado.
+</ul>
+
+<p id="heap">A implementação clássica da fila de prioridades usa uma
+estrutura de   
+<i>heap</i>.&nbsp;&nbsp;
+O&nbsp;heap é armazenado
+num vetor&nbsp; <tt>pq[1..N]</tt>&nbsp;
+(a posição <tt>0</tt> do vetor não é usada).&nbsp;
+A&nbsp;prioridade de um vértice <tt>pq[k]</tt> 
+no heap é <tt>cst[pq[k]]</tt>.&nbsp;
+Propriedade fundamental do heap:&nbsp;&nbsp;
+
+<p class="display">
+<tt>cst[pq[k/2]] &le; cst[pq[k]]</tt> 
+
+<p>para <tt>k=2,..,N</tt>.&nbsp;
+Portanto, o vértice <tt>pq[1]</tt> 
+minimiza&nbsp;<tt>cst</tt>.
+
+
+<blockquote class="hlt" id="PQ">
+<p class="docdim">
+/* O código abaixo é uma adaptação do programa&nbsp;9.12, p.391,
+   do volume&nbsp;1 do livro de Sedgewick.&nbsp;
+   Supõe-se que <tt>N</tt> 
+   <tt>&le;</tt>&nbsp;<tt>maxV</tt>.&nbsp;*/
+<p class="docdim">
+/*  O vetor <tt>qp</tt> é o "inverso" de 
+   <tt>pq</tt>:&nbsp; 
+   para cada vértice <tt>v</tt>, 
+   <tt>qp[v]</tt> é o único índice tal que 
+   <tt>pq[qp[v]]</tt>&nbsp;<tt>==</tt> 
+   <tt>v</tt>.&nbsp;
+   É&nbsp;claro que 
+   <tt>qp[pq[i]]</tt>&nbsp;<tt>==</tt> 
+   <tt>i</tt> para todo&nbsp;<tt>i</tt>.&nbsp;*/
+
+<pre class="codedim">
+<span class="k">static Vertex</span> pq[maxV+1]; 
+<span class="k">static int</span> N;
+<span class="k">static int</span> qp[maxV]; 
+
+<span class="k">void</span> PQinit(<span class="k">void</span>) { 
+  N = 0; 
+}
+<span class="k">int</span> PQempty(<span class="k">void</span>) { 
+   <span class="k">return</span> N == 0; 
+}
+<span class="k">void</span> PQinsert(<span class="k">Vertex</span> v) { 
+   qp[v] = ++N; 
+   pq[N] = v; 
+   fixUp(N); 
+}
+<span class="k">Vertex</span> PQdelmin(<span class="k">void</span>) { 
+   exch(1, N); 
+   --N; 
+   fixDown(1); 
+   <span class="k">return</span> pq[N+1]; 
+}
+<span class="k">void</span> PQdec(<span class="k">Vertex</span> w) { 
+   fixUp(qp[w]); 
+}
+<span class="k">static void</span> exch(<span class="k">int</span> i, <span class="k">int</span> j) {
+   <span class="k">Vertex</span> t;
+   t = pq[i]; pq[i] = pq[j]; pq[j] = t;
+   qp[pq[i]] = i;
+   qp[pq[j]] = j;
+}
+<span class="k">static void</span> fixUp(<span class="k">int</span> k) {
+   <span class="k">while</span> (k > 1 <span class="k">&amp;&amp;</span> cst[pq[k/2]] > cst[pq[k]]) {
+      exch(k/2, k);
+      k = k/2;
+}
+<span class="k">static void</span> fixDown(<span class="k">int</span> k) { 
+   <span class="k">int</span> j;
+   <span class="k">while</span> (2*k <= N) { 
+      j = 2*k;
+      <span class="k">if</span> (j < N <span class="k">&amp;&amp;</span> cst[pq[j]] > cst[pq[j+1]]) j++;
+      <span class="k">if</span> (cst[pq[k]] <= cst[pq[j]]) <span class="k">break</span>;
+      exch(k, j); 
+      k = j;
+   }
+}
+</pre>
+</blockquote>
+
+
+<p id="compactGRAPHmstP2">
+(O código de <tt>GRAPHmstP2</tt> pode parecer um pouco assustador
+porque depende de um grande número de funções auxiliares.&nbsp;
+Pode ser um bom exercício
+escrever uma <a href="http://www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/solutions/prim01.html">versão "compacta"</a>
+da função <tt>GRAPHmstP2</tt>,
+que incorpore,
+tanto quanto razoável,
+o código das funções de manipulação da fila de prioridades.)
+
+
+
+<p class="inlineH3"><span class="inlineH3">Desempenho.</span>&nbsp;
+Eis uma estimativa do consumo de tempo no pior caso 
+de cada uma das funções de manipulação da fila de prioridades
+quando aplicada a um grafo com <tt>V</tt> vértices:
+<ul>
+<li>
+<tt>PQinit</tt>:&nbsp; constante, ou seja, não depende de <tt>V</tt>;
+<li>
+<tt>PQempty</tt>:&nbsp; constante, ou seja, não depende de <tt>V</tt>;
+<li>
+<tt>PQinsert</tt>:&nbsp; proporcional a <tt>lg(V)</tt>;
+<li>
+<tt>PQdelmin</tt>:&nbsp; proporcional a <tt>lg(V)</tt>;
+<li>
+<tt>PQdec</tt>:&nbsp; proporcional a <tt>lg(V)</tt>.
+</ul>
+
+<p>Assim, o consumo de tempo da função <tt>GRAPHmstP2</tt>
+é proporcional a&nbsp;
+<tt>V</tt>&nbsp;<tt>lg(V)</tt>&nbsp;<tt>+</tt>&nbsp;<tt>E</tt>&nbsp;<tt>lg(V)</tt>&nbsp;
+no pior caso.&nbsp;&nbsp;
+Para grafos conexos, 
+essa expressão se reduz&nbsp;a
+
+<p class="display">
+<tt>E</tt>&nbsp;<tt>lg(V)</tt>.&nbsp;
+
+<p>Portanto, a função <tt>GRAPHmstP2</tt> é um pouco pior que linear.&nbsp;
+Mesmo assim,
+esse desempenho é melhor que o da função 
+<tt><a href="#performanceGRAPHmstP1">GRAPHmstP1</a></tt>
+quando os grafos são
+<a href="digraphs.html#sparse">esparsos</a>.
+
+
+
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=15>
+
+<li class="exr">
+O início da primeira iteração de 
+<tt><a href="#GRAPHmstP2">GRAPHmstP2</a></tt>
+é um pouco diferente do início das demais iterações,
+uma vez que nessa ocasião ainda não temos uma árvore.&nbsp;
+Mostre como essa anomalia poderia ser eliminada 
+por um alteração apropriada do código que precede o processo iterativo.
+
+
+<li class="exr">
+Discuta e critique a seguinte versão de <tt>GRAPHmstP2</tt>:
+<pre class="small">
+     void GRAPHmstP2 (Graph G, Vertex parnt[]) { 
+        Vertex v0, w, fr[maxV]; link p; 
+        PQinit(); 
+        for (w = 0; w < G->V; w++) 
+           parnt[w] = fr[w] = -1; 
+        v0 = 0; parnt[v0] = v0;
+        while (1) {
+           for (p = G->adj[v0]; p != NULL; p = p->next) {
+              w = p->w;
+              if (parnt[w] == -1) {
+                 if (fr[w] == -1) { 
+                    cst[w] = p->cst; 
+                    PQinsert(w); 
+                    fr[w] = v0; 
+                 } 
+                 else if (cst[w] > p->cst) {
+                    cst[w] = p->cst; 
+                    PQdec(w); 
+                    fr[w] = v0; 
+                 }
+              }
+           }
+           if (PQempty()) break;
+           v0 = PQdelmin(); 
+           parnt[v0] = fr[v0]; 
+        }
+     }
+</pre>
+
+<li class="exr" id="preencher-fr-cst">
+[<span class="sc">Bom</span>!]&nbsp;
+Considere o grafo com custos nas arestas definido abaixo:
+<center>
+<pre class="small">
+0-1 0-2 1-2 3-4 3-5 3-6 4-1 4-2 4-6 5-1 6-0 6-1 6-2
+1.5 1.5 2.5 2.5 1.5 1.5 3.5 2.5 1.5 4.5 2.5 4.5 6.5
+</pre>
+</center>
+<p>Suponha que certa iteração de <tt>GRAPHmstP2</tt>
+começa com a árvore cujas aresta são <tt>0-1</tt> e <tt>0-2</tt>.&nbsp;
+Dê o estado dos vetores <tt>fr</tt> e&nbsp;<tt>cst</tt>.
+Dê o estado do vetor <tt>pq</tt>,
+supondo que a fila de prioridades
+está implementada como um <i>heap</i>.&nbsp;
+(Dica:
+Não é preciso executar a função passo a passo;
+basta conhecer as propriedades de <tt>fr</tt> e&nbsp;<tt>cst</tt>.)
+
+
+<li class="exr" id="GRAPHmstP2invariants">
+[<span class="sc">Invariantes</span>]&nbsp;
+Enuncie as propriedades 
+que valem no início de cada iteração
+de <tt><a href="#GRAPHmstP2">GRAPHmstP2</a></tt>
+e explicam o funcionamento da função.&nbsp;
+Prove essas propriedades.&nbsp;
+
+
+<li class="exr" id="E20.34">
+Descreva uma família de grafos com <tt>V</tt> vértices e <tt>E</tt>
+arestas que force a função <tt>GRAPHmstP2</tt>
+a consumir tempo proporcional a <tt>E</tt>&nbsp;<tt>log(V)</tt>.
+
+<li class="exr" id="E20.39">
+Escreva uma implementação da fila de prioridade
+em que a fila é, simplesmente, um vetor 
+<a href="footnotes/increasing.html">crescente</a>
+<tt>pq[1..N]</tt>.&nbsp;
+Estime o consumo de tempo de cada uma das funções
+<tt>PQinit</tt>,
+<tt>PQempty</tt>,
+<tt>PQinsert</tt>,
+<tt>PQdelmin</tt> e
+<tt>PQdec</tt>.&nbsp;
+Repita tudo com vetor 
+<a href="footnotes/increasing.html">decrescente</a>.&nbsp;
+
+<li class="exr" id="E20.41">
+Escreva uma implementação trivial da fila de prioridade
+em que a fila é um vetor <tt>pq[1..N]</tt>
+cujos elementos estão em ordem arbitrária.&nbsp;
+Estime o consumo de tempo de cada uma das funções
+<tt>PQinit</tt>,
+<tt>PQempty</tt>,
+<tt>PQinsert</tt>,
+<tt>PQdelmin</tt> e
+<tt>PQdec</tt>.
+Faça testes para comparar o desempenho dessa implementação 
+com o desempenho de <tt>GRAPHmstP2</tt>.
+
+<li class="exr" id="E20.36">
+Adapte o código da função <tt>GRAPHmstP2</tt>
+para grafos representados por matriz de adjacência.
+
+</ol>
+
+
+
+
+<h2>Outra implementação para grafos esparsos</h2>
+
+
+
+
+
+<p>O código abaixo é uma variante da função 
+<tt><a href="#GRAPHmstP2">GRAPHmstP2</a></tt>.&nbsp;
+Nessa variante, 
+os vértices são todos colocados na fila de prioridades 
+antes do início do processo iterativo.&nbsp;&nbsp;
+O&nbsp;vetor <tt>parnt</tt> usurpa o papel de <tt>fr</tt>
+e <tt>fr</tt> é dispensado.&nbsp;
+
+Com isso, o valor de cada elemento de <tt>parnt</tt> 
+pode ser alterados várias vezes ao longo do processo iterativo
+(ao contrário do que acontece em <tt>GRAPHmstP2</tt>).
+
+<p>O&nbsp;código dessa variante é mais curto que o de <tt>GRAPHmstP2</tt>
+(embora não seja mais eficiente).&nbsp;
+Por isso, há quem considere essa variante mais atraente.
+
+
+
+<blockquote class="hlt" id="GRAPHmstP3">
+<p class="doc">
+/* (Código inspirado no Programa 21.1, p.284, de Sedgewick.)&nbsp;*/
+
+<pre class="code">
+<span class="k">static double</span> cst[maxV];
+
+<span class="k">void</span> GRAPHmstP3 (<span class="k">Graph</span> G, <span class="k">Vertex</span> parnt[]) { 
+   <span class="k">Vertex</span> v0, w; <span class="k">link</span> p;
+   PQinit(); 
+   <span class="k">for</span> (w = 0; w < G->V; w++) { 
+      parnt[w] = -1;
+      cst[w] = maxCST; 
+      PQinsert(w); 
+   }
+   v0 = 0;
+   parnt[v0] = v0;
+   cst[v0] = 0.0; 
+   PQdec(v0);
+   <span class="k">while</span> (!PQempty()) {
+      v0 = PQdelmin();
+      <span class="k">if</span> (cst[v0] == maxCST) <span class="k">break</span>;
+      <span class="k">for</span> (p = G->adj[v0]; p != <span class="k">NULL</span>; p = p->next) {
+         w = p->w;
+         <span class="k">if</span> (cst[w] > p->cst) { 
+            cst[w] = p->cst; 
+            PQdec(w); 
+            parnt[w] = v0; 
+         }
+      }
+   }
+}
+</pre>
+</blockquote>
+
+
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=23>
+
+<li class="exr" id="GRAPHmstP3invariants">
+[<span class="sc">Invariantes</span>]&nbsp;
+Enuncie as propriedades 
+que valem no início de cada iteração
+de <tt><a href="#GRAPHmstP3">GRAPHmstP3</a></tt>
+e explicam o funcionamento da função.&nbsp;
+Prove essas propriedades.&nbsp;
+
+<li class="exr">
+Discuta e critique a seguinte variante da função <tt>GRAPHmstP3</tt>:
+<pre class="small">
+     static double cst[maxV];
+     void GRAPHmstP3 (Graph G, Vertex parnt[]) { 
+        Vertex v0, w; link p;
+        PQinit(); 
+        for (w = 0; w < G->V; w++) { 
+           parnt[w] = -1;
+           cst[w] = maxCST; 
+           PQinsert(w); 
+        }
+        v0 = 0; parnt[v0] = v0;
+        while (1) {
+           for (p = G->adj[v0]; p != NULL; p = p->next) {
+              w = p->w;
+              if (cst[w] > p->cst) { 
+                 cst[w] = p->cst; 
+                 PQdec(w); 
+                 parnt[w] = v0; 
+              }
+           }
+           if (PQempty()) break;
+           v0 = PQdelmin();
+           if (cst[v0] == maxCST) break;
+        }
+     }
+</pre>
+
+</ol>
+
+
+
+<h2>Mais exercícios</h2>
+
+<ol start=25>
+
+<li class="exr" id="E20.40">
+Uma aresta <i>e</i> de um grafo <i>G</i> é <i>crítica</i>
+se o custo de uma MST de <i>G&ndash;e</i> é estritamente menor
+que o custo de uma MST de&nbsp;<i>G</i>.
+Escreva uma função que determine todas as aresta críticas de <i>G</i>
+em tempo proporcional a&nbsp; <i>E</i>&nbsp;log(<i>V</i>).
+
+<li class="exr" id="E20.46">
+Faça testes empíricos para determinar até que ponto 
+o consumo de tempo do algoritmo de Prim
+depende do primeiro vértice escolhido pelo algoritmo.&nbsp;
+Vale a pena escolher esse vértice aleatoriamente?
+
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<p>&nbsp;
+<hr>
+<small>
+
+Last modified: Thu Feb 15 08:55:44 BRST 2007
+</small>
+
+</BODY>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/prim.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:41 GMT -->
+</HTML>

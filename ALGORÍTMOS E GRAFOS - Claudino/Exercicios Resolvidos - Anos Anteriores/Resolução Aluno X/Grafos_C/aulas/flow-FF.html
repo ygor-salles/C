@@ -1,0 +1,534 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/flow-FF.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:42 GMT -->
+<HEAD>
+<TITLE>Algoritmos para Grafos: Algoritmo de fluxo maximo</TITLE>
+<META NAME="Author" CONTENT="Paulo Feofiloff">
+<META name="language" content="Portuguese">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1"> 
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<LINK rel="stylesheet" href="code.css" type="text/css">
+</HEAD>
+<BODY>
+
+
+
+
+
+
+
+<p class="top">
+<a href="../index.html#contents">Algoritmos em C para Grafos via Sedgewick</a>&nbsp;
+
+
+
+
+<h1>Um algoritmo de fluxo máximo</h1>
+
+
+<p>Esta página descreve o 
+algoritmo dos caminhos de aumento
+para o
+<a href="flow.html#maxflowproblem">problema do fluxo máximo</a>.&nbsp;
+O&nbsp;algoritmo foi publicado por Ford e Fulkerson
+em 1962.
+
+<p>(Esta página é um resumo de parte da seção
+22.2 (Augmenting-Path Maxflow Algorithms)
+do capítulo&nbsp;22 (Network Flow) 
+do livro de Sedgewick.)
+
+
+<h2 id="pseudopath">Pseudo-caminhos</h2>
+
+
+
+<p>Um&nbsp; 
+<span class="dfn">pseudo-caminho</span>&nbsp;
+num digrafo é uma seqüência de vértices dotada 
+da seguinte propriedade:&nbsp;
+para cada par <tt>(u,v)</tt>
+de vértices consecutivos,
+
+<ol type="none">
+<li><tt>u-v</tt> é um arco do digrafo&nbsp; ou 
+<li><tt>v-u</tt> é um arco do digrafo.
+</ol>
+
+<p>No primeiro caso, dizemos que <tt>u-v</tt> é um 
+<span class="dfn">arco direto</span>&nbsp;
+(=&nbsp;<i>forward arc</i>)
+do pseudo-caminho.
+No segundo caso, dizemos que <tt>v-u</tt> é um 
+<span class="dfn">arco inverso</span>&nbsp;
+(=&nbsp;<i>backward arc</i>)
+do pseudo-caminho.
+
+<blockquote>
+<p><span class="sc">Exemplo:</span> 
+Considere o digrafo definido pelo conjunto 
+de arcos abaixo.
+
+<p class="display">
+<tt>0-1 1-7 2-1 2-3 3-4 4-2 2-6</tt>
+
+<p>Nesse digrafo,
+a seqüência&nbsp; <tt>0-1-2-3-4-5-6</tt>&nbsp;
+é um pseudo-caminho. 
+O&nbsp;arco <tt>2-1</tt> é inverso.
+Todos os demais arcos são diretos.
+</blockquote>
+
+<p>Um pseudo-caminho é um <a href="paths.html#path">caminho</a>
+se não tem arcos inversos.&nbsp;
+Vamos apelar, freqüentemente,
+ao princípio da preguiça universal e dizer
+"caminho" no lugar de "pseudo-caminho".
+
+
+
+
+<h2 id="augmentingpath">Caminhos de aumento</h2>
+
+<p>Suponha dada uma <a href="flow.html#capacitatednetwork">rede capacitada</a>
+e um fluxo que 
+<a href="flow.html#respectscapacity">respeita as capacidades</a>
+dos arcos.&nbsp;
+Dizemos que um arco <tt>u-v</tt> está 
+<span class="dfn">cheio</span>
+se o fluxo no arco é igual à capacidade do arco.
+Dizemos que um arco <tt>u-v</tt> está 
+<span class="dfn">vazio</span>
+se o fluxo no arco é nulo.
+
+<p>Nesse contexto,
+um <span class="dfn">caminho de aumento</span>
+(=&nbsp;<i>augmenting path</i>)
+
+é um pseudo-caminho
+que vai do vértice inicial ao final da rede 
+e tem as seguintes propriedades:
+<ul>
+<li>os arcos diretos do pseudo-caminho não estão cheios&nbsp; e
+<li>os arcos inversos do pseudo-caminho não estão vazios.
+</ul>
+
+<p>A operação de&nbsp;
+<span class="dfn"
+>enviar <tt>d</tt> unidades de fluxo 
+ao longo de um caminho de aumento</span>&nbsp;
+consiste no seguinte:
+<ul>
+<li>para cada arco direto do caminho,
+    some <tt>d</tt> ao fluxo no arco
+<li>para cada arco inverso do caminho,
+    subtraia <tt>d</tt> do fluxo no arco.
+</ul>
+<p>É fácil verificar que o resultado dessa operação é um 
+<a href="flow.html#flow">fluxo</a>
+desde que <tt>d</tt> não seja muito grande.
+
+
+
+
+<h2 id="residualcapacity">Capacidade residual de um caminho de aumento</h2>
+
+
+<p>Suponha dada uma rede capacitada e um fluxo que respeita as capacidades.
+Suponha dado um caminho de aumento na rede.
+A <span class="dfn">capacidade residual</span>
+de um arco direto, digamos <tt>a</tt>, do caminho é a diferença
+
+<p class="display"><tt>c(a)</tt> <tt>-</tt> <tt>f(a)</tt>
+
+<p>e a <span class="dfn">capacidade residual</span>
+de um arco inverso, digamos <tt>b</tt>, do caminho&nbsp;é
+
+<p class="display"><tt>f(b)</tt>,
+
+<p>sendo <tt>f(e)</tt> o fluxo e <tt>c(e)</tt> 
+a capacidade de um arco&nbsp;<tt>e</tt>.
+
+<p>A 
+<span class="dfn">capacidade residual do caminho de aumento</span>
+
+é a menor das capacidades residuais dos arcos do caminho.&nbsp;
+É&nbsp;claro que a capacidade residual de um caminho de aumento
+é um número estritamente positivo.&nbsp;
+(Como veremos adiante, esse número é necessariamente inteiro.)
+
+<p>Suponha que um caminho de aumento <tt>C</tt>
+tem capacidade residual&nbsp;<tt>d</tt>.&nbsp;
+Se enviarmos <tt>d</tt> unidades de fluxo ao longo de&nbsp;<tt>C</tt>, 
+produziremos um novo fluxo 
+que respeita a capacidade 
+de cada arco da rede.
+A&nbsp;intensidade do novo fluxo será 
+<tt>d</tt> unidades maior que a intensidade do fluxo original.
+
+
+
+
+
+<h2 id="myexample">Exemplo 1</h2>
+
+<p>Considere a rede capacitada abaixo.&nbsp;
+
+O fluxo indicado na coluna <tt>f</tt> respeita as capacidades 
+e tem intensidade&nbsp;<tt>2</tt>.
+<pre>
+         arco  c    f     s = 0
+         0-1   2    2     t = 3
+         0-2   2    0 
+         1-2   2    2 
+         1-3   2    0 
+         2-3   2    2 
+</pre>
+<p>A seqüência&nbsp;&nbsp;
+<tt>0-2-1-3</tt>&nbsp;&nbsp;
+é um caminho de aumento.&nbsp;
+Esse caminho tem capacidade residual&nbsp;<tt>2</tt>.&nbsp;
+Se enviarmos <tt>2</tt> unidades de fluxo ao longo do caminho,
+teremos um novo fluxo&nbsp;<tt>f'</tt>:
+<pre>
+         arco  c    f'
+         0-1   2    2 
+         0-2   2    2 
+         1-2   2    0 
+         1-3   2    2 
+         2-3   2    2 
+</pre>
+<p>O novo fluxo <tt>f'</tt> 
+respeita as capacidades e tem intensidade&nbsp;<tt>4</tt>.
+
+
+
+<h2 id="fordfulkersonalgorithm">O algoritmo dos caminhos de aumento</h2>
+
+<p>O algoritmo de 
+<span class="dfn">Ford e Fulkerson</span>,
+também conhecido como 
+<span class="dfn">algoritmo dos caminhos de aumento</span>,
+resolve o
+<a href="flow.html#maxflowproblem">problema do fluxo máximo</a>.&nbsp;
+Cada iteração começa com um fluxo <tt>f</tt> que 
+respeita a capacidade dos arcos da rede.&nbsp; 
+A primeira iteração começa com o fluxo nulo.&nbsp;
+Cada iteração consiste no seguinte:
+
+<blockquote>
+<ol type="none">
+<li class="spaced"><b>se</b>&nbsp; existe caminho de aumento
+para&nbsp;&nbsp;<tt>f</tt>
+  <ol type="none">
+  <li class="spaced"><b>então</b>&nbsp;
+            encontre um caminho de aumento&nbsp; <tt>C</tt>
+  <li class="spaced"><span class="invis"><b>então</b>&nbsp;</span> 
+            calcule a capacidade residual <tt>d</tt> de <tt>C</tt>
+  <li class="spaced"><span class="invis"><b>então</b>&nbsp;</span> 
+            envie <tt>d</tt> unidades de fluxo ao longo de <tt>C</tt>
+  <li class="spaced"><span class="invis"><b>então</b>&nbsp;</span> 
+            seja <tt>f'</tt> o fluxo resultante dessa operação
+  <li class="spaced"><span class="invis"><b>então</b>&nbsp;</span> 
+            comece nova iteração com <tt>f'</tt> 
+            no lugar de&nbsp;&nbsp;<tt>f</tt>
+  <li class="spaced"><b>senão</b>&nbsp; devolva <tt>f</tt> e pare
+  </ol>
+</ol>
+</blockquote>
+
+<p>Por incrível que pareça, 
+esse algoritmo produz um fluxo de intensidade máxima.
+A prova desse fato, será discutida na 
+<a href="maxflowmincut.html#mfmctheorem">próxima página</a>,
+depois que tivermos introduzido o conceito de 
+capacidade de um corte.
+
+<p>Eis uma propriedade interessante do algoritmo:
+Como <a href="flow.html#capacitatednetwork"
+>as capacidades dos arcos são números inteiros</a>,
+o valor do fluxo em cada arco será inteiro
+ao longo da execução do algoritmo.
+
+
+
+
+<h2 id="fig22.14">Exemplo 2</h2>
+
+<p>Considere a <a href="flow.html#capacitatednetwork">rede capacitada</a> abaixo.&nbsp;
+
+(Este exemplo é cópia da figura 22.14, p.372, de Sedgewick.)
+<pre>
+            arco  cap    s = 0
+            0-1   2      t = 5
+            0-2   3  
+            1-3   3  
+            1-4   1  
+            2-3   1  
+            2-4   1  
+            3-5   2  
+            4-5   3  
+</pre>
+
+<p>Comece com fluxo nulo.
+Agora aplique a seqüência de caminhos de aumento 
+<pre>
+            0-1-3-5    
+            0-2-4-5    
+            0-2-<b>3-1</b>-4-5
+</pre>
+<p>(os arcos inversos estão indicados em negrito).&nbsp;
+O primeiro caminho de aumento tem capacidade residual&nbsp;<tt>2</tt>.
+Depois que enviarmos <tt>2</tt> unidades de fluxo 
+ao longo desse caminho,
+teremos um fluxo&nbsp;<tt>f'</tt>.&nbsp;
+O segundo caminho de aumento é calculado 
+em relação a <tt>f'</tt>
+e produz um terceiro fluxo, digamos <tt>f"</tt>.
+O terceiro caminho de aumento é calculado 
+
+em relação a&nbsp;<tt>f"</tt>
+e tem capacidade residual&nbsp;<tt>1</tt>.
+
+<p>A seqüência de fluxos
+
+produzida pelos caminhos de aumento
+está indicada abaixo.
+Todos respeitam as capacidades dos arcos. 
+O último fluxo tem intensidade&nbsp;<tt>4</tt>.
+<pre>
+            arco  f   f'  f"  f"'
+            0-1   0   2   2   2
+            0-2   0   0   1   2
+            1-3   0   2   3   2
+            1-4   0   0   0   1
+            2-3   0   0   0   1
+            2-4   0   0   1   1
+            3-5   0   2   2   2
+            4-5   0   0   1   2
+                    |   |   |
+                    |   |   0-2-<b>3-1</b>-4-5
+                    |   0-2-4-5
+                    0-1-3-5
+</pre>
+
+<p>Eis outra seqüência de caminhos de aumento que 
+leva do fluxo nulo a um fluxo de intensidade&nbsp;<tt>4</tt>:
+<pre>
+            0-2-4-5
+            0-2-3-5
+            0-1-4-5
+            0-1-3-5
+</pre>
+
+<p>Mais uma seqüência de caminhos de aumento que 
+leva do fluxo nulo a um fluxo de intensidade&nbsp;<tt>4</tt>:
+<pre>
+            0-1-4-5
+            0-2-<b>4-1</b>-3-5
+            0-2-3-5
+            0-1-4-5
+</pre>
+
+
+
+
+
+
+<h2 id="performance">Desempenho do algoritmo</h2>
+
+
+<p>O consumo de tempo do algoritmo
+é diretamente proporcional ao número de iterações.&nbsp;
+Tudo se reduz, portanto, à seguinte questão:&nbsp;
+Quantos caminhos de aumento são necessários 
+para produzir um fluxo máximo
+a partir do fluxo nulo?
+
+
+<blockquote class="display">
+<span class="sc">Número de Caminhos de Aumento</span>
+(Property 22.6, p.382, Sedgewick):&nbsp;
+Se todos os arcos da rede têm capacidade 
+<a href="flow.html#capacitatednetwork">menor que <tt>M</tt></a>
+então o número de caminhos de aumento necessário 
+para atingir o fluxo máximo é menor que&nbsp;&nbsp;<tt>V&middot;M</tt>,&nbsp;
+sendo <tt>V</tt> o número de vértices da rede.
+</blockquote>
+
+<p>Eis a prova desse fato.&nbsp;
+Como <a href="flow.html#capacitatednetwork"
+>as capacidades dos arcos são números inteiros</a>,
+o fluxo em cada arco é um número inteiro.
+Portanto, ao longo da execução do algoritmo,
+a capacidade residual de cada arco em qualquer caminho de aumento 
+é um número inteiro positivo.
+Logo,
+cada caminho de aumento tem capacidade residual pelo menos&nbsp;<tt>1</tt>
+e assim aumenta em pelo menos&nbsp;<tt>1</tt>
+a intensidade do fluxo.&nbsp;
+Resta apenas mostrar que 
+a intensidade do fluxo é menor que&nbsp;<tt>VM</tt>.&nbsp;
+Como não temos
+<a href="digraphs.html#parallel">arcos paralelos</a>,
+o número de arcos que saem do vértice inicial
+é menor que&nbsp;<tt>V</tt>.
+Portanto, qualquer fluxo tem intensidade menor 
+que&nbsp;<tt>V&middot;M</tt>.&nbsp;
+[Esse raciocínio é um caso particular da 
+<a href="maxflowmincut.html#property22.4">delimitação superior</a>
+por capacidade de cortes que veremos adiante.]&nbsp;
+
+<p>Essa estimativa do número de caminhos de aumento 
+não é excessivamente pessimista:&nbsp;
+existem exemplos&nbsp&mdash;
+veja próxima seção&nbsp;&mdash;
+em que o número de caminhos de aumento chega 
+muito perto de&nbsp;<tt>VM</tt>.
+
+<p>Como o número de caminhos de aumento depende das capacidades dos arcos,
+o algoritmo não pode ser considerado satisfatório:&nbsp;
+a mera multiplicação de todas as capacidades por <tt>100</tt>,
+por exemplo, pode multiplicar o consumo de tempo
+por&nbsp;<tt>100</tt>.&nbsp;
+<span class="dim">[Em linguagem mais técnica,
+diz-se que o algoritmo é apenas <i>fracamente</i> polinomial.]</span>
+
+
+<p>Para obter um desempenho que não dependa 
+das capacidades será preciso escolher os caminhos de aumento 
+de maneira mais cuidadosa.&nbsp;
+É o que faremos nas 
+<a href="shortestaugmpath.html">próximas páginas</a>.
+
+
+
+<h2 id="fig22.20">Exemplo 3</h2>
+
+<p>Considere a rede capacitada abaixo.&nbsp;
+
+(Este exemplo é cópia da figura 22.20, p.383, de Sedgewick.)
+<pre>
+         arco  cap   s = 0
+         0-1   M     t = 3
+         0-2   M  
+         1-2   1  
+         1-3   M  
+         2-3   M  
+</pre>
+
+<p>Começando com fluxo nulo, considere a seqüência de caminhos de aumento
+
+<pre>
+         0-1-2-3,  0-2-1-3,  0-1-2-3,   0-2-1-3,  ...
+</pre>
+
+<p>Eis a correspondente seqüência de fluxos:
+
+<pre>
+         arco  f   f   f   f   f ...
+         0-1   0   1   1   2   2
+         0-2   0   0   1   1   2
+         1-2   0   1   0   1   0
+         1-3   0   0   1   1   2
+         2-3   0   1   1   2   2
+                 |   |   |   |   
+                 |   |   |   |
+                 |   |   |   |
+                 |   |   |   0-2-1-3
+                 |   |   0-1-2-3
+                 |   0-2-1-3
+                 0-1-2-3
+</pre>
+
+<p>O número de iterações é tanto maior quanto maior for&nbsp;<tt>M</tt>.&nbsp;
+Mais precisamente, 
+o algoritmo controi <tt>2M</tt> caminhos de aumento 
+para atingir o fluxo máximo
+(que tem intensidade <tt>2M</tt>).&nbsp;
+Como <tt>V=4</tt>,
+temos <tt>(V-2)M</tt> caminhos de aumento.
+
+<p>(É bem verdade que poderíamos atingir o fluxo máximo
+em apenas duas iterações
+se os caminhos de aumento fossem escolhidos de maneira diferente.)
+
+
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=1>
+
+<li class="exr" id="E22.21">
+Mostre, no estilo do <a href="#fig22.14">exemplo&nbsp;2</a>,
+uma seqüência de caminhos de aumento que leve a um fluxo máximo
+na rede capacitada abaixo.
+Mostre outra seqüência, diferente da primeira.
+Mostre mais uma, diferente das anteriores.
+<pre class="small">
+                arco  cap            s = 0
+                0-1   2              t = 5
+                0-2   3
+                0-3   2
+                1-2   1
+                1-3   1
+                1-4   1
+                2-4   1
+                2-5   2
+                3-4   2
+                3-5   3
+                4-5   2
+</pre>
+
+<li class="exr" id="E22.41">
+Considere a rede capacitada abaixo.
+Dê uma seqüência de caminhos de aumento 
+que produza um fluxo "com ciclo"
+(ou seja, um fluxo cuja representação por caminhos e ciclos
+tenha um ciclo).
+Cada um dos caminho de aumento deve ser simples 
+(ou seja, não pode ter vértices repetidos).
+<pre id="fig22.12" class="small">
+         arco  cap     s = 0  t = 5
+         0-1   2
+         0-2   3
+         0-3   2
+         1-3   1
+         1-4   1
+         2-1   1
+         2-5   2
+         3-4   2
+         3-5   3
+         4-2   1
+         4-5   2
+</pre>
+
+
+
+
+
+</ol>
+
+
+
+
+
+
+
+
+
+
+<p>&nbsp;
+<hr>
+<small>
+
+Last modified: Thu Feb 15 08:55:41 BRST 2007
+</small>
+
+</BODY>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/flow-FF.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:42 GMT -->
+</HTML>

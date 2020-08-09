@@ -1,0 +1,839 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/boruvka.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:41 GMT -->
+<HEAD>
+<TITLE>Algoritmos para Grafos: algoritmo de Boruvka</TITLE>
+<META NAME="Author" CONTENT="Paulo Feofiloff">
+<META name="language" content="Portuguese">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1"> 
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<LINK rel="stylesheet" href="code.css" type="text/css">
+</HEAD>
+<BODY>
+
+
+
+
+
+
+
+<p class="top">
+<a href="../index.html#contents">Algoritmos em C para Grafos via Sedgewick</a>&nbsp;
+
+
+
+
+
+<h1>Algoritmo de Boruvka</h1>
+
+
+<p>Esta página discute mais um algoritmo 
+para o problema de 
+<a href="mst.html#mst">encontrar uma MST</a> 
+(árvore geradora mínima)
+em um grafo com custos nas arestas.
+
+<p>(Esta página é um resumo 
+da seção 20.5 (Boruvka's Algorithm),
+p.252-255,
+do livro de Sedgewick.)
+
+
+
+
+
+<h2>O algoritmo</h2>
+<p>O 
+<a href="http://en.wikipedia.org/wiki/Bor%C5%AFvka's_algorithm"
+>algoritmo de Boruvka</a>
+(publicado em&nbsp;1926) 
+se apoia nas 
+<a href="mst.html#optimality2">condições de otimalidade de MSTs</a>
+para encontrar uma MST de um grafo 
+com custos nas arestas.
+
+<p>Vamos nos restringir a grafos 
+<a href="connected.html#connected">conexos</a>.
+Essa restrição simplifica a discussão,
+
+embora seja irrelevante para o algoritmo.
+(Se for aplicado a um grafo desconexo,
+o algoritmo produzirá uma MST em cada componente.)
+
+
+<p>Para descrever o algoritmo,
+é importante lembrar que 
+cada aresta um grafo consiste em  
+<a href="graphs.html#edge">dois arcos anti-paralelos</a>.
+Vamos supor 
+(em consonância com <a href="weightedgraphs.html#undirected"
+>nossa estrutura de dados</a>)
+que o custo de cada um desses dois arcos é igual ao custo da aresta.
+O&nbsp;algoritmo manipula os dois arcos de cada aresta independentemente.
+Assim, 
+durante a execução do algoritmo,
+pode ocorrer que apenas um dos arcos de algumas arestas é escolhido
+para fazer parte da árvore geradora.
+No fim, entretanto,
+ambos os arcos de cada aresta da árvore estarão presentes.
+
+
+<p id="fringe">Será necessário fazer uma adaptação previsível 
+do conceito de franja.
+Diremos que a <span class="dfn">franja</span> 
+(=&nbsp;<i>fringe</i>) 
+de uma subárvore <i>T</i> 
+de nosso grafo <i>G</i>
+é o conjunto de todos os arcos que saem de&nbsp;<i>T</i>,
+ou seja,
+têm ponta inicial em <i>T</i> e ponta final fora de&nbsp;<i>T</i>.&nbsp;
+
+Diremos, ainda, que um arco é 
+<span class="dfn">externo</span> a uma 
+<a href="kruskal.html#spanningforest">floresta geradora</a>&nbsp;
+<i>F</i>&nbsp; de <i>G</i> 
+se tiver pontas em 
+duas componentes diferentes de&nbsp;<i>F</i>.&nbsp;
+É&nbsp;claro que cada arco externo a <i>F</i>
+está na franja de exatamente uma das componentes de&nbsp;<i>F</i>.
+
+<p>Cada iteração do algoritmo de Boruvka 
+começa com uma floresta geradora <i>F</i> de&nbsp;<i>G</i>.&nbsp;
+(No início da primeira iteração, cada componente de <i>F</i>
+tem apenas um vértice.)&nbsp;
+Cada iteração consiste no seguinte:
+
+
+<ol type ="none" id="boruvkaalgorithm">
+<li class="spaced">
+<b>se</b> existe algum arco externo a <i>F</i>
+  <ol type ="none">
+  <li class="spaced">
+  <b>então</b>&nbsp; 
+     para cada componente <i>T</i> de <i>F</i>
+  <li class="spaced"><span class="invis"><b>então</b>&nbsp; para</span> 
+         escolha um arco mínimo na franja de <i>T</i>
+  <li class="spaced"><span class="invis"><b>então</b>&nbsp;</span> 
+     seja <i>B</i> o conjunto de todos os arcos escolhidos
+  <li class="spaced"><span class="invis"><b>então</b>&nbsp;</span> 
+     seja <i>B'</i> um subconjunto maximal de <i>B</i> tal que 
+  <li class="spaced"><span class="invis"><b>então</b>&nbsp; para</span> 
+         <i>F</i>+<i>B'</i> não tem <a href="cycles.html#cycle"
+         >ciclos</a> de comprimento&nbsp;&ge;3
+  <li class="spaced"><span class="invis"><b>então</b>&nbsp;</span> 
+     seja <i>B''</i> o conjunto dos arcos anti-paralelos aos de <i>B'</i>
+  <li class="spaced"><span class="invis"><b>então</b>&nbsp;</span> 
+     comece nova iteração com&nbsp; <i>F</i>+<i>B'</i>+<i>B''</i>&nbsp; 
+     no papel de <i>F</i>
+  <li class="spaced">
+  <b>senão</b>&nbsp; pare
+  </ol>
+</ol>
+
+
+
+<p>Esse algoritmo produz uma MST de&nbsp;<i>G</i>&nbsp;
+(uma vez que estamos supondo <i>G</i> conexo).
+
+<p>Diremos que <i>B</i>
+é um <span class="dfn">conjunto de Boruvka</span>.&nbsp;
+Cada componente da floresta <i>F</i> contribui um arco 
+de sua franja para esse conjunto.
+
+(É&nbsp;curioso o sabor de 
+<a href="footnotes/parallel.html">processamento paralelo</a>
+desse algoritmo.)
+
+<p>Se o grafo <i>F</i>&nbsp;+<i>B</i>
+não tiver ciclos de comprimento &ge;3,
+então <i>B'</i> será igual a&nbsp;<i>B</i>.&nbsp;
+Caso contrário, será preciso 
+descartar alguns arcos de <i>B</i> para obter&nbsp;<i>B'</i>.&nbsp;
+O&nbsp;cálculo de <i>B'</i> e <i>B''</i> e a substituição de 
+<i>F</i> por <i>F</i>+<i>B'</i>+<i>B''</i>
+são realizados, simultaneamente, 
+pelo seguinte processo iterativo:&nbsp;
+examine os arcos de <i>B</i> um a um;&nbsp;
+se um arco for externo à floresta corrente,
+acrescente-o à floresta
+juntamente com seu arco anti-paralelo;&nbsp;
+senão, descarte-o.
+
+
+
+
+
+
+
+
+<blockquote>
+<span class="sc">Exemplo:</span>&nbsp;
+A tabela abaixo define um grafo e os custos de suas arestas.
+
+<center>
+<pre>
+0-1   0-2   1-2   1-3
+0.1   0.1   0.1   0.2
+</pre>
+</center>
+
+<p>No início da primeira iteração do algoritmo de Boruvka,
+cada componente da floresta <i>F</i> tem um único vértice.&nbsp;
+Suponha que o algoritmo escolhe os seguintes arcos:
+<p>
+<table align="center" cellpadding=1 cellspacing=0 border=0>
+<tr>
+<td align="right">componente 
+<td width=30>
+<td align="center"><tt>0</tt>
+<td align="center"><tt>1</tt>
+<td align="center"><tt>2</tt>
+<td align="center"><tt>3</tt>
+<tr>
+<td align="right">arco na franja
+<td>
+<td align="center"><tt>0-2&nbsp;</tt>
+<td align="center"><tt>1-0&nbsp;</tt>
+<td align="center"><tt>2-1&nbsp;</tt>
+<td align="center"><tt>3-1&nbsp;</tt>
+</table>
+<p>O grafo <i>F</i>&nbsp;+<i>B</i> contém o ciclo&nbsp;
+<tt>0-2-1-0</tt>&nbsp;, de comprimento &ge;3.&nbsp;
+Para obter&nbsp;<i>B'</i>, basta eliminar qualquer um dos três 
+arcos do ciclo.&nbsp;
+Se eliminarmos o arco <tt>2-1</tt>,
+a próxima iteração começará com a floresta 
+que tem arestas&nbsp; <tt>0-2</tt>, <tt>0-1</tt> e <tt>1-3</tt>.&nbsp;
+(Se&nbsp;o algoritmo tivesse escolhido o conjunto de arcos abaixo,
+o grafo <i>F</i>&nbsp;+<i>B</i> não teria ciclos de comprimento &ge;3,
+e nesse caso <i>B'</i> seria igual a <i>B</i>.)
+<p>
+<table align="center" cellpadding=1 cellspacing=0 border=0>
+<tr>
+<td align="right">componente 
+<td width=30>
+<td align="center"><tt>0</tt>
+<td align="center"><tt>1</tt>
+<td align="center"><tt>2</tt>
+<td align="center"><tt>3</tt>
+<tr>
+<td align="right">arco na franja
+<td>
+<td align="center"><tt>0-2&nbsp;</tt>
+<td align="center"><tt>1-0&nbsp;</tt>
+<td align="center"><tt>2-0&nbsp;</tt>
+<td align="center"><tt>3-1&nbsp;</tt>
+</table>
+
+</blockquote>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=1>
+
+<li class="exr" id="myexample1">
+Aplique o algoritmo de Boruvka ao grafo abaixo.
+Em cada iteração, 
+diga qual arco você escolheu 
+na franja de cada componente da floresta.
+<center>
+<pre class="small">
+0-1  0-2  0-3  1-2  2-3  3-1
+0.3  0.5  0.5  0.7  0.7  0.7
+</pre>
+</center>
+
+<li class="exr" id="myexample1A">
+Aplique o algoritmo de Boruvka ao grafo abaixo.
+Em cada iteração, 
+diga qual arco você escolheu 
+na franja de cada componente da floresta.
+<center>
+<pre class="small">
+0-4  0-1  5-4  4-2  0-3  1-6  6-2  2-7  7-3  3-5  5-1
+0.0  0.3  0.4  0.5  0.5  0.7  0.0  0.7  0.0  0.7  0.0
+</pre>
+</center>
+
+
+
+<li class="exr" id="myexample2">
+Aplique o algoritmo de Boruvka ao grafo abaixo.
+Em cada iteração, 
+diga qual arco você escolheu 
+na franja de cada componente da floresta.
+<center>
+<pre class="small">
+0-1  0-2  0-3  1-2  2-3  3-1
+0.2  0.5  0.2  0.2  0.2  0.7
+</pre>
+</center>
+
+<li class="exr" id="distinctweights">
+Seja <i>F</i> uma floresta geradora de um grafo 
+com custos nas arestas.&nbsp;
+Para cada componente <i>T</i> de <i>F</i>,
+seja <i>b<small><sub>T</sub></small></i> um arco de custo mínimo 
+na franja de&nbsp;<i>T</i>.
+Seja <i>B</i> o conjunto de todos os arcos  
+<i>b<small><sub>T</sub></small></i>.&nbsp; 
+Seja <i>C</i> um ciclo de comprimento &ge;3 no grafo <i>F+B</i>.&nbsp;
+Mostre que todos os arcos de <i>C</i> que estão em <i>B</i>
+têm o mesmo custo.&nbsp;
+Tire daí a seguinte conclusão:
+se os custos das arestas do grafo são distintos dois a dois
+então o grafo <i>F</i>+<i>B</i> é uma floresta.
+
+
+<li class="exr">
+Prove que o algoritmo de Boruvka
+produz uma MST de qualquer grafo conexo 
+com custos nas arestas.
+
+
+
+</ol>
+
+
+
+
+
+<h2 id="rough">Implementação grosseira do algoritmo</h2>
+
+<p id="UFrepresentative">Nossa 
+primeira implementação do algoritmo de Boruvka
+é simples mas um tanto ineficiente.&nbsp;
+Como no <a href="kruskal.html#UFrepresentative">algoritmo de Kruskal</a>,
+um dos vértices de cada componente da floresta 
+será o representante da componente.
+Denotaremos por <tt>id[v]</tt> 
+o representante da componente que contém o vértice&nbsp;<tt>v</tt>.&nbsp;
+Se <tt>i</tt> é o representante de uma componente 
+então <tt>id[i]</tt> é igual a&nbsp;<tt>i</tt>.
+
+<p>O código abaixo supõe
+que o grafo é representado por sua 
+<a href="weightedgraphs.html#matrix">matriz de adjacência</a>,&nbsp;
+que o custo de cada aresta é estritamente menor 
+que <tt>maxCST</tt>&nbsp;
+e que <tt>adj[v][w]</tt> é igual a <tt>maxCST</tt> 
+se e somente se <tt>v-w</tt> não é aresta.
+
+<p>Cada iteração começa com uma floresta <i>F</i> e tem duas fases.
+Na primeira fase, o algoritmo 
+escolhe um conjunto de Boruvka&nbsp;<i>B</i>
+e armazena os arcos desse conjunto num vetor&nbsp;<tt>bvka</tt>.
+Na segunda, 
+o algoritmo incorpora uma parte <i>B'</i> de <i>B</i>,
+juntamente com os arcos anti-paralelos aos de <i>B'</i>, 
+à floresta&nbsp;<i>F</i>.
+
+
+<blockquote class="hlt" id="bruteforce">
+<pre class="codedim">
+#define maxCST 1000000.0
+</pre>
+
+
+
+<pre class="codedim" id="bruteforceBoruvka">
+void <b>bruteforceBoruvka</b> (Graph G) { 
+   Arc bvka[maxV];
+   Vertex i, j, u, v, w, z, idv, idw; 
+   int AA;
+   for (i = 0; i < G->V; i++) id[i] = i;
+   while (1) {
+      for (u = 0; u < G->V; u++) 
+         bvka[u] = <a href="weightedgraphs.html#ARC">ARC</a>(u, u, maxCST);
+      AA = 0;
+      for (v = 0; v < G->V; v++) {
+         for (w = 0; w < G->V; w++) {
+            double cst = G->adj[v][w];
+            if (cst == maxCST || v == w) continue; 
+            i = id[v]; j = id[w];
+            if (i != j) {
+               AA++;
+               if (bvka[i].cst > cst)
+                  bvka[i] = ARC(v, w, cst);
+            }      
+         }
+      }
+      if (AA == 0) break;
+      for (u = 0; u < G->V; u++) {
+         Arc e = bvka[u];
+         idv = id[e.v]; idw = id[e.w];
+         if (idv != idw) {
+            printf("%d-%d ", e.v, e.w);
+            for (z = 0; z < G->V; z++) 
+               if (id[z] == idv)  id[z] = idw;
+         }
+      }
+   }
+}
+</pre>
+</blockquote>
+
+
+<p>
+No fim da primeira fase
+(ou seja, na 22&ordf; linha do código), 
+<ul>
+<li>
+<tt>AA</tt> é o número de arcos externos e
+<li>
+para cada vértice <tt>i</tt> que é o representante de uma 
+componente da floresta <i>F</i>,&nbsp;
+o arco <tt>bvka[i]</tt> é mínimo dentre os que estão na 
+franja da componente.
+
+</ul>
+
+
+
+<p>A figura abaixo tenta ilustrar a primeira fase de uma iteração.
+Estamos supondo 
+que <tt>v-w</tt> é uma aresta de custo <tt>55</tt>,
+que <tt>v</tt> e <tt>w</tt> estão nas componentes 
+representadas pelos vértices <tt>i</tt> e <tt>j</tt> respectivamente,
+que a componente representada por <tt>i</tt> 
+escolheu o arco <tt>v-w</tt>,
+e que a componente representada por <tt>j</tt> 
+escolheu o arco <tt>w-v</tt>.
+O&nbsp;símbolo "<tt>*</tt>" representa <tt>maxCST</tt>.
+
+<p>
+<table align="center" cellpadding=1 cellspacing=1 border=0>
+<tr>
+<td align="center" width=70><tt>u</tt>
+<td align="center" width=30><tt>0</tt>
+<td align="center" width=30><tt>1</tt>
+<td align="center" width=30>&nbsp;
+<td align="center" width=30><tt>i</tt>
+<td align="center" width=30>&nbsp;
+<td align="center" width=30><tt>j</tt>
+<td align="center" width=30>&nbsp;
+<td align="center" width=30>&nbsp;
+<td align="center" width=30><tt>v</tt>
+<td align="center" width=30>&nbsp;
+<td align="center" width=30><tt>w</tt>
+<td align="center" width=30>&nbsp;
+<td align="center" width=30>&nbsp;
+<td align="center" width=30><tt>V-1</tt>
+
+<tr>
+<td align="left"><tt>bvka[u].v</tt>
+<td align="center" bgcolor="silver">&nbsp;
+<td align="center" bgcolor="silver">&nbsp;
+<td align="center" bgcolor="silver">&nbsp;
+<td align="center" bgcolor="silver"><tt>v</tt>
+<td align="center" bgcolor="silver">&nbsp;
+<td align="center" bgcolor="silver"><tt>w</tt>
+<td align="center" bgcolor="silver">&nbsp;
+<td align="center" bgcolor="silver">&nbsp;
+<td align="center" bgcolor="silver"><tt>v</tt>
+<td align="center" bgcolor="silver">&nbsp;
+<td align="center" bgcolor="silver"><tt>w</tt>
+<td align="center" bgcolor="silver">&nbsp;
+<td align="center" bgcolor="silver">&nbsp;
+<td align="center" bgcolor="silver">&nbsp;
+
+<tr>
+<td align="left"><tt>bvka[u].w</tt>
+<td align="center" bgcolor="silver">&nbsp;
+<td align="center" bgcolor="silver">&nbsp;
+<td align="center" bgcolor="silver">&nbsp;
+<td align="center" bgcolor="silver"><tt>w</tt>
+<td align="center" bgcolor="silver">&nbsp;
+<td align="center" bgcolor="silver"><tt>v</tt>
+<td align="center" bgcolor="silver">&nbsp;
+<td align="center" bgcolor="silver">&nbsp;
+<td align="center" bgcolor="silver"><tt>v</tt>
+<td align="center" bgcolor="silver">&nbsp;
+<td align="center" bgcolor="silver"><tt>w</tt>
+<td align="center" bgcolor="silver">&nbsp;
+<td align="center" bgcolor="silver">&nbsp;
+<td align="center" bgcolor="silver">&nbsp;
+
+<tr>
+<td align="left"><tt>bvka[u].cst&nbsp;</tt>
+<td align="center" bgcolor="silver">&nbsp;
+<td align="center" bgcolor="silver">&nbsp;
+<td align="center" bgcolor="silver">&nbsp;
+<td align="center" bgcolor="silver"><tt>55</tt>
+<td align="center" bgcolor="silver">&nbsp;
+<td align="center" bgcolor="silver"><tt>55</tt>
+<td align="center" bgcolor="silver">&nbsp;
+<td align="center" bgcolor="silver">&nbsp;
+<td align="center" bgcolor="silver"><tt>*</tt>
+<td align="center" bgcolor="silver">&nbsp;
+<td align="center" bgcolor="silver"><tt>*</tt>
+<td align="center" bgcolor="silver">&nbsp;
+<td align="center" bgcolor="silver">&nbsp;
+<td align="center" bgcolor="silver">&nbsp;
+</table>
+
+
+
+
+<h2>Exemplo</h2>
+
+<p>Aplique a função <tt>bruteforceBoruvka</tt>
+ao grafo definido pela lista de arestas abaixo.
+
+<center>
+<pre>
+0-6  .51
+0-1  .32
+0-2  .29
+4-3  .34
+5-3  .18
+7-4  .46
+5-4  .40
+0-5  .60
+6-4  .51
+7-0  .31
+7-6  .25
+7-1  .21
+</pre>
+</center>
+
+<p>Veja o estado do vetor <tt>id</tt> no início de sucessivas iterações:
+<center>
+<pre>
+0 1 2 3 4 5 6 7
+2 7 2 5 5 5 7 7
+7 7 7 7 7 7 7 7
+</pre>
+</center>
+
+<p>Veja as arestas impressas no fim de sucessivas iterações,
+<center>
+<pre>
+0-2 1-7 3-5 4-3 6-7        
+                    0-7 4-7
+</pre>
+</center>
+
+
+
+
+
+
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=6>
+
+<li class="exr">
+Qual o consumo de tempo da função <tt>bruteforceBoruvka</tt>?
+
+</ol>
+
+
+
+
+
+
+
+
+
+<h2>Implementação eficiente do algoritmo de Boruvka</h2>
+
+<p>Uma implementação eficiente do algoritmo de Boruvka
+usa as idéias da função <tt>bruteforceBoruvka</tt> 
+combinadas com uma estrutura <i>union-find</i>.&nbsp;
+No código abaixo,
+a função <tt><a href="weightedgraphs.html#DIGRAPHarcs"
+>DIGRAPHarcs</a></tt> 
+armazena os arcos do grafo <tt>G</tt>
+no vetor <tt>a[0..A-1]</tt>,
+em ordem arbitrária.
+
+
+
+
+
+
+<blockquote class="hlt">
+<p class="doc">
+/* Vamos supor que o grafo tem no máximo
+   <tt class="doc">maxV</tt> vértices e no máximo
+   <tt class="doc">maxE</tt> arestas.&nbsp;*/
+
+<pre class="code">
+<span class="k">#define</span> maxV 10000
+<span class="k">#define</span> maxE 100000000
+</pre>
+
+<p class="doc" id="GRAPHmstB">
+/* A função abaixo recebe um grafo conexo 
+   <tt class="doc">G</tt> com custos nas arestas
+   e calcula uma MST   
+   de&nbsp;<tt class="doc">G</tt>.&nbsp;
+   A função armazena as arestas das MSTs no 
+   vetor&nbsp;<tt class="doc">mst[0..k-1]</tt> e 
+   devolve&nbsp;<tt class="doc">k</tt>.&nbsp;*/<br>
+<p class="doc">
+/* A função supõe que o custo de cada aresta é estritamente menor 
+   que <tt class="doc">maxCST</tt>.&nbsp;
+   O&nbsp;código é uma versão corrigida  
+   do programa 20.6, p.254, de Sedgewick.&nbsp;*/
+
+<pre class="code">
+<span class="k">int</span> GRAPHmstB(<span class="k">Graph</span> G, <span class="k">Edge</span> mst[]) { 
+   <span class="k">Arc</span> bvka[maxV], a[2*maxE];
+   <span class="k">Vertex</span> i, j, u, v, w; 
+   <span class="k">int</span> A = G->A, k = 0;
+   DIGRAPHarcs(a, G);
+   UFinit(G->V);
+   <span class="k">while</span> (1) {
+      <span class="k">int</span> h, AA;
+      <span class="k">for</span> (u = 0; u < G->V; u++) 
+         bvka[u] = ARC(u, u, maxCST);
+      <span class="k">for</span> (AA = 0, h = 0; h < A; h++) {
+         i = find(a[h].v); j = find(a[h].w); 
+         <span class="k">if</span> (i != j) {
+            a[AA++] = a[h]; 
+            <span class="k">if</span> (bvka[i].cst > a[h].cst)  
+               bvka[i] = a[h];
+         }
+      }
+      A = AA;
+      <span class="k">if</span> (A == 0) <span class="k">break</span>;
+      <span class="k">for</span> (u = 0; u < G->V; u++) {
+         <span class="k">Arc</span> e = bvka[u]; 
+         v = e.v; w = e.w;
+         <span class="k">if</span> (v != w <span class="k">&amp;&amp;</span> find(v) != find(w)) { 
+            UFunion(v, w); 
+            mst[k++] = e; 
+         }
+      }
+   }
+   <span class="k">return</span> k;
+}
+</pre>
+</blockquote>
+
+<p>Antes da 11&ordf; linha do código,
+<tt>a[0..A-1]</tt> contém todos os arcos externos 
+(em relação à floresta geradora <tt>mst[0..k-1]</tt>)
+e possivelmente alguns arcos não-externos.&nbsp;
+No fim da primeira fase (20&ordf; linha do código),
+o vetor <tt>bvka[0..V-1]</tt>
+contém um conjunto de Boruvka:
+para cada vértice <tt>u</tt> que é representante 
+de uma componente,
+<tt>bvka[u]</tt> é um arco mínimo da franja da componente.
+
+
+<p>No início de cada iteração,
+o conjunto de arestas <tt>mst[0..k-1]</tt>
+define uma floresta geradora <i>F</i> de&nbsp;<tt>G</tt>&nbsp; e&nbsp;
+as funções <tt>find</tt>
+
+e <tt>UFunion</tt> 
+têm o seguinte papel:
+<ul>
+<li>
+<tt>find(v)</tt>&nbsp;
+é o <a href="#UFrepresentative">representante</a>
+da componente que contém&nbsp;<tt>v</tt>.
+<li>
+<tt>UFunion(v,</tt> <tt>w)</tt>&nbsp;
+promove a união das componentes de <i>F</i>
+que contêm <tt>v</tt> e&nbsp;<tt>w</tt> respectivamente.
+</ul>
+
+<p>Para dar uma implementação eficiente às funções <tt>find</tt>
+e <tt>UFunion</tt>,
+o vetor <tt>id</tt> é definido de maneira um pouco diferente 
+da que usamos na <a href="#rough">seção anterior</a>.&nbsp;
+Cada componente da floresta é representada por 
+uma <i>union-find tree</i>
+(que <u>não</u> é um subdigrafo de nosso grafo&nbsp;<tt>G</tt>).
+Na <i>union-find tree</i>,
+cada vértice <tt>i</tt> tem um 
+pai&nbsp;&nbsp;<tt>id[i]</tt>.&nbsp;&nbsp;
+Se <tt>i</tt> é a raiz de uma <i>union-find tree</i> então 
+<tt>id[i]</tt>&nbsp;=&nbsp;<tt>i</tt>.&nbsp;&nbsp;
+(Veja a seção 1.3, p.11-19, 
+do volume&nbsp;1 do livro de Sedgewick.)&nbsp;&nbsp;
+Se&nbsp;<tt>i</tt> é raiz de uma union-find tree,
+então <tt>sz[i]</tt> é o número de nós na 
+union-find tree.
+
+<p>A implementação da estrutura <i>union-find tree</i>
+exibida abaixo é mais eficiente,
+no sentido amortizado,
+que a que usamos na <a href="kruskal.html#union-find"
+>implementação do algoritmo de Kruskal</a>:&nbsp;
+ela inclui o "truque" <i>path compression</i>
+no código da função <tt>find</tt>.
+
+
+
+<blockquote class="hlt" id="union-find">
+<p class="docdim">
+/* (O código abaixo é uma versão adaptada dos programas&nbsp;1.3,
+   1.4 e&nbsp;4.8 (p.17, 19 e&nbsp;152 respectivamente)
+   do volume&nbsp;1 do livro de Sedgewick).&nbsp;*/<br>
+
+<pre class="codedim">
+<span class="k">static Vertex</span> id[maxV];
+<span class="k">static int</span> sz[maxV];
+
+<span class="k">void</span> UFinit(<span class="k">int</span> N) { 
+   <span class="k">Vertex</span> i;
+   <span class="k">for</span> (i = 0; i < N; i++) { 
+      id[i] = i; 
+      sz[i] = 1; 
+   }
+}
+</pre>
+
+<p class="docdim">
+/* A função <tt>find</tt> 
+   devolve a raiz da <i>union-find tree</i> 
+   que contém o vértice&nbsp;<tt>x</tt>.&nbsp;*/<br>
+
+<pre class="codedim">
+<span class="k">Vertex</span> find(<span class="k">Vertex</span> x) { 
+   <span class="k">Vertex</span> i; 
+   <span class="k">for</span> (i = x; i != id[i]; i = id[i]) 
+      id[i] = id[id[i]];&nbsp; <span class="doc">/* path compression */</span>
+   <span class="k">return</span> i; 
+}
+</pre>
+
+<p class="docdim">
+/* A função <tt>UFunion</tt> 
+   faz a união das <i>union-find trees</i>
+   que contêm os vértices <tt>v</tt> e <tt>w</tt>.&nbsp;*/
+
+<pre class="codedim">
+<span class="k">void</span> UFunion(<span class="k">Vertex</span> v, <span class="k">Vertex</span> w) { 
+   <span class="k">Vertex</span> i = find(v), j = find(w);
+   <span class="k">if</span> (i == j) <span class="k">return</span>;
+   <span class="k">if</span> (sz[i] < sz[j]) { 
+      id[i] = j; 
+      sz[j] += sz[i]; 
+   }
+   <span class="k">else</span> { 
+      id[j] = i; 
+      sz[i] += sz[j]; 
+   }
+}
+</pre>
+</blockquote>
+
+<p id="compactGRAPHmstB">
+(O código de <tt><a href="#GRAPHmstB">GRAPHmstB</a></tt> 
+pode parecer um pouco assustador
+porque depende de várias funções auxiliares.&nbsp;
+É&nbsp;um bom exercício
+escrever uma versão "compacta"
+da função <tt>GRAPHmstB</tt>
+que incorpore,
+tanto quanto razoável,
+o código das funções de manipulação da estrutura <i>union-find</i>.)
+
+
+
+<h3>Desempenho</h3>
+
+<p>Graças ao <i>path compression</i>, 
+o consumo <i>amortizado</i> de tempo de cada 
+execução da função <tt>find</tt> é proporcional a&nbsp; 
+<tt><a href="footnotes/logstar.html">log</a><sup>*</sup>(E)</tt>,&nbsp;
+sendo <tt>E</tt> o número de arestas do grafo.
+
+<p>Cada iteração reduz
+o número de componentes da floresta&nbsp;<i>F</i>
+pelo menos à metade.
+Assim, o número de iterações não passa de <tt>log(V)</tt>.
+Com isso, o consumo de tempo da implementação 
+<tt>GRAPHmstB</tt> do algoritmo de Boruvka 
+é proporcional&nbsp;a
+<p class="display">
+<tt>E</tt>&nbsp;<tt>log(V)</tt>&nbsp;<tt>log<sup>*</sup>(E)</tt>
+<p>no pior caso.&nbsp;
+Na prática, isto é essencialmente o mesmo que&nbsp;
+<tt>E</tt>&nbsp;<tt>log(V)</tt>.&nbsp;
+Mesmo essa estimativa é muito pessimista:&nbsp;
+na prática, o consumo de tempo é, em geral,
+proporcional a&nbsp;<tt>E</tt>.
+
+
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=7>
+
+<li class="exr" id="E20.56">
+Considere o grafo cujos vértices são pontos no plano:
+<pre class="small">
+       vértices    0     1     2     3     4     5
+    coordenadas  (1,3) (2,1) (6,5) (3,4) (3,7) (5,3)
+</pre>
+<p>Suponha que as arestas do grafo são
+<center>
+<pre class="small">
+1-0 3-5 5-2 3-4 5-1 0-3 0-4 4-2 2-3
+</pre>
+</center>
+<p>e o custo de cada aresta <tt>v-w</tt> é igual ao 
+comprimento do segmento de reta 
+que liga os pontos <tt>v</tt> e&nbsp;<tt>w</tt> no plano.&nbsp;
+Aplique o algoritmo de Boruvka a esse grafo.
+Exiba uma figura do grafo e da floresta no início de cada iteração.
+
+<li class="exr" id="E20.57">
+O teste "<tt>find(v)</tt>&nbsp;<tt>!=</tt>&nbsp;<tt>find(w)</tt>" 
+na parte final do código da 
+função <tt>GRAPHmstB</tt> é realmente necessário?&nbsp;
+(Dica: Considere arestas de mesmo custo.)
+
+
+
+<li class="exr" id="E20.60">
+Escreva uma implementação do algoritmo de Boruvka
+que começa por colocar as arestas do grafo em 
+ordem crescente de custos.&nbsp;
+
+</ol>
+
+
+
+
+
+
+
+
+<p>&nbsp;
+<hr>
+<small>
+
+Last modified: Wed Jul 25 12:51:59 BRT 2007
+</small>
+
+</BODY>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/boruvka.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:42 GMT -->
+</HTML>

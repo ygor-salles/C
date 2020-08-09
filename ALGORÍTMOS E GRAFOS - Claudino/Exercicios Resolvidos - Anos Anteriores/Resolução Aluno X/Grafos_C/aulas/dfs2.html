@@ -1,0 +1,372 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/dfs2.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:40 GMT -->
+<HEAD>
+<TITLE>Algoritmos para Grafos: Arborescencia DFS</TITLE>
+<META NAME="Author" CONTENT="Paulo Feofiloff">
+<META name="language" content="Portuguese">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1"> 
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<LINK rel="stylesheet" href="code.css" type="text/css">
+</HEAD>
+<BODY>
+
+
+
+
+
+
+
+
+<p class="top">
+<a href="../index.html#contents">Algoritmos em C para Grafos via Sedgewick</a>&nbsp;
+
+
+
+
+
+<h1>Arborescência de busca em profundidade</h1>
+
+
+<p>(Esta página corresponde aproximadamente à
+seção&nbsp;18.4 (Properties of DFS Forests)
+do capítulo&nbsp;18 (Graph Search)
+e à seção&nbsp;19.2 (Anatomy of DFS in digraphs)
+do <a href="http://www.ime.usp.br/~pf/algoritmos_para_grafos/bib.html#Sedg">livro de Sedgewick</a>.)
+
+
+
+
+<h2 id="treearc">Arcos de arborescência</h2>
+
+<p>Examine, uma vez mais,
+a função <tt><a href="dfs1.html#DIGRAPHdfs">DIGRAPHdfs</a></tt> 
+(e a função <tt>dfsR</tt>)
+que implementam a <a href="dfs1.html"
+>busca em profundidade</a>.&nbsp;
+O arco&nbsp; <tt>v-w</tt>&nbsp; que <tt>dfsR</tt> 
+percorre para visitar um vértice&nbsp; <tt>w</tt>&nbsp; pela primeira vez
+é conhecido como 
+<span class="dfn">arco de arborescência</span>
+(=&nbsp;<i>tree arc</i>).&nbsp;&nbsp;
+Na <a href="dfs1.html#dfsRmatrix">versão de <tt>dfsR</tt> 
+para matriz de adjacência</a>,
+por exemplo,
+um arco de arborescência é qualquer arco <tt>v-w</tt>
+imediatamente antes da linha 
+"<tt>dfsR(G,w)</tt>".&nbsp;
+
+
+<p id="dfstree">Suponha, por um momento,
+que todo vértice de nosso digrafo <tt>G</tt>
+pode ser atingido a partir do vértice&nbsp;<tt>0</tt>,
+ou seja, 
+que todo vértice é término de um caminho que começa 
+em&nbsp;<tt>0</tt>.&nbsp;
+(Esse é o caso, por exemplo, se <tt>G</tt> é um 
+<a href="connected.html#connected">grafo conexo</a>.)&nbsp;
+Então,
+ao fim da execução de <tt>DIGRAPHdfs</tt>,
+o conjunto dos arcos de arborescência define uma 
+<a href="arborescences.html">arborescência</a>
+com raiz&nbsp;<tt>0</tt>.&nbsp;
+Dizemos que essa é a&nbsp; 
+<span class="dfn">arborescência de busca em profundidade</span>
+(=&nbsp;<i>DFS tree</i>)
+gerada por <tt>DIGRAPHdfs</tt>.
+
+<p id="dfsforest">Se algum vértice de nosso digrafo <tt>G</tt> 
+não pode ser alcançado a partir do vértice&nbsp;<tt>0</tt>,
+o conjunto dos arcos de arborescência define 
+várias arborescências, disjuntas uma da outra.&nbsp;
+Dizemos que esse conjunto de arborescências é a
+<span class="dfn">floresta de busca em profundidade</span>
+(=&nbsp;<i>DFS forest</i>)&nbsp;
+gerada por <tt>DIGRAPHdfs</tt>.&nbsp;
+É&nbsp;claro que a floresta de busca em profundidade
+contém todos os vértices de&nbsp;<tt>G</tt>.
+
+<p><span class="dim">[A expressão 
+"arborescência de busca" não é usual.
+É&nbsp;mais comum dizer "árvore de busca".
+Mas no presente texto a palavra "árvore" é reservada para um 
+<a href="trees.html#tree">conceito ligeiramente diferente</a>.&nbsp;
+A expressão "floresta de busca" é duplamente infeliz:&nbsp;
+ela entra em choque com "arborescência de busca"
+e com o 
+<a href="trees.html#forest">conceito usual de "floresta"</a>.&nbsp;
+Infelizmente, não sei como evitar isso.]</span>
+
+<p>A função abaixo 
+registra a floresta de busca em profundidade num 
+<a href="arborescences.html#parnt-array"
+>vetor de pais</a>&nbsp;&nbsp;<tt>parnt</tt>&nbsp;.&nbsp;
+A&nbsp;função é quase idêntica a 
+<tt><a href="dfs1.html#DIGRAPHdfs">DIGRAPHdfs</a></tt>:
+
+
+
+<blockquote class="hlt">
+<pre class="codedim">
+<span class="k">#define</span> maxV 1000
+<span class="k">static int</span> cnt, lbl[maxV];
+<b><span class="k">static Vertex</span> parnt[maxV];</b>
+</pre>
+
+<p class="doc" id="DIGRAPHdfs">
+/* A função <tt class="doc">DIGRAPHdfs</tt>
+   visita todos os vértices e todos os arcos 
+   do digrafo <tt class="doc">G</tt> "em ordem DFS".
+   A&nbsp;função registra 
+   a ordem em que os vértices são visitados
+   no vetor <tt class="doc">lbl[x]</tt> 
+   e registra a floresta de busca 
+   no vetor <tt class="doc">parnt</tt>.&nbsp;
+   (Código inspirado no programa 18.3, p.87, 
+   de Sedgewick.)&nbsp;*/
+
+<pre class="codedim">
+<span class="k">void</span> DIGRAPHdfs (<span class="k">Digraph</span> G) { 
+   <span class="k">Vertex</span> v;
+   cnt = 0;
+   <span class="k">for</span> (v = 0; v < G->V; v++) 
+      lbl[v] = -1;
+   <span class="k">for</span> (v = 0; v < G->V; v++)
+      <span class="k">if</span> (lbl[v] == -1) {
+         <b>parnt[v] = v;</b>
+         dfsR(G, v);
+      }
+}
+</pre>
+
+<p class="doc" id="dfsRlists">
+/* Código para vetor de listas de adjacência.&nbsp;*/
+
+<pre class="codedim">
+<span class="k">void</span> dfsR (<span class="k">Digraph</span> G, <span class="k">Vertex</span> v) { 
+   <span class="k">link</span> p; 
+   lbl[v] = cnt++; 
+   <span class="k">for</span> (p = G->adj[v]; p != <span class="k">NULL</span>; p = p->next)
+      <span class="k">if</span> (lbl[p->w] == -1) {
+         <b>parnt[p->w] = v;</b>
+         dfsR(G, p->w); 
+      }
+}
+</pre>
+</blockquote>
+
+
+
+
+
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=1>
+
+<li class="exr" id="dfsRmatrix">
+Escreva uma versão da função <tt>dfsR</tt>
+para digrafos representados por matriz de adjacência.
+
+</ol>
+
+
+<h2 id="backarc">Arcos de retorno, descendentes e cruzados</h2>
+
+
+
+<p>A relação entre a floresta de busca em profundidade
+e os arcos do digrafo que não estão na floresta 
+pode ser em parte descrita pelo vetor <tt>lbl</tt>:
+
+<ul id="kindsofarcs">
+<li>
+Se <tt>v-w</tt> é um 
+<a href="arborescences.html#backarcetc">arco descendente</a>
+então&nbsp; 
+<tt>lbl[v]</tt>&nbsp;<tt>&lt;</tt>&nbsp;<tt>lbl[w]</tt>.&nbsp;
+<li>
+Se <tt>v-w</tt> é um 
+<a href="arborescences.html#backarcetc">arco de retorno</a>
+(em particular, um 
+<a href="arborescences.html#backarcetc">arco-pai</a>)
+então&nbsp; 
+<tt>lbl[v]</tt>&nbsp;<tt>&gt;</tt>&nbsp;<tt>lbl[w]</tt>.
+<li>
+Se <tt>v-w</tt> é um 
+<a href="arborescences.html#backarcetc">arco cruzado</a>
+então&nbsp; 
+<tt>lbl[v]</tt>&nbsp;<tt>&gt;</tt>&nbsp;<tt>lbl[w]</tt>.
+</ul>
+
+<p>(Mas as recíprocas não são verdadeiras.
+É preciso acrescentar a numeração 
+<a href="arborescences.html#postorder">em pós-ordem</a>
+à numeração registrada no vetor <tt>lbl</tt>
+para classificar os arcos.)
+
+
+
+<p>No caso de digrafos <a href="digraphs.html#symmetric">simétricos</a>,
+a classificação dos arcos é bem mais simples,
+pois não há arcos cruzados:
+
+<blockquote class="display" id="dfstreeingraph">
+<span class="sc">Propriedade da DFS em Grafos Simétricos</span>:&nbsp;
+Depois de uma busca em profundidade num digrafo simétrico,
+todo arco que não pertence à floresta de busca
+é um arco de retorno 
+ou um arco descendente.
+</blockquote>
+
+<p>Essa propriedade garante que 
+depois de uma busca em profundidade num digrafo simétrico,
+todo arco <tt>v-w</tt> tal que 
+<tt>parnt[w]</tt> é diferente de <tt>v</tt> e 
+<tt>parnt[v]</tt> é diferente de <tt>w</tt>
+pode ser assim classificado:
+<ul>
+<li>
+se&nbsp; <tt>lbl[v]</tt>&nbsp;<tt>&gt;</tt>&nbsp;<tt>lbl[w]</tt>&nbsp;
+então <tt>v-w</tt> é um arco de retorno;
+<li>
+se&nbsp; <tt>lbl[v]</tt>&nbsp;<tt>&lt;</tt>&nbsp;<tt>lbl[w]</tt>&nbsp;
+então <tt>v-w</tt> é um arco descendente.
+</ul>
+
+
+
+
+
+
+<h2 id="fig18.10">Exemplo: busca em profundidade num digrafo simétrico</h2>
+
+<p>
+(Este exemplo é cópia da figura 18.10, p.94, de Sedgewick.)&nbsp;
+Considere o grafo definido pelas arestas abaixo.
+Represente o grafo por sua matriz de adjacência.
+<p class="display">
+<tt>0-2 2-6 6-4 4-5 5-0 0-7 7-1 7-4 3-4 3-5</tt>
+<p>Agora submeta o grafo à função 
+<tt><a href="#DIGRAPHdfs">DIGRAPHdfs</a></tt>.
+Eis as classificação dos arcos do grafo 
+imposta pela busca em profundidade:
+<pre class="small">
+          0-2 arborescência
+            2-0 pai
+            2-6 arborescência
+              6-2 pai
+              6-4 arborescência
+                4-3 arborescência
+                  3-4 pai
+                  3-5 arborescência
+                    5-0 retorno
+                    5-3 pai
+                    5-4 retorno
+                4-5 descendente
+                4-6 pai
+                4-7 arborescência
+                  7-0 retorno
+                  7-1 arborescência
+                    1-7 pai
+                  7-4 pai
+          0-5 descendente
+          0-7 descendente
+</pre>
+
+
+
+
+
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=2>
+
+<li class="exr" id="E18.4">
+Aplique a função <tt>DIGRAPHdfs</tt>
+ao grafo definido pelas arestas 
+<p class="display">
+<tt>0-2 0-5 1-2 3-4 4-5 3-5</tt>
+<p>e exiba um "trace" da execução da função
+no formato do <a href="#fig18.10">exemplo acima</a>.
+(Suponha que o grafo é representado por sua matriz de adjacência.)
+Exiba também o estado do vetor <tt>lbl</tt>
+depois de cada alteração de algum componente.&nbsp;
+Faça também um desenho da floresta de busca em profundidade.
+
+
+<li class="exr" id="E18.14">
+Faça um desenho da floresta de busca em profundidade 
+que resulta da aplicação da função 
+<tt><a href="#DIGRAPHdfs">DIGRAPHdfs</a></tt>
+ao grafo definido pelo conjunto de arestas abaixo.
+<p class="display">
+<tt>3-7 1-4 7-8 0-5 5-2 3-8 2-9 0-6 4-9 2-6 6-4 </tt>
+<p>Suponha que o grafo é representado por uma matriz de adjacência.
+
+
+<li class="exr" id="E18.15">
+Repita o exercício anterior
+supondo que grafo é representado por listas de adjacência.
+Suponha que as listas de adjacência são construídas 
+inserindo os arcos acima, na ordem dada, num grafo inicialmente vazio.
+
+
+<li class="exr" id="E18.16">
+Escreva uma variante da função 
+<tt><a href="#dfsRlists">dfsR</a></tt>
+que imprima um "trace" da execução semelhante ao 
+do <a href="#fig18.10">exemplo acima</a>.&nbsp;
+(Use uma variável global <tt>depth</tt> 
+que é incrementada quando a execução entra em <tt>dfsR</tt>
+e decrementada quando a execução sai de <tt>dfsR</tt>.)&nbsp;
+Compile e teste a função modificada.
+Use um <a href="random.html#E17.71"
+>subgrafo aleatório da grade quadrada</a> para os testes.
+
+
+
+<li class="exr" id="E18.18">
+Escreva uma variante da função 
+<tt><a href="#dfsRlists">dfsR</a></tt>
+que imprima a altura da arborescência de busca em profundidade
+e o número de arcos de retorno (=&nbsp;<i>back edges</i>).
+
+<li class="exr">
+Seja <tt>r</tt> um vértice de um grafo conexo&nbsp;<tt>G</tt>.&nbsp;
+Mostre como encontrar uma arborescência com raiz <tt>r</tt>
+em relação à qual <tt>G</tt> não tenha
+<a href="arborescences.html#backarcetc">arcos cruzados</a>.&nbsp;
+A arborescência deve ser um 
+<a href="footnotes/subgraph.html">subdigrafo</a> de <tt>G</tt>
+e deve conter todos os vértices de&nbsp;<tt>G</tt>.
+
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+<p>&nbsp;
+<hr>
+<small>
+
+Last modified: Thu Feb 15 08:55:49 BRST 2007
+</small>
+
+</BODY>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/dfs2.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:40 GMT -->
+</HTML>

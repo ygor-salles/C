@@ -1,0 +1,12 @@
+/* Exercicio 2 - P2 */
+
+void somatorio (int n, float *s)
+{
+    int i, funcao;
+    *s=1;
+    for (i=1; i<=n; i++){
+        funcao = fatorial(i);
+        *s = *s+(1/(float)funcao);
+    }
+    return ;
+}

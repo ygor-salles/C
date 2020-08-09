@@ -1,0 +1,382 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" 
+   "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+
+<head>
+
+<TITLE>Algoritmos para Grafos em C</TITLE>
+<META name="author" content="Paulo Feofiloff">
+<META name="keywords" content="grafos, algoritmos, C, ciencia da computacao, graphs, algorithms, computer science">
+<META name="description" content="Curso de Algoritmos para Grafos em linguagem C. Ciencia da Computacao, USP.">
+<META name="language" content="Portuguese">
+<META HTTP-EQUIV="Content-Type" content="text/html; charset=ISO-8859-1">
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<LINK rel="stylesheet" href="front.css" type="text/css">
+</head>
+
+<body>
+
+
+
+
+
+
+<p>&nbsp;
+<h1 class="indexpage">Algoritmos para Grafos
+em C<br>
+via <i>Sedgewick</i></h1>
+
+<h3 class="indexpage">
+<a class="indexpage" href="http://www.ime.usp.br/~pf/"
+>Paulo Feofiloff</a></h3>
+
+
+
+
+
+
+
+
+
+
+
+<p>&nbsp;
+<div align="center">
+<table width="80%" cellspacing=0 cellpadding=0 border=0>
+<tr>
+<td>
+
+<p>
+
+A teoria dos grafos
+estuda problemas computacionais
+que envolvem objetos conhecidos como
+<a href="http://pt.wikipedia.org/wiki/Teoria_dos_grafos"
+>grafos</a>.
+Os problemas 
+
+tornaram-se célebres
+porque ocorrem em diversas áreas da computação,
+da engenharia,
+
+e em muitas aplicações industriais.
+
+<p>O material abaixo é um curso de 
+algoritmos para grafos
+baseado no livro
+<a href="resources.html#Sedg"><i>Algorithms in C: Graph Algorithms</i>
+de R.&nbsp;Sedgewick</a>.&nbsp;
+Tomei a liberdade de 
+mudar a ordem em que os tópicos são apresentados no livro,
+
+de melhorar&nbsp;(!) a notação e a terminologia,
+e de corrigir alguns erros do livro.&nbsp;
+É&nbsp;claro que aproveitei a oportunidade 
+para introduzir novos erros&hellip;&nbsp;
+
+Tal como no livro de Sedgewick,
+todos os algoritmos são descritos na linguagem&nbsp;C.
+
+
+
+<p><span class="dim">(É&nbsp;preciso deixar claro,
+entretanto,
+que grande parte do material de Sedgewick 
+não é sequer mencionada nesse curso.
+Minhas notas omitem, por exemplo,
+as excelentes figuras e exemplos do livro,
+bem como a discussão da complexidade prática dos algoritmos.)</span>
+
+
+
+
+<p>&nbsp;
+
+<p class="bar">&nbsp;
+
+
+<h3 class="center" id="contents" style="text-align: left">0&nbsp; -&nbsp; Conceitos básicos</h3>
+
+<ul>
+
+<li class="spaced">
+<a href="aulas/digraphs.html">Digrafos</a>
+
+<li class="spaced">
+<a href="aulas/graphs.html">Grafos</a>
+
+<li class="spaced">
+<a href="aulas/digraphdatastructs.html">Estruturas de dados</a>
+
+<li class="spaced">
+<a href="aulas/adjmatrix.html">Matriz de adjacência</a>
+
+<li class="spaced">
+<a href="aulas/adjlists.html">Vetor de listas de adjacência</a>
+
+<li class="spaced">
+<a href="aulas/random.html">Grafos aleatórios</a>
+
+<li class="spaced">
+<a href="aulas/connected.html">Digrafos conexos</a>
+
+</ul>
+
+
+
+
+
+
+
+<h3 class="center" style="text-align: left">1&nbsp; -&nbsp; Busca em profundidade</h3>
+
+<ul>
+<li class="spaced">
+<a href="aulas/dfs1.html">Busca em profundidade: introdução</a>
+
+<li class="spaced">
+<a href="aulas/paths.html">Caminhos em digrafos</a>
+
+<li class="spaced">
+<a href="aulas/arborescences.html">Arborescências (árvores enraizadas)</a>
+
+<li class="spaced">
+<a href="aulas/components.html">Componentes de grafos</a>
+
+<li class="spaced">
+<a href="aulas/dfs2.html">Arborescência de busca em profundidade</a>
+
+</ul>
+
+
+
+<h3 class="center" style="text-align: left">2&nbsp; -&nbsp; Aplicações</h3>
+
+<ul>
+
+<li class="spaced">
+<a href="aulas/cycles.html">Ciclos em grafos e digrafos</a>
+
+<li class="spaced">
+<a href="aulas/trees.html">Florestas e árvores</a> 
+
+
+<li class="spaced">
+<a href="aulas/bipartite.html"
+>Grafos bipartidos e ciclos ímpares</a>
+
+<li class="spaced">
+<a href="aulas/bridges.html">Pontes em grafos</a>
+
+<li class="spaced">
+<a href="aulas/articulations.html">Articulações em grafos</a>
+
+
+</ul>
+
+
+
+<h3 class="center" style="text-align: left">3&nbsp; -&nbsp; Busca em largura</h3>
+
+<ul>
+<li class="spaced">
+<a href="aulas/bfs.html"
+>Busca em largura</a>
+
+
+<li class="spaced">
+<a href="aulas/shortestpaths.html"
+>Caminhos mínimos</a>
+
+</ul>
+
+
+
+<h3 class="center" style="text-align: left">4&nbsp; -&nbsp; Grafos e digrafos com custos</h3>
+
+<ul>
+<li class="spaced">
+<a href="aulas/weightedgraphs.html"
+>Custos nos arcos e arestas</a>
+</ul>
+
+
+<h3 class="center" style="text-align: left">5&nbsp; -&nbsp; Árvores geradoras de custo mínimo</h3>
+
+
+<ul>
+<li class="spaced">
+<a href="aulas/spanningtrees.html">Árvores geradoras de grafos</a>
+
+<li class="spaced">
+<a href="aulas/mst.html"
+>Árvores geradora de custo mínimo (MST)</a>
+
+<li class="spaced">
+<a href="aulas/prim.html"
+>Algoritmo de Prim</a>
+
+<li class="spaced">
+<a href="aulas/kruskal.html"
+>Algoritmo de Kruskal</a>
+
+<li class="spaced">
+<a href="aulas/boruvka.html"
+>Algoritmo de Boruvka</a>
+
+</ul>
+
+
+<h3 class="center" style="text-align: left">6&nbsp; -&nbsp; Caminhos de custo mínimo</h3>
+
+<ul>
+<li class="spaced">
+<a href="aulas/cheapestpaths.html">Caminhos de custo mínimo</a>
+
+<li class="spaced">
+<a href="aulas/dijkstra.html">Algoritmo de Dijkstra</a>
+
+</ul>
+
+
+
+<h3 class="center" style="text-align: left">7&nbsp; -&nbsp; Digrafos acíclicos</h3>
+
+
+<ul>
+
+<li class="spaced">
+<a href="aulas/dags.html">Digrafos acíclicos (DAGs)</a>
+
+<li class="spaced">
+<a href="aulas/toposorting.html">Algoritmos de ordenação topológica</a>
+
+<li class="spaced">
+<a href="aulas/dag-apps.html">Aplicações de DAGs</a>
+
+</ul>
+
+
+<h3 class="center" style="text-align: left">8&nbsp; -&nbsp; Fluxo em redes</h3>
+
+
+<ul>
+<li class="spaced">
+<a href="aulas/flow.html">Fluxo em redes</a>
+
+<li class="spaced">
+<a href="aulas/flow-FF.html">Algoritmo de fluxo máximo</a>
+
+<li class="spaced">
+<a href="aulas/maxflowmincut.html">Fluxo máximo e corte mínimo</a>
+
+<li class="spaced">
+<a href="aulas/flowdatastruct.html">Estruturas de dados para redes de fluxo</a>
+
+<li class="spaced">
+<a href="aulas/shortestaugmpath.html">Shortest augmenting paths</a>
+
+<li class="spaced">
+<a href="aulas/maxcapaugmpath.html">Maximum capacity augmenting paths</a>
+</ul>
+<p>&nbsp;
+
+<p class="bar">&nbsp;
+
+<tr>
+<td>
+<p>&nbsp;
+
+<h3 class="center" style="text-align: left"><a href="resources.html">Livros e material na teia WWW</a></h3>
+
+
+
+
+
+
+
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<p>&nbsp;
+<hr>
+
+Esse material foi originalmente preparado
+para a disciplina
+MAC0328 (Algoritmos em Grafos),
+do 
+curso de Ciência da Computação
+do IME-USP
+(Instituto de Matemática e Estatística 
+da Universidade de São Paulo).
+
+
+
+
+
+
+
+
+
+
+
+<hr>
+<small>
+
+Last modified: Thu Jan 31 10:10:57 BRST 2008
+<br>
+&nbsp;</small>
+
+</body>
+
+
+</html>

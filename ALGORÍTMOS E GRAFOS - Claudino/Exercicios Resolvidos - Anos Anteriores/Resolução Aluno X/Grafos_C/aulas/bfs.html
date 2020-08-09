@@ -1,0 +1,601 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/bfs.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:40 GMT -->
+<HEAD>
+<TITLE>Algoritmos para Grafos: Busca em largura</TITLE>
+<META NAME="Author" CONTENT="Paulo Feofiloff">
+<META name="language" content="Portuguese">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1"> 
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<LINK rel="stylesheet" href="code.css" type="text/css">
+</HEAD>
+<BODY>
+
+
+
+
+
+
+
+
+
+<p class="top">
+<a href="../index.html#contents">Algoritmos em C para Grafos via Sedgewick</a>&nbsp;
+
+
+
+
+
+<h1>Busca em largura</h1>
+
+
+<p>Como já dissemos ao discutir 
+<a href="dfs1.html">busca em profundidade</a>,
+um algoritmo de busca 
+é um algoritmo que examina, sistematicamente,
+os vértices e os arcos
+de um digrafo.&nbsp;
+Há muitas maneiras de organizar uma tal busca.&nbsp;
+Cada estratégia de busca 
+é caracterizada pela ordem em que os vértices são visitados.
+
+<p>Esta página introduz a
+<span class="dfn">busca em largura</span>
+(=&nbsp;<i>breadth-first search</i> =&nbsp;<i>BFS</i>).&nbsp;
+Essa estratégia,
+também conhecida como busca BFS,
+está intimamente relacionada com o conceito de distância
+entre vértices.&nbsp;
+Quando aplicada a uma <a href="arborescences.html">arborescência</a>,
+a busca BFS faz uma varredura "por níveis".
+
+
+
+<p>(Esta página corresponde aproximadamente à 
+seção&nbsp;18.7 (Breadth-First Search), p.114-124, 
+do capítulo 18 
+do livro de Sedgewick.)
+
+
+
+<h2 id="queuevsstack">BFS versus DFS</h2>
+
+<p>A diferença mais marcante entre  
+a busca em largura e a
+<a href="dfs1.html">busca em profundidade</a>
+está na estrutura de dados auxiliar
+empregada por uma das estratégias e pela outra.&nbsp;
+A&nbsp;busca em largura usa uma 
+<a href="/fila.html">fila</a> (de vértices),
+enquanto a busca em profundidade usa uma 
+<a href="pilha.html">pilha</a>.&nbsp;
+(Na versão recursiva da busca em profundidade,
+a pilha não aparece explicitamente pois 
+é administrada pelo mecanismo de recursão.)&nbsp;
+Mas há várias outras diferenças, mais superficiais,
+entre os dois algoritmos:
+<ul>
+<li>
+na busca em profundidade,
+o próprio algoritmo escolhe o vértice inicial,
+enquanto a busca em largura começa tipicamente num 
+vértice especificado pelo usuário;
+<li>
+a busca em profundidade visita, tipicamente,
+todos os vértices do digrafo,
+enquanto a busca em largura visita apenas os vértices 
+que podem ser atingidos a partir do vértice inicial;
+<li>
+a busca em profundidade é descrita, usualmente,
+em estilo recursivo,
+enquanto a busca em largura é descrita 
+em estilo iterativo.
+</ul>
+
+<p>O&nbsp;fato é que,
+apesar da semelhança entre a siglas,
+a busca DFS e a busca BFS
+são muito diferentes e têm aplicações muito diferentes.
+
+
+
+
+
+
+
+
+<h2>Busca em largura</h2>
+
+
+<p>A busca em largura começa por um vértice,
+digamos <tt>s</tt>, especificado pelo usuário.&nbsp;
+O&nbsp;algoritmo visita <tt>s</tt>,
+depois visita todos os vértices que estão 
+à distância&nbsp;1 de <tt>s</tt>,
+depois todos os vértices que estão 
+à distância&nbsp;2 de <tt>s</tt>,
+e assim por diante.
+(O conceito de distância será definido precisamente na 
+<a href="shortestpaths.html">próxima página</a>.)
+
+<p>Para implementar essa idéia,
+o algoritmo usa uma fila de vértices.&nbsp;
+Essa&nbsp;fila contém todos os vértices já visitados
+cujos vizinhos ainda não foram visitados.&nbsp;
+A&nbsp;fila é manipulada pelas funções 
+<tt>QUEUEinit</tt>,
+<tt>QUEUEput</tt>,
+<tt>QUEUEget</tt> e 
+<tt>QUEUEempty</tt>.&nbsp;
+(A&nbsp;primeira cria uma fila vazia,
+a segunda insere um vértice na fila,
+a terceira retira um vértice da fila,
+e a última verifica se a fila está vazia.)
+
+
+<p>A ordem em que os vértices são visitados 
+é registrada num vetor&nbsp; <tt>lbl</tt>&nbsp;
+indexado pelos vértices,
+à semelhança do que fizemos ao estudar busca em profundidade.
+<span class="dim">[O&nbsp;nome "lbl" não faz muito sentido 
+no presente contexto,
+uma vez que a busca em largura 
+não tem relação alguma com <i>preorder traversal</i>
+de árvores.]</span>&nbsp;
+ 
+Se <tt>v</tt> é o <tt>k</tt>-ésimo vértices visitado 
+então <tt>prev[v]</tt> vale&nbsp;<tt>k-1</tt>.
+
+
+
+
+<blockquote class="hlt">
+<pre class="code">
+<span class="k">#define</span> maxV 10000
+<span class="k">static int</span> cnt, lbl[maxV];
+</pre>
+
+<p class="doc" id="DIGRAPHbfs1">
+/* A função <tt class="doc">DIGRAPHbfs</tt>
+   visita todos os vértices do digrafo <tt class="doc">G</tt> 
+   que podem ser alcançados a partir do 
+   vértice&nbsp;<tt class="doc">s</tt>.&nbsp;
+   A&nbsp;ordem em que os vértices são visitados 
+   é registrada no vetor&nbsp;<tt class="doc">lbl</tt>.&nbsp;
+   (Código inspirado no programa 18.9, p.119, de Sedgewick.)&nbsp;*/
+
+<pre class="code">
+<span class="k">void</span> DIGRAPHbfs (<span class="k">Digraph</span> G, <span class="k">Vertex</span> s) { 
+   <span class="k">Vertex</span> v, w;
+   cnt = 0;
+   <span class="k">for</span> (v = 0; v < G->V; v++) lbl[v] = -1;
+   QUEUEinit(G->V);
+   lbl[s] = cnt++; 
+   QUEUEput(s); 
+   <span class="k">while</span> (!QUEUEempty()) {
+      v = QUEUEget(); 
+      <span class="k">for</span> (w = 0; w < G->V; w++)
+         <span class="k">if</span> (G->adj[v][w] == 1)
+            <span class="k">if</span> (lbl[w] == -1) { 
+               lbl[w] = cnt++; 
+               QUEUEput(w); 
+            }
+   }
+}
+</pre>
+</blockquote>
+
+<p>
+No início de cada iteração valem as seguinte propriedades:
+
+<ol>
+<li>
+todo vértice que está na fila já foi visitado;
+<li>
+se um vértice <tt>v</tt> já foi visitado 
+mas algum de seus vizinhos ainda não foi visitado,
+então <tt>v</tt> está na fila.
+</ol>
+
+<p>(Um vértice <tt>x</tt> já foi visitado 
+se e somente se 
+<tt>lbl[x]</tt> é diferente de&nbsp;<tt>-1</tt>.)&nbsp;&nbsp;
+Cada vértice entra na fila no máximo uma vez.
+Portanto, basta que a fila tenha espaço suficiente
+para <tt>V</tt> vértices.
+
+
+
+
+<h2 id="example1">Exemplo</h2>
+
+<p id="fig18.21">
+(Este exemplo é cópia da figura 18.21, p.116 de Sedgewick.)&nbsp;
+Seja <tt>G</tt> o digrafo simétrico
+definido pelo conjunto de arestas 
+(cada aresta é um par de arcos) abaixo.
+<p class="display">
+<tt>0-2 2-6 6-4 4-5 5-0 0-7 7-1 7-4 3-4 3-5</tt>
+<p>Represente <tt>G</tt> por sua matriz de adjacência
+e submeta o digrafo à função <tt>DIGRAPHbfs</tt>.&nbsp;
+Eis o estado da fila no início de sucessivas iterações:
+<pre>
+       0-2 0-5 0-7
+           0-5 0-7 2-6
+               0-7 2-6 5-3 5-4
+                   2-6 5-3 5-4 7-1 7-4
+                       5-3 5-4 7-1 7-4 6-4
+                           5-4 7-1 7-4 6-4 3-4
+                               7-1 7-4 6-4 3-4
+                                   7-4 6-4 3-4
+                                       6-4 3-4
+                                           3-4
+</pre>
+<p>Eis o vetor <tt>lbl</tt> no início de sucessivas iterações
+(com "<tt>*</tt>" no lugar de&nbsp;"<tt>-1</tt>"):
+<pre>
+              0 1 2 3 4 5 6 7
+              ---------------
+              * * * * * * * *
+              0 * * * * * * *
+              0 * 1 * * * * *
+              0 * 1 * * 2 * *
+              0 * 1 * * 2 * 3
+              0 * 1 * * 2 4 3
+              0 * 1 5 * 2 4 3
+              0 * 1 5 6 2 4 3
+              0 7 1 5 6 2 4 3
+</pre>
+
+<p>Portanto, os vértices são visitados na ordem&nbsp;
+<tt>0 2 5 7 6 3 4 1</tt>.
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=1>
+
+
+
+
+
+<li class="exr" id="queueimplementation">
+Escreva o código das funções 
+<tt>QUEUEinit</tt>,
+<tt>QUEUEput</tt>,
+<tt>QUEUEget</tt> e 
+<tt>QUEUEempty</tt>.&nbsp;
+(Sugestão: implemente a fila em um vetor global.)
+
+
+<li class="exr" id="E18.52">
+Reescreva a função <tt><a href="#DIGRAPHbfs1">DIGRAPHbfs</a></tt>
+substituindo as invocações de 
+<tt>QUEUEinit</tt>,
+<tt>QUEUEput</tt>, 
+<tt>QUEUEget</tt> e
+<tt>QUEUEempty</tt>
+por uma implementação explícita da fila num vetor.
+
+
+<li class="exr">
+Mostre um exemplo em que a fila de vértices chega a conter 
+quase todos os vértices do digrafo.
+
+
+<li class="exr" id="bfs-vs-dfs">
+Escreva uma generalização comum das 
+buscas em largura e em profundidade.
+Sua função deve usar uma estrutura de dados auxiliar 
+que pode operar como fila ou como pilha.
+Se a estrutura operar como fila, a função executa busca em largura,
+e se operar como pilha, a função executa busca em profundidade.&nbsp;
+
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h2 id="bfstree">Arborescência de busca em largura</h2>
+
+<p>A busca em largura a partir de um vértice <tt>s</tt> descreve, 
+implicitamente, 
+uma <a href="arborescences.html">arborescência</a>
+com raiz <tt>s</tt>.&nbsp;
+Essa arborescência é conhecida como
+<span class="dfn">arborescência de busca em largura</span>
+(=&nbsp;<i>BFS tree</i>).&nbsp;
+Podemos representar essa arborescência explicitamente por um  
+<a href="arborescences.html#parnt-array">vetor de pais</a>&nbsp;<tt>parnt</tt>.
+
+<p><span class="dim">[Muita gente diz "árvore de busca"
+no lugar do meu "arborescência de busca".
+Infelizmente, a palavra "árvore" também é usada para designar 
+um <a href="trees.html#tree">outro conceito</a>,
+o que pode causar confusão.]</span>
+
+
+
+
+
+
+<blockquote class="hlt">
+<pre class="codedim">
+<span class="k">#define</span> maxV 10000
+<span class="k">static int</span> cnt, lbl[maxV];
+<b><span class="k">static Vertex</span> parnt[maxV];</b>
+</pre>
+
+<p class="doc" id="DIGRAPHbfs2">
+<pre class="codedim">
+<span class="k">void</span> DIGRAPHbfs (<span class="k">Digraph</span> G, <span class="k">Vertex</span> s) { 
+   <span class="k">Vertex</span> v, w;
+   cnt = 0;
+   <span class="k">for</span> (v = 0; v < G->V; v++) lbl[v] = -1;
+   QUEUEinit(G->V);
+   lbl[s] = cnt++; 
+   <b>parnt[s] = s;</b>
+   QUEUEput(s); 
+   <span class="k">while</span> (!QUEUEempty()) {
+      v = QUEUEget(); 
+      <span class="k">for</span> (w = 0; w < G->V; w++)
+         <span class="k">if</span> (G->adj[v][w] == 1)
+            <span class="k">if</span> (lbl[w] == -1) { 
+               lbl[w] = cnt++; 
+               <b>parnt[w] = v;</b>
+               QUEUEput(w); 
+            }
+   }
+}
+</pre>
+</blockquote>
+
+
+<p>No início de cada iteração,
+cada vértice que está na fila é uma 
+<a href="arborescences.html#leaf">folha</a> da arborescência
+representada por&nbsp;<tt>parnt</tt>.
+
+
+
+
+
+<h2 id="example2">Exemplo (continuação)</h2>
+
+<p>Aplique a função <tt><a href="#DIGRAPHbfs2">DIGRAPHbfs</a></tt>
+ao grafo do <a href="#example1">exemplo acima</a>.&nbsp;
+No fim da execução da função,
+o vetor <tt>parnt</tt> estará no seguinte estado:
+
+<pre>
+              v    0 1 2 3 4 5 6 7
+                   ---------------
+        parnt[v]   0 7 0 5 5 0 2 0
+</pre>
+
+
+
+
+
+
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=5>
+
+<li class="exr" id="E18.50">
+Faça uma busca em largura, a partir do vértice&nbsp;<tt>0</tt>,
+no grafo definido pelo conjunto de arestas
+<p class="display">
+<tt>8-9 3-7 1-4 7-8 0-5 5-2 3-8 2-9 0-6 4-9 2-6 6-4</tt>&nbsp;.
+<p>Suponha que o grafo está representado por sua matriz de adjacência.
+Faça um desenho da arborescência de busca.
+
+<li class="exr" id="bfsforlists">
+Escreva uma versão da função <tt>DIGRAPHbfs</tt>
+para digrafos representados por listas de adjacência.&nbsp;
+
+
+<li class="exr" id="E18.49">
+Represente o grafo abaixo por listas de adjacência.
+Insira as arestas, na ordem dada, num grafo inicialmente vazio.
+<p class="display">
+<tt>8-9 3-7 1-4 7-8 0-5 5-2 3-8 2-9 0-6 4-9 2-6 6-4</tt>
+<p>Faça uma busca em largura a partir do vértice&nbsp;<tt>0</tt>.
+Faça um desenho da arborescência de busca.
+
+
+<li class="exr">
+Considere um busca em largura num grafo conexo
+a partir de um vértice&nbsp;<tt>s</tt>.&nbsp;
+Seja <tt>v-w</tt> um arco do grafo 
+e suponha que <tt>w</tt> não é 
+<a href="arborescences.html#parentchild">filho</a> de <tt>v</tt> nem 
+<a href="arborescences.html#parentchild">pai</a> de <tt>v</tt> 
+na arborescência de busca.&nbsp;
+Mostre que <tt>v</tt> não é 
+<a href="arborescences.html#ancestordescendant">ancestral</a> 
+nem 
+<a href="arborescences.html#ancestordescendant">descendente</a>
+de&nbsp;<tt>w</tt>.
+
+
+<li class="exr">
+Analise e critique a seguinte implementação da busca em largura
+(essencialmente igual ao programa 18.8, p.117, de Segewick):
+<pre class="small">
+   static int cnt, lbl[maxV];
+   void DIGRAPHsearch (Digraph G) { 
+      Vertex v;
+      cnt = 0;
+      for (v = 0; v < G->V; v++) lbl[v] = -1;
+      for (v = 0; v < G->V; v++)
+         if (lbl[v] == -1) 
+            bfs(G, ARC(v, v));
+   }
+   void bfs (Digraph G, Arc e) { 
+      Vertex v, w;
+      QUEUEput(e);
+      while (!QUEUEempty()) {
+         e = QUEUEget();
+         <b>if (lbl[e.w] == -1) {</b>
+            lbl[e.w] = cnt++; 
+            parnt[e.w] = e.v;
+            for (v = 0; v < G->V; v++)
+               if (G->adj[e.w][v] == 1)
+                  if (lbl[v] == -1)
+                     QUEUEput(ARC(e.w, v)); 
+         }
+      }
+   }
+</pre>
+
+
+<li class="exr">
+Analise e critique a seguinte implementação da busca em largura
+(essencialmente igual ao programa 18.9, p.119, de Segewick):
+<pre class="small">
+   static int cnt, lbl[maxV];
+   void DIGRAPHsearch (Digraph G) { 
+      Vertex v;
+      cnt = 0;
+      for (v = 0; v < G->V; v++) lbl[v] = -1;
+      for (v = 0; v < G->V; v++)
+         if (lbl[v] == -1) 
+            bfs(G, ARC(v, v));
+   }
+   void bfs (Digraph G, Arc e) { 
+      Vertex v, w;
+      QUEUEput(e); 
+      <b>lbl[e.w] = cnt++;</b> 
+      while (!QUEUEempty()) {
+         e = QUEUEget(); 
+         w = e.w; 
+         parnt[w] = e.v; 
+         for (v = 0; v < G->V; v++)
+            if (G->adj[w][v] == 1) { 
+               if (lbl[v] == -1) { 
+                  QUEUEput(ARC(w, v)); 
+                  <b>lbl[v] = cnt++;</b>
+               }
+      }
+   }
+</pre>
+
+</ol>
+
+
+
+
+
+<h2>Desempenho</h2>
+
+<p>A função <tt>DIGRAPHbfs</tt> é linear:&nbsp;
+ela consome tempo proporcional a&nbsp; <tt>V<sup>2</sup></tt>&nbsp;
+no pior caso.&nbsp;
+A variante dessa função para listas de adjacência consome tempo 
+proporcional a&nbsp;&nbsp;<tt>V+E</tt>.
+
+
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=11>
+
+<li class="exr" id="queueofarcs">
+Escreva uma versão da função <tt>DIGRAPHbfs</tt>
+em que a fila armazexna arcos e não vértices.&nbsp;
+
+<li class="exr" id="sem-lbl">
+Escreva uma versão de <tt><a href="#DIGRAPHbfs2">DIGRAPHbfs</a></tt>
+sem o vetor <tt>lbl</tt>:&nbsp;
+o vetor <tt>parnt</tt> é suficiente para controlar a lógica da função.
+
+
+<li class="exr" id="recursive-bfs">
+[<span class="sc">Um tanto ridículo</span>]&nbsp;
+Escreva uma versão recursiva da busca em largura.
+
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h2>Mais exercícios</h2>
+
+<ol start=14>
+
+<li class="exr">
+Escreva uma função que use busca em largura 
+para calcular o número de componentes de um grafo.
+
+<li class="exr" id="bipartite">
+[<span class="sc">Grafos Bipartidos</span>]&nbsp;
+Escreva uma função que use busca em largura 
+para reconhecer
+<a href="bipartite.html">grafos bipartidos</a>.
+
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<p>&nbsp;
+<hr>
+<small>
+
+Last modified: Thu Feb 15 08:55:46 BRST 2007
+<br>
+&nbsp;</small>
+
+</BODY>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/bfs.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:40 GMT -->
+</HTML>

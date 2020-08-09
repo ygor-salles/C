@@ -1,0 +1,500 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/dfs1.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:39 GMT -->
+<HEAD>
+<TITLE>Algoritmos para Grafos: Busca em profundidade: introducao</TITLE>
+<META NAME="Author" CONTENT="Paulo Feofiloff">
+<META name="language" content="Portuguese">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1"> 
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<LINK rel="stylesheet" href="code.css" type="text/css">
+</HEAD>
+<BODY>
+
+
+
+
+
+
+
+
+
+
+<p class="top">
+<a href="../index.html#contents">Algoritmos em C para Grafos via Sedgewick</a>&nbsp;
+
+
+
+
+
+<h1>Busca em profundidade: introdução</h1>
+
+
+
+<p>Um algoritmo de busca (ou varredura) 
+é um algoritmo que examina, sistematicamente,
+todos os vértices e todos os arcos
+de um digrafo.&nbsp;
+Cada arco é examinado uma só vez.&nbsp;
+Depois de visitar a ponta inicial de um arco,
+o algoritmo percorre o arco
+e visita sua ponta final.
+
+<p id="lbl">Há muitas maneiras de fazer uma tal busca.&nbsp;
+Cada estratégia de busca 
+é caracterizada pela ordem em que os vértices são visitados.&nbsp;
+Diremos que o <tt>k</tt>-ésimo vértice visitado durante a busca
+tem <span class="dfn">número de ordem</span>
+<tt>k-1</tt>&nbsp;.&nbsp;
+
+
+<p>Esta página introduz uma poderosa estratégia de busca
+conhecida como 
+<span class="dfn">busca em profundidade</span>
+(=&nbsp;<i>depth-first search</i> =&nbsp;<i>DFS</i>).&nbsp;
+A busca em profundidade,
+ou busca DFS,
+está relacionada com conceitos como 
+backtracking,
+varredura de árvore em pré-ordem,
+exploração de labirintos,
+fio de Ariadne (no mito de Teseu e o Minotauro),
+etc.
+
+
+<p>(Esta página corresponde aproximadamente às 
+seções&nbsp;18.1 (Exploring a Maze) e
+18.2 (Depth-First Search) 
+do capítulo&nbsp;18 (Graph Search)
+do livro de Sedgewick.)
+
+
+
+
+
+
+<h2>Busca DFS</h2>
+
+<p>A função <tt>DIGRAPHdfs</tt> abaixo executa uma 
+busca em profundidade em um digrafo.&nbsp;
+Pode-se dizer que a função visita os vértices do digrafo 
+"em ordem DFS".&nbsp;
+Cada vértice <tt>v</tt> recebe um rótulo (=&nbsp;<i>label</i>&nbsp;)
+que dá o número de ordem do vértice.&nbsp;
+
+Os rótulos são armazenados num vetor&nbsp; <tt>lbl</tt>&nbsp; 
+indexado pelos vértices.&nbsp;
+<span class="dim">[Sedgewick escreve "<tt>pre</tt>" no lugar do
+meu "<tt>lbl</tt>",
+pois está pensando no <a href="arborescences.html#preorder"
+>algoritmo de varredura de arborescências</a>
+conhecido como <i>preorder traversal</i>.&nbsp;
+Infelizmente, 
+Sedgewick continua escrevendo "<tt>pre</tt>" em outros contextos,
+que não têm relação alguma com <i>preorder</i>.]</span>
+
+
+
+
+<blockquote class="hlt">
+<p class="doc">
+/* Vamos supor que nossos digrafos têm no máximo 
+   <tt class="doc">maxV</tt> vértices.&nbsp;*/
+
+<pre class="code">
+<span class="k">#define</span> maxV 10000
+<span class="k">static int</span> cnt, lbl[maxV];
+</pre>
+
+<p class="doc" id="DIGRAPHdfs">
+/* A função <tt class="doc">DIGRAPHdfs</tt>
+   visita todos os vértices e todos os arcos 
+   do digrafo <tt class="doc">G</tt>.
+   A&nbsp;função registra a ordem em que os vértices são visitados
+   atribuindo um número de ordem <tt class="doc">lbl[x]</tt> a 
+   cada vértice&nbsp;<tt class="doc">x</tt>:&nbsp;
+   o <tt class="doc">k</tt>-ésimo 
+   vértice visitado recebe número de 
+   ordem&nbsp;<tt class="doc">k-1</tt>.&nbsp;
+   (Código inspirado no programa 18.3, p.87, 
+   de Sedgewick.)&nbsp;*/
+
+<pre class="code">
+<span class="k">void</span> DIGRAPHdfs (<span class="k">Digraph</span> G) { 
+   <span class="k">Vertex</span> v;
+   cnt = 0;
+   <span class="k">for</span> (v = 0; v < G->V; v++) 
+      lbl[v] = -1;
+   <span class="k">for</span> (v = 0; v < G->V; v++)
+      <span class="k">if</span> (lbl[v] == -1) 
+         dfsR(G, v);
+}
+</pre>
+
+<p class="doc" id="dfsRmatrix">
+/* A função <tt class="doc">dfsR</tt>
+   supõe que o digrafo <tt class="doc">G</tt> 
+   é representado por uma matriz de adjacência.&nbsp;
+   (Inspirado no programas 18.1, p.82, de Sedgewick.)&nbsp;*/
+
+<pre class="code">
+<span class="k">void</span> dfsR (<span class="k">Digraph</span> G, <span class="k">Vertex</span> v) { 
+   <span class="k">Vertex</span> w;
+   lbl[v] = cnt++; 
+   <span class="k">for</span> (w = 0; w < G->V; w++)
+      <span class="k">if</span> (G->adj[v][w] != 0) 
+         <span class="k">if</span> (lbl[w] == -1)
+            dfsR(G, w); 
+}
+</pre>
+</blockquote>
+
+
+<p>A função <tt>DIGRAPHdfs</tt> é apenas uma interface com o usuário.&nbsp;
+A busca em profundidade propriamente dita é realizada 
+pela função <i>recursiva</i>&nbsp;<tt>dfsR</tt>.&nbsp;
+A&nbsp;versão acima supõe que o grafo está representado por sua
+<a href="adjmatrix.html">matriz de adjacência</a>,
+enquanto a versão abaixo grafo está representado por
+<a href="adjlists.html">listas de adjacência</a>.
+
+
+
+<blockquote class="hlt">
+<p class="doc" id="dfsRlists">
+/* A função abaixo é a versão de <tt class="doc">dfsR</tt>
+   para digrafos representados por listas de adjacência.&nbsp;
+   (Inspirado no programas 18.2, p.85, de Sedgewick.)&nbsp;*/
+
+<pre class="code">
+<span class="k">void</span> dfsR (<span class="k">Digraph</span> G, <span class="k">Vertex</span> v) { 
+   <span class="k">link</span> p; 
+   lbl[v] = cnt++; 
+   <span class="k">for</span> (p = G->adj[v]; p != <span class="k">NULL</span>; p = p->next)
+      <span class="k">if</span> (lbl[p->w] == -1) 
+         dfsR(G, p->w); 
+}
+</pre>
+</blockquote>
+
+
+
+
+
+
+
+<p>Se <tt>lbl[v]</tt> vale <tt>-1</tt>,
+dizemos que o vértice <tt>v</tt>
+ainda não foi visitado.&nbsp;
+Dizemos que um arco <tt>v-w</tt> 
+foi visitado quando a função <tt>dfsR</tt> 
+se depara com <tt>w</tt> 
+ao examinar os vizinhos de&nbsp;<tt>v</tt>.
+
+
+
+
+
+<h2 id="fig18.5">Exemplo</h2>
+
+<p>O exemplo abaixo ilustra uma busca em profundidade 
+num grafo, ou seja, num digrafo simétrico.&nbsp;
+O&nbsp;grafo é definido pelo conjunto de arestas
+
+<p class="display">
+<tt>0-2 2-6 6-4 4-5 5-0 0-7 7-1 7-4 3-4 3-5</tt>&nbsp;.
+
+<p>Suponha que o grafo é representado por sua matriz de adjacência.
+A figura abaixo registra 
+cada arco no momento em que ele é visitado
+e registra cada invocação de <tt>dfsR</tt>.
+A execução de cada nova instância de <tt>dfsR</tt>
+é indicada por uma <a href="footnotes/indent.html">endentação</a> 
+apropriada das linhas.
+
+<pre>
+          dfsR(G,0)
+            0-2 dfsR(G,2)
+              2-0 
+              2-6 dfsR(G,6)
+                6-2
+                6-4 dfsR(G,4)
+                  4-3 dfsR(G,3)
+                    3-4
+                    3-5 dfsR(G,5)
+                      5-0
+                      5-3
+                      5-4
+                  4-5
+                  4-6
+                  4-7 dfsR(G,7)
+                    7-0
+                    7-1 dfsR(G,1)
+                      1-7
+                    7-4
+            0-5
+            0-7
+</pre>
+
+<p>O vetor <tt>lbl</tt> terá a seguinte evolução
+(com "<tt>*</tt>" no lugar de "<tt>-1</tt>"):
+<pre>
+            0 1 2 3 4 5 6 7
+            ---------------
+            0 * * * * * * *
+            0 * 1 * * * * *
+            0 * 1 * * * 2 *
+            0 * 1 * 3 * 2 *
+            0 * 1 4 3 * 2 *
+            0 * 1 4 3 5 2 *
+            0 * 1 4 3 5 2 6
+            0 7 1 4 3 5 2 6
+</pre>
+
+<p>Portanto, os vértices são visitados na ordem&nbsp;
+<tt>0 2 6 4 3 5 7 1</tt>.&nbsp;&nbsp;
+(Esse exemplo foi copiado 
+da figura&nbsp;18.5, p.82, de Sedgewick.)
+
+
+
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=1>
+
+
+
+<li class="exr" id="doc-dfsR">
+Escreva a documentação da função recursiva
+<tt><a href="#dfsRmatrix">dfsR</a></tt>&nbsp;
+(ou seja, diga <i>o&nbsp;que</i> a função faz).&nbsp;
+[<a href="solutions/dfs01.html">Solução</a>]
+
+<li class="exr" id="E18.4">
+Aplique a função <tt>DIGRAPHdfs</tt>,
+<a href="#dfsRmatrix">versão para matriz de adjacência</a>,
+ao grafo definido pelas arestas
+<center>
+<pre class="small">
+   0-2 0-5 1-2 3-4 4-5 3-5
+</pre>
+</center>
+<p>e exiba um "trace" da execução da função
+no formato do <a href="#fig18.5">exemplo acima</a>.
+
+
+<li class="exr" id="E18.5">
+Refaça o <a href="#fig18.5">exemplo acima</a>
+depois de alterar o código de <tt>dfsR</tt>,
+versão para matriz de adjacência,
+de modo que cada linha da matriz seja percorrida "ao contrário",
+isto é, de <tt>V-1</tt> para&nbsp;<tt>0</tt>.
+
+<li class="exr" id="E18.7">
+Aplique a função <tt>DIGRAPHdfs</tt>,
+<a href="#dfsRmatrix">versão para matriz de adjacência</a>,
+ao grafo definido pelas arestas
+<center>
+<pre class="small">
+3-7 1-4 7-8 0-5 5-2 3-8 2-9 0-6 4-9 2-6 6-4
+</pre>
+</center>
+<p>e exiba um "trace" da execução da função.
+Use o formato do <a href="#fig18.5">exemplo acima</a>.
+
+
+<li class="exr">
+Refaça o <a href="#fig18.5">exemplo acima</a>
+supondo que o grafo 
+é representado por suas listas de adjacência.
+Suponha que as listas são construídas 
+pela inserção das arestas, na ordem dada acima,
+num grafo inicialmente vazio.
+
+
+<li class="exr" id="E18.8">
+Aplique a função <tt>DIGRAPHdfs</tt>,
+versão para listas de adjacência,
+ao grafo definido pelas arestas
+<center>
+<pre class="small">
+3-7 1-4 7-8 0-5 5-2 3-8 2-9 0-6 4-9 2-6 6-4
+</pre>
+</center>
+<p>e exiba um "trace" da execução da função.
+Suponha que as listas de adjacência são construídas 
+inserindo os arcos acima, na ordem dada, num grafo inicialmente vazio.
+Use o formato do <a href="#fig18.5">exemplo acima</a>.
+
+
+
+<li class="exr" id="E18.11">
+Existem <tt>13!</tt> diferentes permutações dos vértices 
+do grafo definido pelas arestas
+<center>
+<pre class="small">
+0-1 0-9 1-4 1-9 2-7 2-10 2-12 3-12 5-12 6-10 6-12 7-10 8-11
+</pre>
+</center>
+<p>(figura&nbsp;18.8, p.87, de Sedgewick).&nbsp;
+Quantas dessas permutações coincidem com a ordem 
+em que os vértices do grafo poderiam ser visitados pela função
+<tt><a href="#DIGRAPHdfs">DIGRAPHdfs</a></tt>
+se usarmos a versão da função <tt>dfsR</tt>
+para listas de adjacência?&nbsp;
+(Sugestão:
+Considere todas as ordens em que os vértices podem 
+aparecer nas listas de adjacência.)
+
+</ol>
+
+
+
+<h2>Desempenho</h2>
+
+<p>A função <tt>DIGRAPHdfs</tt>
+combinada com a versão de <tt>dfsR</tt> para matriz de adjacência
+consome tempo proporcional a
+
+<p class="display">
+<tt>V<sup>2</sup></tt>.
+
+<p>(Isso é proporcional ao tempo necessário para 
+ler a matriz de adjacência;
+o algoritmo é, portanto, muito rápido).&nbsp;
+Combinada com a versão de <tt>dfsR</tt> para listas de adjacência,
+a função <tt>DIGRAPHdfs</tt>
+consome tempo proporcional a
+
+<p class="display">
+<tt>V+E</tt>.
+
+<p>(Isso é proporcional ao tempo necessário para ler 
+todas as listas de adjacência; 
+o algoritmo é, portanto, muito rápido).
+
+
+
+
+
+
+
+
+<h2>Mais exercícios</h2>
+
+<ol start=8>
+
+<li class="exr">
+Suponha que o grafo abaixo é representado por suas listas de adajcência.
+<p class="display">
+<tt>0-1 0-2 1-3 1-4 1-5 3-6 3-7 4-7 5-7</tt>
+<p>Se as listas de adjacência do grafo fossem construídas
+de maneira apropriada,
+a numeração dos vértices dada abaixo poderia ser produzida por uma
+busca em profundidade?
+<pre>
+          v     0  1  2  3  4  5  6  7
+      lbl[v]    0  1  4  3  2  5  6  7
+</pre>
+
+
+
+<li class="exr">
+O seguinte algoritmo iterativo executa uma busca em profundidade?&nbsp;
+As funções 
+<tt>STACKinit</tt>, <tt>STACKpush</tt>, 
+<tt>STACKpop</tt> e <tt>STACKempty</tt> 
+manipulam uma pilha de vértices:&nbsp;
+<tt>STACKinit</tt> cria uma pilha vaiza,
+<tt>STACKpush</tt> coloca um vértice na pilha,
+<tt>STACKpop</tt> retira um vértice da pilha e
+<tt>STACKempty</tt> devolve <tt>1</tt> se a pilha está vazia.&nbsp;
+(Compare o código com a implementação da busca em largura
+a ser estudada <a href="bfs.html#DIGRAPHbfs1">adiante</a>.)
+<pre class="small">
+   #include "STACK.h"
+   static int cnt, lbl[maxV];
+   void DIGRAPHdfs? (Digraph G) { 
+      Vertex v;
+      cnt = 0;
+      for (v = 0; v < G->V; v++) lbl[v] = -1;
+      for (v = 0; v < G->V; v++)
+         if (lbl[v] == -1)
+            dfs?(G, v);
+   }
+   void dfs? (Digraph G, Vertex v) { 
+      Vertex w;
+      STACKinit(G->A);
+      lbl[s] = cnt++; 
+      STACKpush(s); 
+      while (!STACKempty()) {
+         v = STACKpop(); 
+         for (w = 0; w < G->V; w++)
+            if (G->adj[v][w] == 1)
+               if (lbl[w] == -1) { 
+                  lbl[w] = cnt++; 
+                  STACKpush(w); 
+               }
+      }
+   }
+</pre>
+
+
+
+<li class="exr" id="stack-based-dfs">
+[<span class="sc">Versão Iterativa da Busca em Profundidade</span>]&nbsp;
+Escreva uma versão iterativa da função 
+<tt><a href="#dfsRlists">dfsR</a></tt>
+para digrafos representados por listas de adjacência.&nbsp;&nbsp;
+
+<li class="exr" id="stack-based-dfs-matrix">
+[<span class="sc">Versão Iterativa, Matriz de Adjacência</span>]&nbsp;
+Escreva uma versão iterativa da função 
+<tt><a href="#dfsRmatrix">dfsR</a></tt>
+para digrafos representados por matriz de adjacência.&nbsp;&nbsp;
+(Este exercício exige apenas uma adaptação simples do 
+<a href="#stack-based-dfs">exercício anterior</a>.)&nbsp;
+
+
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<p>&nbsp;
+<hr>
+<small>
+
+Last modified: Thu Feb 15 08:55:50 BRST 2007
+</small>
+
+</BODY>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/dfs1.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:39 GMT -->
+</HTML>

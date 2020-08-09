@@ -1,0 +1,35 @@
+Condição && e ||, utilização:
+
+
+A condição E "&&" é a mais utilizada devido ao valor que o usuário digitar se estiver dentro de um intervalo
+essa deve ser utilizada E.  OU fora do intervalo.
+Exemplo:
+
+	if ((media>=25) && (media<=50)).. ==> 25|------|50 (media está dentro do intervalo 25-50)
+
+
+	if ((opcao<1) || (opcao>4)).. ==> ----|1    4|------ (opção está fora do meio)
+
+
+ESCOLHA CASO: (ESTRUTURA):
+
+	switch (x){ 				
+ case 1:
+	condição 1;
+	break;
+ case 2:
+	condição 2;
+	break;
+	.
+	.
+	.
+ default:
+	condição n;
+}
+
+ x= variável
+ break = critério de parada do código caso encontre a condição que o satisfaça.
+ default = "else final"
+
+	
+	

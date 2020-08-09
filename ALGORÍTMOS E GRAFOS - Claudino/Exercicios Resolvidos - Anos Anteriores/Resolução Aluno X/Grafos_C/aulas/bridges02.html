@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/bridges02.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:43 GMT -->
+<HEAD>
+<TITLE>Algoritmos para Grafos: Calculo do vetor low[]</TITLE>
+<META NAME="Author" CONTENT="Paulo Feofiloff">
+<META name="language" content="Portuguese">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1"> 
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<LINK rel="stylesheet" href="code.css" type="text/css">
+</HEAD>
+<BODY>
+
+
+
+
+
+
+<p class="right">
+<a href="bridges.html#bridges02">Enunciado do exercício</a>
+
+
+
+
+<h3>Cálculo ineficiente do vetor low[ ]</h3>
+
+
+
+<blockquote class="hlt" id="low">
+<pre class="codedim">
+static int cnt, lbl[1000], low[1000];
+static Vertex parnt[1000];
+
+/* Esta função faz uma busca em profundidade no grafo G 
+   e imprime lbl[v] e low[v] para cada vértice v do grafo.
+*/
+
+void compute_low (Graph G) { 
+   Vertex v, w;
+   cnt = 0;
+   for (v = 0; v < G->V; v++) 
+      lbl[v] = -1;
+   for (v = 0; v < G->V; v++)
+      if (lbl[v] == -1) 
+         dfsR(G, EDGE(v, v));
+
+   for (w = 0; w < G->V; w++) 
+      low[w] = lbl[w];
+   for (w = 1; w < G->V; w++) {
+      link t;
+      for (t = G->adj[w]; t != NULL; t = t->next) {
+         v = t->w;
+         if (lbl[v] < lbl[w] &amp;&amp; v != parnt[w]) { 
+            Vertex i = w;
+            while (low[i] > lbl[v]) {
+               low[i] = lbl[v];
+               i = parnt[i];
+            }
+         }
+      }
+   }
+
+   print(G->V);
+}
+
+
+void dfsR (Graph G, Edge e) { 
+   link t; 
+   Vertex w = e.w;
+   lbl[w] = cnt++; 
+   parnt[w] = e.v;
+   for (t = G->adj[w]; t != NULL; t = t->next) 
+      if (lbl[t->w] == -1) 
+         dfsR(G, EDGE(w, t->w)); 
+}
+
+
+void print (int V) {
+   Vertex v;
+   printf("\n   v lbl[v] low[v]\n");
+   for (v = 0; v < V; v++) 
+      printf("%4d %6d %6d\n", v, lbl[v], low[v]);
+   printf("\n");
+}
+</pre>
+</blockquote>
+
+
+
+
+
+
+
+
+
+
+<p>&nbsp;
+<hr>
+<small>
+
+Last modified: Tue Jan  2 06:45:07 BRST 2007
+</small>
+
+</BODY>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/bridges02.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:43 GMT -->
+</HTML>

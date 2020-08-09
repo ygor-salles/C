@@ -1,0 +1,46 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int *reverso(int qtd, int *v);
+
+int main(){
+    int qtd, *v, *vetorReverso, i;
+
+    printf("Digite a qtd de numeros: ");
+    scanf(" %d", &qtd);
+
+    v = (int*) malloc(qtd * sizeof(int));
+
+    for(i=0; i<qtd; i++){
+        printf("\nDigite o numero %d: ", i+1);
+        scanf(" %d", &v[i]);
+    }
+
+
+    vetorReverso = reverso(qtd, v);
+
+
+
+    printf("\n-- Vetor Reverso: ");
+    for(i=0; i<qtd; i++){
+        printf("%d ", vetorReverso[i]);
+    }
+
+    free(v);
+    free(vetorReverso);
+
+    return 0;
+}
+
+int *reverso(int qtd, int *v){
+    int i, *vetorReverso, cont = qtd-1;
+
+    vetorReverso = (int*) malloc(qtd * sizeof(int));
+
+    for(i=0; i<qtd; i++){
+            vetorReverso[i] = v[cont];
+            cont--;
+    }
+
+    return vetorReverso;
+}

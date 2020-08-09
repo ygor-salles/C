@@ -1,0 +1,4 @@
+P2 - Caiu somente a parte conceitual de Árvore AVL (3), Árvore Rubro Negra(4), Árvore B(1) e Tabela Hash(2)
+*10 Questões fechadas
+
+Nível - Very Easy

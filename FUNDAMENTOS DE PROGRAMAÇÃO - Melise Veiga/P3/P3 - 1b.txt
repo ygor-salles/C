@@ -1,0 +1,7 @@
+void funcaoB (usuario *pa, int codigo, char log[])
+{
+    if (pa->cod == codigo) {
+        strcpy (pa->login, log);
+    }
+    return ;
+}

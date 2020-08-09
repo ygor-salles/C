@@ -1,0 +1,904 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+   <HEAD>
+   <TITLE>Projeto de Algoritmos: Listas encadeadas</TITLE>
+   <META NAME="Author" CONTENT="Paulo Feofiloff">
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1"> 
+   <LINK rel="stylesheet" href="Laulas.css" type="text/css">
+</HEAD>
+<BODY>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h1>Listas encadeadas</h1>
+
+
+
+
+
+
+<p>Uma lista encadeada
+é uma representação de uma seqüência de objetos 
+na memória do computador.
+Cada elemento da seqüência é armazenado em uma célula da lista:
+o primeiro elemento na primeira célula,
+o segundo na segunda e assim por diante.
+
+
+
+
+<h2>Estrutura de uma lista encadeada</h2>
+
+
+<p>Uma <dfn>lista encadeada</dfn>&nbsp;
+<i>(=&nbsp;linked list =&nbsp;lista ligada)</i>&nbsp;
+é uma seqüência de <dfn>células</dfn>;
+cada célula contém um objeto de algum tipo 
+e o endereço 
+da célula seguinte.&nbsp;&nbsp;
+
+Suporemos nesta página que os objetos armazenados 
+nas células são do tipo <tt>int</tt>.&nbsp;
+A estrutura de cada célula de uma tal lista pode ser definida assim:
+
+
+
+
+
+
+
+
+
+
+
+<table class="ca" cellpadding=0>
+<tr>
+<td>
+
+ <pre class="ind">
+    struct cel {
+       int         conteudo;
+       struct cel *prox;
+    };                                    
+ </pre>
+
+<td>
+
+ <TABLE align="right" cellpadding=0 border=0>
+ <TR>
+ <TD>
+   <table cellpadding=2 cellspacing=3 border=0>
+   <tr>
+   <td height=35 bgcolor="#e0cce0">&nbsp;
+   <td align="center" bgcolor="#b0b0b0">&nbsp;
+   <tr>   
+   <td align="center"><tt>conteudo</tt>
+   <td align="center"><tt>prox</tt>
+   </table>
+ 
+ </TABLE>
+
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<p>É conveniente tratar as células como um novo 
+tipo-de-dados
+e atribuir um nome a esse novo tipo:
+
+<pre class="ind">
+   typedef struct cel <b>celula</b>;
+</pre>
+
+
+
+
+
+
+<p>Uma célula&nbsp; <tt>c</tt>&nbsp; e  
+um ponteiro&nbsp; <tt>p</tt>&nbsp; para uma célula 
+podem ser declarados assim:
+<pre class="ind">
+   celula  c;
+   celula *p;
+</pre>
+
+<p>Se <tt>c</tt> é uma célula então&nbsp;
+<tt>c.conteudo</tt>&nbsp; é o conteúdo da célula e&nbsp;
+<tt>c.prox</tt>&nbsp; é o endereço da próxima célula.&nbsp;
+
+Se&nbsp; <tt>p</tt>&nbsp; é o endereço de uma célula,
+então&nbsp;
+<tt>p-&gt;conteudo</tt>&nbsp; 
+é o conteúdo da célula e&nbsp;
+<tt>p-&gt;prox</tt>&nbsp; é o endereço da próxima célula.&nbsp;
+Se&nbsp; <tt>p</tt>&nbsp; é o endereço da <i>última</i> 
+célula da lista então&nbsp;
+
+<p class="center">
+<tt>p-&gt;prox</tt>&nbsp; vale&nbsp; 
+<tt>NULL</tt>.
+
+
+
+
+
+    
+    <p class="center">
+    <img src="file:///C:/Documents%20and%20Settings/Claudino/Meus%20documentos/matl_2008/grafos/grafos_pf/Grafos_C/gif/lista2a.gif" 
+    style="padding-top:2em;padding-bottom:3em"
+    alt="lista encadeada">
+
+
+
+
+
+
+<h2>Endereço de uma lista encadeada</h2>
+
+<p id="address">O <dfn>endereço</dfn> de uma lista encadeada
+é o endereço de sua primeira célula.&nbsp;
+Se <tt>p</tt> é o endereço de uma lista,
+convém, às vezes, dizer simplesmente
+ 
+<p class="center">
+&quot;<tt>p</tt> é uma lista&quot;.
+
+<p>Listas são animais eminentemente recursivos.
+Para tornar isso evidente, basta fazer a seguinte observação:&nbsp;
+se&nbsp;<tt>p</tt> é  uma lista então
+vale uma das seguintes alternativas:
+<ul>
+<li class="space"><tt>p == NULL</tt>&nbsp; ou
+<li class="space"><tt>p-&gt;prox</tt>&nbsp; é  uma lista.
+</ul>
+
+
+
+
+
+
+<h2 id="cabeca">Listas com cabeça e sem cabeça</h2>
+
+<p>Uma lista encadeada pode ser organizada de duas maneiras diferentes,
+um óbvia e outra menos óbvia.
+
+
+<ul>
+<li class="ssspace">
+Lista <i>com</i> cabeça.&nbsp;
+O conteúdo da primeira célula é irrelevante:
+ela serve apenas para marcar o início da lista.&nbsp;
+A primeira célula é a <dfn>cabeça</dfn> 
+<i>(=&nbsp;head cell =&nbsp;dummy cell)</i>
+da lista.&nbsp;
+A primeira célula está sempre no mesmo lugar na memória,
+mesmo que a lista fique vazia.&nbsp;
+Digamos que <tt>ini</tt> é o endereço da primeira célula.
+Então&nbsp; <tt>ini-&gt;prox</tt> == <tt>NULL</tt>&nbsp;
+se e somente se a lista está vazia.
+Para criar uma lista vazia, basta dizer
+<p>
+<table cellpadding=2 border=0>
+<tr>
+<td>
+<pre>
+   celula c, *ini;
+   c.prox = NULL;
+   ini = &amp;c;
+</pre>
+<td width="80" align="center">ou
+<td>
+<pre>
+   celula *ini;
+   ini = malloc (sizeof (celula));
+   ini->prox = NULL;
+</pre>
+</table>
+
+
+<li class="sspace">
+Lista <i>sem</i> cabeça.&nbsp;
+O conteúdo da primeira célula é tão relevante quanto o das demais.
+Nesse caso, a lista está vazia se 
+o endereço de sua primeira célula é <tt>NULL</tt>.&nbsp;
+Para criar uma lista vazia basta fazer
+<pre>
+   celula *ini;  
+   ini = NULL;
+</pre>
+
+</ul>
+
+
+<p>Suporemos no que segue
+que nossas listas têm cabeça.
+O caso de listas <i>sem</i> cabeça
+será tratado nos exercícios.
+Eu prefiro listas sem cabeça (porque são mais &quot;puras&quot;),
+mas a vida do programador fica mais fácil quando a lista tem cabeça.
+
+
+
+
+
+<h2>Exemplos</h2>
+
+<p>Eis como se imprime o conteúdo de uma lista encadeada <i>com</i> cabeça:
+
+<pre class="ind">
+<span class="comm"><a href="footnotes/comments.html">//</a> Imprime o conteúdo de uma lista encadeada
+// com cabeça. O endereço da primeira célula é ini.</span>
+
+void imprima (celula *ini)
+{
+   celula *p;
+   for (p = ini-&gt;prox; p != NULL; p = p-&gt;prox) 
+      printf ("%d\n", p-&gt;conteudo);
+}
+</pre>
+
+<p>Eis a correspondente função para lista <i>sem</i> cabeça:
+
+<pre class="ind">
+<span class="comm">// Imprime o conteúdo de uma lista encadeada ini.
+// A lista não tem cabeça.</span>
+
+void imprima (celula *ini)
+{
+   celula *p;
+   for (p = ini; p != NULL; p = p-&gt;prox) 
+      printf ("%d\n", p-&gt;conteudo);
+}
+</pre>
+
+
+
+
+
+
+
+
+<h2>Busca em uma lista encadeada</h2>
+
+<p>Veja como é fácil verificar se um inteiro <tt>x</tt>
+pertence a uma lista encadeada, ou seja, 
+se é igual ao conteúdo de alguma célula da lista:
+
+
+<pre class="hlt">
+<span class="comm">// Esta função recebe um inteiro x e uma lista
+// encadeada de inteiros. O endereço da lista é
+// ini e ela tem uma celula-cabeça. A função
+// devolve o endereço de uma celula que contém x.
+// Se tal celula não existe, a função devolve NULL.</span>
+
+celula *<b>busca</b> (int x, celula *ini)
+{
+   celula *p;
+   p = ini-&gt;prox;
+   while (p != NULL &amp;&amp; p-&gt;conteudo != x) 
+      p = p-&gt;prox; 
+   return p; 
+}
+</pre>
+
+<p>Que beleza! Nada de variáveis booleanas!
+A função se comporta bem até mesmo quando a lista está vazia.
+
+<p>Eis uma versão recursiva da mesma função:
+
+<pre class="hlt">
+celula *busca2 (int x, celula *ini)
+{
+   if (ini-&gt;prox == NULL) 
+      return NULL;
+   if (ini-&gt;prox-&gt;conteudo == x) 
+      return ini-&gt;prox;
+   return busca2 (x, ini-&gt;prox);
+}
+</pre>
+
+
+
+<h2 class="exr">Exercícios</h2>
+
+<div class="exr">
+<ol start=1>
+
+<li class="exr">
+Critique a função abaixo.
+Ao receber uma lista encadeada com cabeça e um inteiro <tt>x</tt>,
+ela promete devolver
+o endereço de uma célula com conteúdo <tt>x</tt>.
+Se tal célula não existe,
+promete devolver <tt>NULL</tt>.
+<pre>
+celula *busca (int x, celula *ini) {
+   int achou;
+   celula *p;
+   achou = 0;
+   p = ini-&gt;prox;
+   while (p != NULL &amp;&amp; !achou) {
+      if (p-&gt;conteudo == x) achou = 1;
+      p = p-&gt;prox; }
+   if (achou) return p;
+   else return NULL; }
+</pre>
+
+
+
+
+
+<li class="exr">
+Escreva uma versão da função <tt>busca</tt>
+para listas <i>sem</i> cabeça.
+
+
+<li class="exr">
+[<span class="smallcaps">Mínimo</span>]&nbsp;
+Escreva uma função que 
+encontre uma célula de conteúdo mínimo.
+Faça duas versões: uma iterativa e uma recursiva.
+
+
+<li class="exr">
+Escreva uma função que faça um busca em uma lista <i>crescente</i>.
+Faça versões para listas com e sem cabeça.
+Faça versões recursiva e iterativa.
+
+
+<li class="exr">
+[<span class="smallcaps">Ponto médio de uma lista</span>]&nbsp;
+Escreva uma função que receba uma lista encadeada
+e devolva o endereço de um nó que esteja o mais próximo possível do
+meio da lista.
+Faça isso sem contar explicitamente o número de nós da lista.
+
+    
+</ol>
+</div>
+
+
+
+<h2>Inserção em uma lista</h2>
+
+
+<p>Quero <i>inserir</i> <i>(=&nbsp;insert)</i>
+uma nova célula com conteúdo <tt>x</tt>
+entre a posição apontada por&nbsp; <tt>p</tt>&nbsp; e a 
+posição seguinte
+[por que seguinte e não anterior?]
+em uma lista encadeada.&nbsp;
+É claro que isso só faz sentido se 
+<tt>p</tt> é diferente de <tt>NULL</tt>.
+
+
+<pre class="hlt">
+<span class="comm">// Esta função insere uma nova celula em uma 
+// lista encadeada. A nova celula tem conteudo
+// x e é inserida entre a celula apontada por 
+// p e a seguinte. Supõe-se que p != NULL.</span>
+
+void <b>insere</b> (int x, celula *p)
+{
+   celula *nova;
+   nova = malloc (sizeof (celula));
+   nova-&gt;conteudo = x;
+   nova-&gt;prox = p-&gt;prox;
+   p-&gt;prox = nova;
+}
+</pre>
+
+<p>Veja que maravilha! 
+Não é preciso movimentar células para &quot;criar espaço&quot;
+para um nova célula,
+como fizemos para 
+inserir um elemento de um vetor.
+Basta mudar os valores de alguns ponteiros.
+
+<p>Observe também que a função
+se comporta corretamente mesmo quando quero inserir no fim da lista,
+isto&nbsp;é, quando <tt>p-&gt;prox</tt> == <tt>NULL</tt>.&nbsp;
+Se a lista tem cabeça, a função pode ser usada 
+para inserir no início da lista: 
+basta que <tt>p</tt> aponte para a célula-cabeça.&nbsp;
+Infelizmente, a função não é capaz de inserir antes da 
+primeira célula de uma lista <i>sem</i> cabeça.
+
+<p>O tempo que a função consome
+<i>não depende</i> do ponto da lista
+onde quero fazer a inserção:
+tanto faz inserir uma nova célula
+na parte inicial da lista 
+quanto na parte final.&nbsp;
+Isso é bem diferente do que ocorre com a inserção em um vetor.
+
+
+
+<h2 class="exr">Exercícios</h2>
+
+<div class="exr">
+<ol start=6>
+
+<li class="exr">
+Por que a seguinte versão de <tt>insere</tt> não funciona?
+<pre>
+void insere (int x, celula *p) {
+   celula nova;
+   nova.conteudo = x;
+   nova.prox = p-&gt;prox;
+   p-&gt;prox = &amp;nova; }
+</pre>
+
+
+<li class="exr">
+Escreva uma função que insira 
+um novo elemento em uma lista encadeada <i>sem</i> cabeça.
+Será preciso tomar algumas decisões de projeto 
+antes de começar a programar.
+
+
+</ol>
+</div>
+
+
+
+
+
+
+<h2>Remoção em uma lista</h2>
+
+<p>Suponha que quero 
+
+<i>remover</i>
+<i>(=&nbsp;to remove =&nbsp;to delete)</i> 
+uma certa célula da lista.
+Como posso especificar a célula em questão?
+A idéia mais óbvia é apontar para a célula que quero remover.
+Mas é fácil perceber que essa idéia não é boa.
+É&nbsp;melhor apontar para
+a célula <i>anterior</i> à que quero remover.
+Infelizmente, isso traz uma nova dificuldade: 
+não há como pedir a remoção da <i>primeira</i> célula.
+Portanto, vamos nos limitar às listas com cabeça.
+
+<p>Vamos supor que <tt>p</tt> é o endereço de uma célula
+de uma lista com cabeça e que desejo remover a célula
+apontada por <tt>p-&gt;prox</tt>.&nbsp;
+
+(Note que a função de remoção não precisa saber onde a lista começa.)
+
+<pre class="hlt">
+<span class="comm">// Esta função recebe o endereço p de uma celula 
+// de uma lista encadeada. A função remove da
+// lista a celula p-&gt;prox. A função supõe que
+// p != NULL e p-&gt;prox != NULL.</span>
+
+void <b>remove</b> (celula *p)
+{
+   celula *morta;
+   morta = p-&gt;prox;
+   p-&gt;prox = morta-&gt;prox;
+   free (morta);
+}
+</pre>
+
+<p>Veja que maravilha! 
+Não é preciso copiar informações de um lugar para outro,
+como fizemos para
+remover um elemento de um vetor:
+basta mudar o valor de um ponteiro.
+A função consome sempre o mesmo tempo, quer a célula a ser removida esteja
+perto do início da lista,
+quer esteja perto do fim.
+
+
+
+
+
+
+<h2 class="exr">Exercícios</h2>
+
+<div class="exr">
+<ol start=8>
+
+<li class="exr">
+Critique a seguinte versão da função <tt>remove</tt>:
+<pre>
+void remove (celula *p, celula *ini) {
+   celula *morta;
+   morta = p-&gt;prox;
+   if (morta-&gt;prox == NULL)  p-&gt;prox = NULL;
+   else  p-&gt;prox = morta-&gt;prox;
+   free (morta); }
+</pre>
+
+
+<li class="exr">
+Invente um jeito de remover uma célula de
+uma lista encadeada <i>sem</i> cabeça.
+(Será preciso tomar algumas decisões de projeto 
+antes de começar a programar.)&nbsp;
+
+
+
+
+</ol>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<h2 class="exr">Mais exercícios</h2>
+
+<div class="exr">
+<ol start=10>
+
+<li class="exr">
+Escreva
+uma função que copie um vetor para uma lista encadeada.
+Faça duas versões: uma iterativa e uma recursiva.
+
+
+<li class="exr">
+Escreva
+uma função que copie uma lista encadeada para um vetor.
+Faça duas versões: uma iterativa e uma recursiva.&nbsp;
+
+
+<li class="exr">
+Escreva uma função que faça uma <i>cópia</i> de uma lista dada.
+
+
+<li class="exr">
+Escreva uma função que <i>concatena</i> duas listas encadeadas
+(isto&nbsp;é, &quot;amarra&quot; a segunda no fim da primeira).
+
+
+<li class="exr">
+Escreva uma função que <i>conta</i> o número de células de 
+uma lista encadeada.
+
+
+
+<li class="exr">
+Escreva uma função que remove a <tt>k</tt>-ésima célula
+de uma lista encadeada sem cabeça.
+Escreva uma função que insere na lista uma nova célula
+com conteúdo <tt>x</tt> 
+entre a <tt>k</tt>-ésima e a <tt>k+1</tt>-ésima células.
+
+
+<li class="exr">
+Escreva uma função que verifica se duas listas dadas
+são <i>iguais</i>,
+ou melhor, se têm o mesmo conteúdo.
+Faça duas versões: uma iterativa e uma recursiva.&nbsp;
+
+
+<li class="exr" id="desaloca">
+Escreva
+uma função que <i>desaloca</i> (função <tt>free</tt>)
+todos os nós de uma lista encadeada.&nbsp;
+Estamos supondo, é claro, que cada nó da lista foi
+originalmente alocado por <tt>malloc</tt>.&nbsp;
+
+
+<li class="exr">
+Escreva uma função que 
+<i>inverte</i> a ordem das células de uma lista encadeada
+(a primeira passa a ser a última, 
+a segunda passa a ser a penúltima etc.).
+Faça isso sem usar espaço auxiliar;
+apenas altere os ponteiros.
+Dê duas soluções: uma iterativa e uma recursiva.&nbsp;
+
+
+ 
+
+
+<li class="exr">
+<span class="smallcaps">Projeto de Programação</span>.&nbsp;
+Digamos que um <i>texto</i>
+é um vetor de caracteres contendo apenas letras, 
+espaços e sinais de pontuação.
+Digamos que uma <i>palavra</i> é um segmento maximal
+de texto que consiste apenas de letras.
+Escreva uma função que recebe um texto
+e imprime uma relação de todas as palavras 
+que ocorrem no texto juntamente com o número de 
+ocorrências de cada palavra.
+
+
+
+
+</ol>
+</div>
+
+
+
+
+
+
+
+
+<h2>Outros tipos de listas</h2>
+
+<p>A partir de agora, tudo é festa:
+você pode inventar uma grande variedade de tipos de listas encadeadas.
+Por exemplo, você pode fazer uma 
+lista encadeada <dfn>circular</dfn>:&nbsp;
+a última célula aponta para a primeira.
+A lista pode ou não ter uma célula-cabeça (você decide).
+Para especificar uma lista circular, basta fornecer um endereço
+(por exemplo, o endereço da última célula).
+
+<p>Outro tipo útil é a lista <dfn>duplamente encadeada</dfn>:&nbsp;
+cada célula contém o endereço da célula anterior e 
+o da célula seguinte.
+A lista pode ou não ter uma célula-cabeça (você decide).
+A lista pode até ter uma célula-rabo se você achar isso útil!
+
+
+<p>Pense nas seguintes questões, 
+apropriadas para qualquer tipo de lista encadeada.
+Em que condições a lista está vazia?
+Como remover a célula apontada por <tt>p</tt>?
+Idem para a célula seguinte à apontada por <tt>p</tt>?
+Idem para a célula anterior à apontada por <tt>p</tt>?
+Como inserir uma nova célula entre o elemento 
+apontado por <tt>p</tt> e o seu antecessor? 
+Idem entre <tt>p</tt> e seu sucessor?
+
+
+
+
+
+
+<h2 class="exr">Exercícios</h2>
+
+<div class="exr">
+<ol start=20>
+
+<li class="exr">
+Descreva, em linguagem C, a estrutura de uma das célula 
+de uma lista duplamente encadeada.
+
+
+<li class="exr">
+Escreva uma função que remove de uma lista 
+duplamente encadeada a célula apontada por <tt>p</tt>.
+(Que dados sua função recebe? Que coisa devolve?)
+
+
+
+<li class="exr">
+Escreva uma função que insira 
+em uma lista duplamente encadeada,
+logo após a célula apontada por <tt>p</tt>,
+uma nova célula com conteúdo <tt>y</tt>.
+(Que dados sua função recebe? Que coisa devolve?)
+
+
+
+<li class="exr">
+<span class="smallcaps">Problema de Josephus</span>.&nbsp;
+Imagine que temos <i>n</i> pessoas dispostas em círculo.
+Suponha que as pessoas estão numeradas <tt>1</tt> a <i>n</i> 
+no sentido horário.
+
+Começando com a pessoa de número&nbsp;<tt>1</tt>,
+percorra o círculo no sentido horário  
+e elimine cada <tt>m</tt>-ésima pessoa
+enquanto o círculo tiver duas ou mais pessoas.
+Qual o número do sobrevivente?&nbsp;
+
+
+</ol>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h2 id="lista2">Busca-e-remoção</h2>
+
+
+<p>Suponha que <tt>ini</tt>
+é o endereço de uma lista encadeada <i>com</i> cabeça.&nbsp;
+Nosso problema:&nbsp;
+Dado um inteiro <tt>y</tt>,
+remover da lista a primeira célula que contém <tt>y</tt>
+(se tal célula não existe, não é preciso fazer nada).
+
+<pre class="hlt">
+<span class="comm">// Esta função recebe uma lista encadeada ini,
+// com cabeça, e remove da lista a primeira
+// celula que contiver y, se tal celula existir.</span>
+
+void <b>buscaEremove</b> (int y, celula *ini)
+{
+   celula *p, *q;
+   p = ini;
+   q = ini-&gt;prox;
+   while (q != NULL &amp;&amp; q-&gt;conteudo != y) {
+      p = q;
+      q = q-&gt;prox;
+   }
+   if (q != NULL) {
+      p-&gt;prox = q-&gt;prox;
+      free (q);
+   }
+}
+</pre>
+
+<p>Invariante:
+no início de cada iteração 
+(imediatamente antes da comparação de <tt>q</tt> com <tt>NULL</tt>),
+temos 
+
+<blockquote>
+<tt>q == p-&gt;prox</tt>&nbsp;,
+</blockquote>
+
+<p>ou seja,&nbsp; <tt>q</tt>&nbsp; está sempre um passo à frente 
+de&nbsp;&nbsp;<tt>p</tt>.
+
+
+
+
+
+
+
+
+
+<h2 class="exr">Exercícios</h2>
+
+<div class="exr">
+<ol start=24>
+
+<li class="exr">Escreva uma função busca-e-remove
+para listas encadeadas <i>sem</i> cabeça
+(só pra ver que dor de cabeça isso dá).
+
+
+
+</ol>
+</div>
+
+
+
+
+
+
+
+<h2>Busca-e-inserção</h2>
+
+
+<p>Mais uma vez,
+suponha que tenho uma lista encadeada <tt>ini</tt>,
+com cabeça.
+(É óbvio que <tt>ini</tt> é diferente de <tt>NULL</tt>.)&nbsp;
+Nosso problema:&nbsp;
+Inserir na lista uma nova célula com conteúdo <tt>x</tt>
+imediatamente <i>antes</i> da primeira célula 
+que tiver conteúdo <tt>y</tt>&nbsp;;&nbsp;
+se tal célula não existe, inserir <tt>x</tt> no <i>fim</i> da lista.
+
+
+<pre class="hlt">
+<span class="comm">// Esta função recebe uma lista encadeada ini,
+// com cabeça, e insere na lista uma nova celula
+// imediatamente antes da primeira que contiver y.
+// Se nenhuma celula contém y, insere a nova
+// celula no fim da lista. O conteudo da nova
+// celula é x.</span>
+
+void <b>buscaEinsere</b> (int x, int y, celula *ini)
+{
+   celula *p, *q, *nova;
+   nova = malloc (sizeof (celula));
+   nova-&gt;conteudo = x;
+   p = ini;
+   q = ini-&gt;prox;
+   while (q != NULL &amp;&amp; q-&gt;conteudo != y) {
+      p = q;
+      q = q-&gt;prox;
+   }
+   nova-&gt;prox = q;
+   p-&gt;prox = nova;
+}
+</pre>
+
+
+
+
+
+
+
+<h2 class="exr">Exercícios</h2>
+
+<div class="exr">
+<ol start=25>
+
+<li class="exr" id="bipp">Escreva uma função
+busca-e-insere para listas encadeadas <i>sem</i> cabeça
+(só pra ver que dor de cabeça isso dá).
+
+
+
+
+<li class="exr">
+Escreva uma função para remover de uma lista encadeada todos
+os elementos que contêm&nbsp;<tt>y</tt>.
+</ol>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<p>&nbsp;
+<div class="left" style="width: 711px; height: 50px">
+<small>
+
+1998 |
+
+Last modified: Sat Aug 23 11:54:04 BRT 2008
+</small>
+</div>
+
+</BODY>
+</HTML>

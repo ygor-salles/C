@@ -1,0 +1,394 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/weightedgraphs.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:40 GMT -->
+<HEAD>
+<TITLE>Algoritmos para Grafos: Digrafos com custos</TITLE>
+<META NAME="Author" CONTENT="Paulo Feofiloff">
+<META name="language" content="Portuguese">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1"> 
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<LINK rel="stylesheet" href="code.css" type="text/css">
+</HEAD>
+<BODY>
+
+
+
+
+
+
+
+<p class="top">
+<a href="../index.html#contents">Algoritmos em C para Grafos via Sedgewick</a>&nbsp;
+
+
+
+
+
+<h1>Custos nos arcos e arestas</h1>
+
+
+
+
+<p>(Esta página é um resumo da seção&nbsp;seção 20.1 (Representations)
+p.222-225,
+do capítulo&nbsp;20 (Minimum Spanning Trees)
+do livro de Sedgewick.)
+
+
+
+
+<h2>Digrafos com custos nos arcos</h2>
+
+<p>Muitas aplicações associam um número a cada arco de um digrafo.&nbsp;
+Diremos que esse número é o <span class="dfn">custo</span>
+do arco.&nbsp;
+Vamos supor, em geral, que esses números são 
+do tipo <tt>double</tt>,
+podendo ser positivos, negativos, ou nulos.&nbsp;
+Essa associação de custos aos arcos pode ser entendida
+como uma função que leva o conjunto de arcos num conjunto de números.
+
+
+
+<p>Dependendo da aplicação, pode ser mais apropriado dizer&nbsp; 
+"<span class="dfn">peso</span>"
+ou "<span class="dfn">comprimento</span>"
+no lugar de "custo".&nbsp;
+<span class="dim">[Sedgewick diz <i>weight</i> 
+no lugar do nosso "custo".&nbsp;
+Mas isso aumenta o número de variáveis cujo nome começa "w",
+o que torna os programas menos legíveis.]</span>
+
+
+
+
+
+
+
+
+
+
+
+<h2  id="undirected">Grafos com custos nas arestas</h2>
+
+<p><a href="graphs.html">Grafos</a>
+com custos nas arestas têm uma peculiaridade previsível:&nbsp;
+os dois arcos que constituem cada aresta têm o mesmo custo.&nbsp;
+O&nbsp;custo de uma aresta, nesse caso, 
+é o custo de qualquer dos dois arcos que constituem a aresta.
+
+
+
+
+<h2 id="datastructs">Estrutura de dados</h2>
+
+<p>Para representar digrafos com custos nos arcos,
+é preciso fazer algumas alterações simples na 
+<a href="digraphdatastructs.html"
+>representação de digrafos</a>.
+
+<blockquote class="hlt" id="ARC">
+<pre class="code">
+<span class="k">typedef struct</span> { 
+   <span class="k">Vertex</span> v, w; 
+   <span class="k">double</span> cst; 
+} Arc;
+
+<span class="k">Arc</span> ARC (<span class="k">Vertex</span> v, <span class="k">Vertex</span> w, <span class="k">double</span> cst) {
+   <span class="k">Arc</span> e;
+   e.v = v; e.w = w;
+   e.cst = cst;
+   <span class="k">return</span> e;
+}
+</pre>
+</blockquote>
+
+<p>O campo <tt>cst</tt> de cada <tt>Arc</tt>
+contém o custo do arco&nbsp;<tt>v-w</tt>.&nbsp;
+<span class="dim">[Sedgewick escreve <tt>wt</tt> 
+no lugar do nosso <tt>cst</tt>.]</span>&nbsp;&nbsp;
+As correspondentes definições para grafos são idênticas:
+
+<blockquote class="hlt">
+<pre class="code">
+<span class="k">#define</span> Edge <span class="k">Arc</span>
+<span class="k">#define</span> EDGE <span class="k">ARC</span>
+</pre>
+</blockquote>
+
+
+
+
+<h2 id="matrix">Matriz de adjacência</h2>
+
+<p id="maxCST">
+A matriz de adjacência <tt>adj</tt> tem agora dupla função:
+além de indicar a presença ou ausência de arco,
+ela armazena os custos dos arcos.&nbsp;
+Se os vértices <tt>v</tt> e 
+<tt>w</tt> não são adjacentes então 
+<tt>adj[v][w]</tt> tem o valor de uma constante
+
+<p class="display">
+<tt class="doc">maxCST</tt>
+
+<p>apropriada.&nbsp;
+Caso contrário, 
+<tt>adj[v][w]</tt> é o 
+custo da arco&nbsp;<tt>v-w</tt>.&nbsp;
+O&nbsp;valor de&nbsp; <tt>maxCST</tt>&nbsp;
+deve ser diferente do custo de qualquer arco.&nbsp;
+Em algumas aplicações, convém que <tt>maxCST</tt> seja 
+maior que o custo de qualquer arco
+(nesse caso, <tt>maxCST</tt> terá o sabor de&nbsp;&infin;).&nbsp;
+Em outras aplicações, pode ser mais apropriado
+adotar o valor&nbsp;<tt>0</tt>.
+
+
+
+<blockquote id="fig20.3">
+Exemplo: Eis a matriz de adjacência de um grafo
+com custos nos arestas.
+(Os "<tt>*</tt>" representam <tt>maxCST</tt>).
+<pre>
+               0   1   2   3   4   5   6   7
+          
+          0    *  .32 .29  *   *  .60 .51 .31
+          1   .32  *   *   *   *   *   *  .21
+          2   .29  *   *   *   *   *   *   *
+          3    *   *   *   *  .34 .18  *   *
+          4    *   *   *  .34  *  .40 .51 .46
+          5   .60  *   *  .18 .40  *   *   *
+          6   .51  *   *   *  .51  *   *  .25
+          7   .31 .21  *   *  .46  *  .25  * 
+</pre>
+<p>(Esse exemplo foi copiado 
+das figuras&nbsp;20.3, p.223, e 20.4, p.226, de Sedgewick.)
+</blockquote>
+
+<p>O par de funções abaixo pode ser usado 
+para construir digrafos com custos nos arcos.
+A função <tt>MATRIXdouble</tt>
+é uma variante óbvia da função 
+<tt><a href="adjmatrix.html#DIGRAPHinit">MATRIXint</a></tt>.
+
+
+<blockquote class="hlt">
+<p class="doc">
+/* (Adaptação do programa&nbsp;20.1, p.224, de Sedgewick.)&nbsp;*/
+
+<pre class="code" id="DIGRAPHinit-matrix">
+<span class="k">Digraph</span> DIGRAPHinit (<span class="k">int</span> V) { 
+   <span class="k">Digraph</span> G = <span class="k">malloc</span>(<span class="k">sizeof</span> *G);
+   G->V = V; 
+   G->A = 0;
+   G->adj = MATRIXdouble(V, V, maxCST);
+   <span class="k">return</span> G;
+}
+</pre>
+
+<pre class="code" id="DIGRAPHinsertA-matrix">
+<span class="k">void</span> DIGRAPHinsertA (<span class="k">Digraph</span> G, <span class="k">Vertex</span> v, <span class="k">Vertex</span> w, <span class="k">double</span> cst) { 
+   <span class="k">if</span> (v != w <span class="k">&amp;&amp;</span> G->adj[v][w] == maxCST) {
+      G->adj[v][w] = cst; 
+      G->A++;
+   }
+}
+</pre>
+</blockquote>
+
+
+
+<p>As mesmas funções podem ser usadas para construir grafos,
+mas é conveniente adaptar os nomes das funções
+e o código de <tt>DIGRAPHinsertA</tt>:
+
+
+<blockquote class="hlt">
+<pre class="code" id="GRAPHinit">
+<span class="k">#define</span> GRAPHinit <span class="k">DIGRAPHinit</span>
+
+<span class="k">void</span> GRAPHinsertE (<span class="k">Digraph</span> G, <span class="k">Vertex</span> v, <span class="k">Vertex</span> w, <span class="k">double</span> cst) { 
+   DIGRAPHinsertA(G, v, w, cst);
+   DIGRAPHinsertA(G, w, v, cst);
+}
+</pre>
+
+</blockquote>
+
+
+<p>É um bom exercício escrever uma função
+<tt>GRAPHremoveE</tt>
+que remova uma aresta de um grafo.
+ 
+
+
+
+
+
+<h2 id="lists">Vetor de listas de adjacência</h2>
+
+<p>Eis as adaptações necessárias da
+<a href="adjlists.html"
+>representação por listas de adjacência</a>.&nbsp;
+O campo <tt>cst</tt> de cada <tt>node</tt> armazena
+o custo do arco correspondente.
+
+<blockquote class="hlt">
+<p class="doc">
+/* (Adaptação do programa&nbsp;20.2, p.225, de Sedgewick.)&nbsp;*/
+
+<pre class="code" id="cst">
+<span class="k">typedef</span> <span class="k">struct</span> node *link;
+<span class="k">struct</span> node { 
+   <span class="k">Vertex</span> w; 
+   <span class="k">double</span> cst; 
+   <span class="k">link</span> next; 
+};
+<span class="k">link</span> NEW (<span class="k">Vertex</span> w, <span class="k">double</span> cst, <span class="k">link</span> next) { 
+   <span class="k">link</span> x = <span class="k">malloc</span>(<span class="k">sizeof</span> *x);
+   x->w = w; 
+   x->cst = cst;     
+   x->next = next;     
+   <span class="k">return</span> x;                         
+}
+</pre>
+
+
+<pre class="code" id="DIGRAPHinit-lists">
+<span class="k">Digraph</span> DIGRAPHinit (<span class="k">int</span> V) { 
+   <span class="k">Vertex</span> v;
+   <span class="k">Digraph</span> G = <span class="k">malloc</span>(<span class="k">sizeof</span> *G);
+   G->V = V; 
+   G->A = 0;
+   G->adj = <span class="k">malloc</span>(V * <span class="k">sizeof</span>(<span class="k">link</span>));
+   <span class="k">for</span> (v = 0; v < V; v++) G->adj[v] = <span class="k">NULL</span>;
+   <span class="k">return</span> G;
+}
+</pre>
+
+<pre class="code" id="DIGRAPHinsertA-lists">
+<span class="k">void</span> DIGRAPHinsertA (<span class="k">Digraph</span> G, <span class="k">Vertex</span> v, <span class="k">Vertex</span> w, <span class="k">double</span> cst) { 
+   <span class="k">link</span> p;
+   <span class="k">if</span> (v == w) <span class="k">return</span>;
+   <span class="k">for</span> (p = G->adj[v]; p != <span class="k">NULL</span>; p = p->next) 
+      <span class="k">if</span> (p->w == w) <span class="k">return</span>;
+   G->adj[v] = NEW(w, cst, G->adj[v]);
+   G->A++;
+}
+</pre>
+</blockquote>
+
+
+<p>Para tratar de grafos, é conveniente adaptar os nomes das funções
+e reescrever a função de inserção de arestas.
+
+
+<blockquote class="hlt">
+<pre class="code" id="GRAPHinit">
+<span class="k">#define</span> GRAPHinit <span class="k">DIGRAPHinit</span>
+
+<span class="k">void</span> GRAPHinsertE (<span class="k">Graph</span> G, <span class="k">Vertex</span> v, <span class="k">Vertex</span> w, <span class="k">double</span> cst) { 
+   DIGRAPHinsertA(G, v, w, cst);
+   DIGRAPHinsertA(G, w, v, cst);
+}
+</pre>
+</blockquote>
+
+
+
+
+
+
+
+
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=1>
+
+<li class="exr" id="DIGRAPHarcs">
+Escreva uma função 
+<tt><a href="adjlists.html#DIGRAPHarcs">DIGRAPHarcs</a></tt>
+que receba um digrafo <tt>G</tt> com custos nos arcos 
+e armazene as arestas de <tt>G</tt>
+num vetor <tt>a[0..A-1]</tt>.&nbsp;
+Faça uma versão para matriz de adjacência e outra 
+para listas de adjacência.
+
+<li class="exr" id="GRAPHedges">
+Escreva uma função 
+<tt><a href="adjlists.html#GRAPHedges">GRAPHedges</a></tt>
+que receba um grafo <tt>G</tt> com custos nas arestas 
+e armazene as arestas de <tt>G</tt>
+num vetor <tt>a[0..A/2-1]</tt>.&nbsp;
+Faça uma versão para matriz de adjacência e outra 
+para listas de adjacência.
+
+
+
+
+<li class="exr" id="E20.14">
+Encontre (na internet?) 
+um grafo grande com custos nas arestas
+(talvez um mapa geográfico com distâncias,
+ou uma rede de telefônica com custos,
+ou uma rede de rotas aéreas com custos).
+
+<li class="exr" id="E20.9">
+Modifique a função 
+<tt><a href="random.html#GRAPHrand1">GRAPHrand1</a></tt>
+para que ela gere um grafo aleatório com custos aleatórios
+(entre 0 e&nbsp;1) nas arestas.
+
+
+<li class="exr" id="E20.10">
+Modifique a função
+<tt><a href="random.html#GRAPHrand2">GRAPHrand2</a></tt>
+para que ela gere um grafo aleatório com custos aleatórios
+(entre 0 e&nbsp;1) nas arestas.
+
+<li class="exr" id="E20.11">
+Escreva um programa que gere um 
+<a href="adjlists.html#grid">grade</a> 
+com <tt>n&times;n</tt>
+vértices e custos aleatórios nas arestas.
+(Cada aresta deve ter um custo entre 0 e&nbsp;1).
+
+<li class="exr" id="E20.13">
+Escreva uma programa que gere <tt>V</tt> pontos aleatórios
+no produto cartesiano de intervalos <tt>[0,1]&times;[0,1]</tt>
+e em seguida construa um grafo
+ligando por uma aresta os pontos que estejam à 
+distância <tt>&le;d</tt>
+um do outro.&nbsp;
+(Veja <a href="random.html#E17.73">exercício
+em outra página</a>.)&nbsp;
+O&nbsp;custo de cada aresta deve ser igual à distância
+euclidiana entre os suas pontas.&nbsp;
+Qual deve ser o valor de <tt>d</tt> para que  
+o número esperado de arestas seja&nbsp;<tt>E</tt>?&nbsp;
+
+
+
+</ol>
+
+
+
+
+
+
+<p>&nbsp;
+<hr>
+<small>
+
+Last modified: Thu Feb 15 08:55:46 BRST 2007
+</small>
+
+</BODY>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/weightedgraphs.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:40 GMT -->
+</HTML>

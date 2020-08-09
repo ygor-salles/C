@@ -1,0 +1,29 @@
+DIVISÕES E RESTO DE DIVISÕES:
+
+% ou MOD --> resto da divisão (declarar variável como inteiro)
+
+/ --> divisão de inteiro (declarar variável como inteiro, na linguagem C [Code Blocks] não existe \ para divisão inteiro)
+
+/ --> divisão normal (declarar variável como real)
+
+EXEMPLO: 10 \_3_    1 = resto da divisão
+	- 9   3	    3 = divisão por inteiro
+        ____
+	   1
+
+
+
+*Em divisões o denominador dever ser declarado como float, mesmo que seja um inteiro ou um contador,
+de preferencia colocar tudo como float ou da seguinte maneira:
+
+int a,b;
+float total;
+
+total = a/(float)b
+
+
+
+
+*O code blocks não reconhece o ^ como elevado. Para fazer um numero elevado é da seguinte maneira:
+
+a^b ==>  pow(base,expoente);   ou seja    pow (a,b);

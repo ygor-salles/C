@@ -1,0 +1,38 @@
+ORDENAÇÃO VALORES MENOR PARA MAIOR
+(SEM USO DE VETOR): 
+
+int menor, medio, maior;
+    if ((a>b) && (a>c)){
+        maior = a;
+            if (b>c){
+                medio = b; menor = c;
+                printf ("\nOs valores digitados de modo ordenado sao: %d %d %d\n",menor, medio, maior);
+            }
+            else{
+                medio = c; menor = b;
+                printf ("\nOs valores digitados de modo ordenado sao: %d %d %d\n",menor, medio, maior);
+            }
+    }
+    else if ((b>a) && (b>c)){
+        maior = b;
+            if (a>c){
+                medio = a; menor = c;
+                printf ("\nOs valores digitados de modo ordenado sao: %d %d %d\n",menor, medio, maior);
+            }
+            else{
+                medio = c; menor = a;
+                printf ("\nOs valores digitados de modo ordenado sao: %d %d %d\n",menor, medio, maior);
+            }
+    }
+    else if ((c>a) && (c>b)){
+        maior = c;
+            if (b>a){
+                medio = b; menor = a;
+                printf ("\nOs valores digitados de modo ordenado sao: %d %d %d\n",menor, medio, maior);
+            }
+            else{
+                medio = a; menor = b;
+                printf ("\nOs valores digitados de modo ordenado sao: %d %d %d\n",menor, medio, maior);
+            }
+    }
+    return 0;

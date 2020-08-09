@@ -1,0 +1,38 @@
+int main ()
+{
+    setlocale(LC_ALL, "Portuguese");
+    int codigo, qtd, codigo_maior;
+    char log[51];
+    usuario a;
+    usuario lista[100];
+
+    printf ("Digite o código: ");
+    scanf ("%d",&a.cod);
+    printf ("Digite login: ");
+    scanf (" %[^\n]",a.login);
+    printf ("Digite senha: ");
+    scanf (" %s",a.senha);      //Senha não possui espaço
+    a.ponto = 0;
+    printf ("\n Valor de código: ");    scanf ("%d",&codigo);
+    printf (" Valor de login: ");     scanf (" %[^\n]",log);
+    funcaoB (&a, codigo, log);
+    printf (" O novo login do usuário é: %s\n",a.login);
+
+    printf ("\nDigite a quantidade de usuários: ");
+    scanf ("%d",&qtd);
+    if (qtd<0 || qtd>50){
+        printf ("\nQuantidade inválida!!\n");
+        return 0;
+    }
+    else{
+        funcaoC (lista, qtd);
+
+        funcaoD (lista, qtd, &codigo_maior);
+        if (codigo_maior != 0)
+            printf ("\nO código do usuário com a maior pontuação é: %d",codigo_maior);
+        else
+            printf ("\nNenhum usuário pontuou até o momento!\n");
+    }
+
+    return 0;
+}

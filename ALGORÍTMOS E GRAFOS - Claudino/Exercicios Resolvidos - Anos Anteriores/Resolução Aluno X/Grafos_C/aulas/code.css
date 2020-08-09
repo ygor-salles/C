@@ -1,0 +1,371 @@
+/* GRAFOS/algoritmos_para_grafos/aulas/code.css */
+BODY {
+/* background: #ffffe0; light yellow */
+/* background: #f0f0f0; light gray */
+   background: white; /* in this case, use border in blockquote.hlt */
+   color: black;
+   margin-left: 4%;
+   margin-right: 4%;
+}
+
+/* ordinary links */
+a:link {
+  color: #0000ff;
+  text-decoration: underline;
+} 
+a:visited {
+  color: #0000c0;
+  color: #6000e0;
+  text-decoration: none;
+}
+a:hover { /* Must come after :link and :visited */
+  text-decoration: underline;
+  color: red;
+}
+a:active {
+  text-decoration: underline;
+  color: red;
+} 
+
+/****** tips (not working yet) ******
+a {
+  text-decoration: underline;
+  padding: 0;
+  cursor: help;
+  position: relative;
+  z-index: 60;
+}
+a:link {
+  color: #0000ff;
+  text-decoration: underline;
+}
+a:visited {
+  color: #0000c0;
+  color: #6000e0;
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: none;
+  color: red;
+  background: transparent;
+  z-index: 20;
+}
+a:active {
+  text-decoration: underline;
+  color: red;
+} 
+a span {
+  display: none;
+}
+a:hover span {
+  color: #000000;
+  padding: 1px;
+  width: 100em;
+  border: 1px solid #000000;
+  background: #00ffb0;
+  left: 10px;
+  top: 10px;
+  display: block;
+  height: 100em;
+  position: absolute;
+  text-align: left;
+}
+*****************************/
+
+
+/********** regular stuff *****/
+p.top {
+  padding: 0.2ex; 
+  background: #f0d0a0;
+  text-align: right;
+  font-size: small;
+}
+p.top a:link {
+  color: #0000ff;
+  text-decoration: none; /* different from ordinary a:link */
+} 
+p.top a:visited {
+  color: #0000ff; /* different from ordinary a:link */
+  text-decoration: none;
+}
+p.top a:hover { /* Must come after :link and :visited */
+  text-decoration: underline;
+  /*color: red;*/
+  color: white;
+}
+p.top a:active {
+  text-decoration: underline;
+  color: red;
+} 
+
+
+/**** headlines ****/
+h1 {
+   margin-top: 2em;
+   color: #006070; 
+   text-align: left;
+}
+h2 {
+   margin-top: 2em;
+   color: #c04010; /* brown-orange */ 
+}
+h3 {
+   color: #c04010; /* brown-orange */ 
+}
+h4 {
+   color: #c04010; /* brown-orange */ 
+}
+p.inlineH3 {
+  margin-top: 2em;
+}
+span.inlineH3 {
+   color: #c04010; /* brown-orange */ 
+   font-size: 110%;
+   font-weight: bold;
+}
+
+span.sc {
+/* text-transform: uppercase; */
+   font-variant: small-caps;
+}
+
+tt { /* tt in text */
+   font-style: normal;
+/* font-weight: bold; */
+   color: #500000;
+}
+
+/* ------ code ------ */
+p.doc {
+/* color: #ff4040; red */
+   color: #c04010; /* orange */
+   font-family: monospace;
+   font-size: 95%;
+   font-style: italic;
+/* font-weight: bold;*/
+}
+p.docdim { /* unimportant doc */
+   color: #606060;
+   font-family: monospace;
+   font-size: 95%;
+   font-style: italic;
+/* font-weight: bold; */
+}
+pre.code {
+  line-height: 125%;
+  font-weight: bold;
+}
+pre.codedim {
+  line-height: 115%;
+}
+blockquote.hlt {
+   border: solid; /* nice with overall white background */
+   border-width: 1px;  /* nice with overall white background */
+   margin-top: 2em;
+   margin-bottom: 2em;
+   margin-left: 1em;
+   margin-right: 2em;
+   padding-top: 0.1em;
+   padding-left: 1em;
+   padding-right: 0.5em;
+   padding-bottom: 0.1em;
+/* background-color: #ffffe4; */
+   background-color: #ffffff;
+}
+tt.doc {
+   font-style: normal;
+/* font-weight: bold; */
+   color: black;
+/* color: #ff5050; compare with p.doc and pre.doc */
+   color: #a02020; /* darker than p.doc and pre.doc */
+}
+span.k { /* keyword in code */
+/* font-weight: normal; */
+/* color: #808080; */
+/* color: #0000b0; */
+   color: #7070e0;
+}
+span.red { /* highlight in code */
+/* font-weight: normal; */
+   color: #ff0000;
+}
+span.t { /* text string in code */
+   font-family: monospace;
+/* font-style: italic; */
+   color: #a0a0a0;
+}
+span.doc { /* like pre.doc */
+/* color: #ff4040; red */
+   color: #c04010; /* orange */
+   font-family: monospace;
+   font-style: italic;
+   font-weight: normal;
+}
+span.docdim { /* like pre.docdim */
+   color: #606060;
+   font-family: monospace;
+   font-style: italic;
+   font-weight: normal;
+}
+span.tt {
+   font-family: monospace;
+   font-style: italic;
+}
+p.red {
+   color: red;
+}
+
+
+/* doc links */
+a.doc:link {
+  color: #ff0000;
+  text-decoration: underline;
+} 
+a.doc:visited {
+  color: #6000e0;
+  color: #ff0000;
+  text-decoration: none;
+}
+a.doc:hover { /* Must come after :link and :visited */
+  text-decoration: underline;
+  color: blue;
+}
+a.doc:active {
+  text-decoration: underline;
+  color: blue;
+} 
+/* code links */
+a.code:link {
+  color: #0000a0;
+  text-decoration: underline;
+} 
+a.code:visited {
+  color: #6000e0;
+  color: #0000a0;
+  text-decoration: none;
+}
+a.code:hover { /* Must come after :link and :visited */
+  text-decoration: underline;
+  color: red;
+}
+a.code:active {
+  text-decoration: underline;
+  color: red;
+} 
+
+/* *** miscelanea *** */
+pre.framed {
+   line-height: 110%;
+   margin-left: 1em;
+   padding: 0.5em;
+   border: solid;
+   border-width: 1px;
+   font-family: monospace;
+   font-style: normal;
+/* font-weight: bold; */
+   color: black;
+}
+span.orange {
+   color: #c04010;    /* brown-orange */ 
+   font-weight: bold;
+}
+div.orange {
+   color: #c04010;    /* brown-orange */ 
+}
+span.dfn { /* substitute for italic */
+   background: #ffffb0; 
+}
+span.dim { /* gray text */
+   color: #808080; 
+}
+span.ddim { /* light gray text */
+   color: #b0b0b0; 
+}
+span.normal {
+   color: black; 
+   font-style: normal;
+}
+
+p.right {
+   text-align: right;
+   font-size: small;
+}
+
+pre.small {
+/* font-size: small; no good in MS Explorer */
+   font-size: 80%;
+}
+
+tt.small {
+/* font-size: small; no good in MS Explorer */
+   font-size: 80%;
+}
+
+p.exr { /* exercise */
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+}
+ul.exr { /* exercise */
+  margin-top: 2em;
+  margin-bottom: 2em;
+}
+li.exr { /*exercício*/
+  margin-top: 1em;
+}
+li.spaced { /* generic use */
+  margin-top: 0.3em;
+  margin-right: 0.5em
+}
+li.sspaced { /* generic use */
+  margin-top: 0.7em;
+  margin-right: 0.5em
+}
+
+div.small {
+/* font-size: small; no good in MS Explorer */
+   font-size: 80%;
+}
+
+span.hide { 
+   /* color: #00b000; */
+   color: black;
+   background-color: #d0ffd0;
+}
+p.hide { 
+   /* color: #00b000; */
+   color: black;
+   background-color: #d0ffd0;
+}
+div.hide { 
+   /* color: #00b000; */
+   color: black;
+   background-color: #d0ffd0;
+}
+
+p.display {
+   text-align: center;
+}
+blockquote.display {
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+  margin-left: 3em;
+  margin-right: 3em;
+  padding: 0.8em;
+  background-color: #ffffe4;
+}
+span.letterspacing {
+  letter-spacing: 3px;
+}
+
+span.invis {
+   visibility: hidden;
+}
+p.invis {
+   visibility: hidden;
+}
+
+
+
+
+
+

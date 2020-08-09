@@ -1,0 +1,13 @@
+/* Exercicio 3 - P3 */
+
+int main ()
+{
+    int n;
+    float soma;
+    printf ("Digite o valor de N fatorial: ");
+    scanf ("%d",&n);
+    somatorio (n, &soma);
+    printf ("\nO somatorio eh: %.2f\n",soma);
+
+    return 0;
+}

@@ -1,0 +1,569 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/kruskal.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:41 GMT -->
+<HEAD>
+<TITLE>Algoritmos para Grafos: algoritmo de Kruskal</TITLE>
+<META NAME="Author" CONTENT="Paulo Feofiloff">
+<META name="language" content="Portuguese">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1"> 
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<LINK rel="stylesheet" href="code.css" type="text/css">
+</HEAD>
+<BODY>
+
+
+
+
+
+
+
+
+<p class="top">
+<a href="../index.html#contents">Algoritmos em C para Grafos via Sedgewick</a>&nbsp;
+
+
+
+
+
+<h1>Algoritmo de Kruskal</h1>
+
+<p>Nosso problema nesta página é o mesmo da 
+<a href="mst.html">página anterior</a>:&nbsp;
+encontrar uma <a href="mst.html#mst">MST</a> 
+(árvore geradora mínima)
+de um grafo <i>G</i> com custos nas arestas.
+
+
+<p>(Esta página é um resumo 
+da seção 20.4 (Kruskal's Algorithm),
+p.246-252,
+do livro de Sedgewick.)
+
+
+
+
+<h2>O algoritmo</h2>
+
+
+
+
+
+<p>O <a href="http://en.wikipedia.org/wiki/Kruskal's_algorithm"
+>algoritmo de Kruskal</a> (publicado em&nbsp;1956) 
+se apoia nas
+
+<a href="mst.html#optimality1">condições otimalidade de MSTs</a>
+para encontrar uma MST de um grafo.
+
+
+<p>Os&nbsp;seguintes conceitos serão usados para descrever o 
+algoritmo de Kruskal.&nbsp;
+Todos são relativos a um grafo&nbsp;<i>G</i>:
+<ul>
+<li class="spaced" id="subforest">
+Uma <span class="dfn">subfloresta</span>
+de <i>G</i>
+é qualquer 
+<a href="trees.html#forest">floresta</a> <i>F</i> que seja 
+<a href="footnotes/subgraph.html">subgrafo</a> de&nbsp;<i>G</i>.
+<li class="spaced" id="spanningforest">
+Uma <span class="dfn">floresta geradora</span>
+de <i>G</i> é qualquer 
+subfloresta de <i>G</i>
+que tenha o mesmo conjunto de vértices que&nbsp;<i>G</i>.
+<li class="spaced" id="externaledge">
+Uma aresta de <i>G</i>
+é <span class="dfn">externa</span>
+em relação a uma subfloresta <i>F</i> de <i>G</i>
+se liga duas diferentes componentes de&nbsp;<i>F</i>,&nbsp;
+ou seja, 
+se tem uma ponta em uma componente de <i>F</i>
+e outra ponta em outra componente de&nbsp;<i>F</i>.&nbsp;
+Se&nbsp;<i>a</i> é uma aresta externa então é claro que 
+<i>a</i> não está em <i>F</i>
+e&nbsp; <i>F</i>&nbsp;+<i>a</i>&nbsp; 
+é uma floresta.
+</ul>
+
+
+<p>Podemos agora descrever o algoritmo de Kruskal.
+Cada iteração começa com uma 
+floresta geradora&nbsp; <i>F</i>&nbsp;
+do grafo.&nbsp;
+(No início da primeira iteração, cada componente de <i>F</i>
+tem apenas um vértice.)&nbsp;
+Cada iteração consiste no seguinte:
+
+
+
+<ol type ="none" id="kruskalalgorithm">
+<li class="spaced">
+<b>se</b> existe aresta externa a <i>F</i>
+  <ol type ="none">
+  <li class="spaced"><b>então</b>&nbsp; 
+     seja <i>a</i> uma aresta externa de custo mínimo
+  <li class="spaced"><span class="invis"><b>então</b>&nbsp;</span> 
+     comece nova iteração com&nbsp; <i>F</i>+<i>a</i>&nbsp; no papel de <i>F</i>
+  <li class="spaced"><b>senão</b>&nbsp; pare
+  </ol>
+</ol>
+
+
+
+
+
+<p>Se <i>G</i> for conexo, o algoritmo produz uma MST de&nbsp;<i>G</i>.
+Caso contrário, o algoritmo produz uma MST em cada 
+componente de&nbsp;<i>G</i>.
+
+<p id="UFrepresentative">Como decidir se uma aresta <tt>v-w</tt>
+é externa a uma floresta geradora?&nbsp;
+Basta fazer o seguinte:&nbsp;
+(1)&nbsp;em cada componente da floresta geradora, 
+eleja um dos vértices para ser o&nbsp;
+<span class="dfn">representante</span>&nbsp; 
+da componente;&nbsp;
+(2)&nbsp;mantenha um vetor&nbsp;
+<tt>id[0..V-1]</tt>&nbsp;
+de representantes, sendo 
+<p class="display">
+<tt>id[v]</tt> 
+<p>o representante da componente
+que contém o vértice&nbsp;<tt>v</tt>;&nbsp;
+(3)&nbsp;agora, <tt>v-w</tt> é externa se e somente se <tt>id[v]</tt> 
+é diferente de <tt>id[w]</tt>.
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=1>
+
+<li class="exr" id="kruskaliscorrect">
+[Importante]&nbsp;
+Prove que o algoritmo de Kruskal
+produz uma MST de qualquer grafo conexo 
+com custos nas arestas.
+(Sugestão: use as <a href="spanningtrees.html#exchange1"
+>propriedades da troca</a>.)&nbsp;
+
+</ol>
+
+
+
+
+
+
+<h2>Implementação grosseira do algoritmo</h2>
+
+<p>Nossa primeira implementação das idéias acima
+é simples mas ineficiente.&nbsp;&nbsp;
+Ela imprime uma lista das arestas de uma MST 
+de um grafo <tt>G</tt> com custos nas arestas.&nbsp;&nbsp;
+O grafo é representado por sua 
+<a href="weightedgraphs.html#matrix">matriz de adjacência</a>.
+A&nbsp;função supõe que o custo de cada aresta é estritamente menor 
+que <tt><a href="weightedgraphs.html#maxCST"
+>maxCST</a></tt>.
+
+
+<blockquote class="hlt" id="bruteforce">
+<pre class="codedim">
+#define maxCST 1000000.0
+</pre>
+<pre class="codedim" id="bruteforceKruskal">
+void <b>bruteforceKruskal</b> (Graph G) { 
+   Vertex id[maxV], v, w;
+   for (v = 0; v < G->V; v++) id[v] = v;
+   while (1) {
+      double mincst = maxCST;
+      Vertex v0, w0;
+      for (v = 0; v < G->V; v++) 
+         for (w = 0; w < G->V; w++) 
+            if (G->adj[v][w] < mincst &amp;&amp; id[v] != id[w]) 
+               mincst = G->adj[v0=v][w0=w];
+      if (mincst == maxCST) return; 
+      printf("%d-%d\n", v0, w0);
+      for (v = 0; v < G->V; v++) 
+         if (id[v] == id[w0])
+            id[v] = id[v0];
+   }
+}
+</pre>
+</blockquote>
+
+
+
+<p id="fig20.12"><span class="sc">Exemplo</span>:&nbsp;
+Considere o grafo definido pela lista de arestas na coluna esquerda abaixo.
+A coluna do meio traz a mesma lista de arestas em ordem 
+<a href="footnotes/increasing.html">crescente</a> 
+de custos.&nbsp;
+O&nbsp;algoritmo de Kruskal examina as arestas nessa ordem. 
+Na coluna da direita,
+as arestas rejeitadas pelo algoritmo estão riscadas.&nbsp;
+(Isto é uma cópia do figura 20.12, p.247, de Sedgewick.)
+<p>
+<table align="center" cellspacing=0 cellpadding=0 border=0>
+<tr>
+<td>
+<pre>
+0-6  .51
+0-1  .32
+0-2  .29
+4-3  .34
+5-3  .18
+7-4  .46
+5-4  .40
+0-5  .60
+6-4  .51
+7-0  .31
+7-6  .25
+7-1  .21
+</pre>
+<td width=110>&nbsp;
+<td>
+<pre>
+5-3  .18
+7-1  .21
+7-6  .25
+0-2  .29
+7-0  .31
+0-1  .32
+4-3  .34
+5-4  .40
+7-4  .46
+0-6  .51
+6-4  .51
+0-5  .60
+</pre>
+<td width=110>&nbsp;
+<td>
+<pre>
+5-3  .18
+7-1  .21
+7-6  .25
+0-2  .29
+7-0  .31
+<strike>0-1  .32</strike>
+4-3  .34
+<strike>5-4  .40</strike>
+7-4  .46
+<strike>0-6  .51</strike>
+<strike>6-4  .51</strike>
+<strike>0-5  .60</strike>
+</pre>
+</table>
+
+
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=2>
+
+<li class="exr">
+Qual o consumo de tempo da função <tt>bruteforceKruskal</tt>?
+
+
+<li class="exr" id="bruteforcewithincreasingedges">
+Escreva uma variante de <tt>bruteforceKruskal</tt>
+que comece por colocar as arestas em ordem crescente de custo.
+Quanto tempo essa versão consome?
+
+<li class="exr">
+A função abaixo é uma implementação do algoritmo de Kruskal?&nbsp;
+Em caso afirmativo, quanto tempo ela consome?
+
+<pre class="small">
+   Graph bruteK (Graph G) { 
+      Graph T = <a href="weightedgraphs.html#DIGRAPHinit-lists">GRAPHinit</a>(G->V);
+      while (1) {
+         double mincst = maxCST; link p;
+         Vertex v, v0, w0;
+         for (v = 0; v < G->V; v++) 
+            for (p = G->adj[v]; p != NULL; p = p->next) 
+               if (p->cst < mincst &amp;&amp; !<a href="paths.html#DIGRAPHpath">GRAPHpath</a>(T, v, p->w)) {
+                  mincst = p->cst;
+                  v0 = v;
+                  w0 = p->w;
+               }
+         if (mincst == maxCST) return T; 
+         <a href="weightedgraphs.html#DIGRAPHinsertA-lists">GRAPHinsertE</a>(T, v0, w0, mincst);
+      }
+   }
+</pre>
+
+<li class="exr" id="E20.48">
+Considere o grafo cujos vértices são pontos no plano:
+<pre class="small">
+          vértices    0     1     2     3     4     5
+       coordenadas  (1,3) (2,1) (6,5) (3,4) (3,7) (5,3)
+</pre>
+<p>Suponha que as arestas do grafo são
+<center>
+<pre class="small">
+1-0 3-5 5-2 3-4 5-1 0-3 0-4 4-2 2-3
+</pre>
+</center>
+<p>e o custo de cada aresta <tt>v-w</tt> é igual ao 
+comprimento do segmento de reta 
+que liga os pontos <tt>v</tt> e&nbsp;<tt>w</tt> no plano.&nbsp;
+Aplique o algoritmo de Kruskal a esse grafo.
+Exiba uma figura do grafo e da floresta no início de cada iteração.
+
+
+
+</ol>
+
+
+
+
+<h2>Implementação eficiente do algoritmo de Kruskal</h2>
+
+<p>Essa implementação começa por colocar 
+todas as arestas do grafo em ordem 
+<a href="footnotes/increasing.html">crescente</a> de custo.&nbsp;
+Preliminarmente, 
+a função <tt><a href="weightedgraphs.html#GRAPHedges"
+>GRAPHedges</a></tt> 
+armazena as arestas do grafo 
+num vetor <tt>a[0..E-1]</tt>.&nbsp;
+Em seguida, 
+uma função <tt>sort</tt>
+rearranja o vetor <tt>a[0..E-1]</tt>
+em ordem crescente de custos:&nbsp;
+<tt>a[0].cst</tt>&nbsp;<tt>&le;</tt>
+<tt>a[1].cst</tt>&nbsp;<tt>&le;</tt
+>&nbsp;&hellip;&nbsp;
+
+
+
+
+<blockquote class="hlt">
+<pre class="code">
+<span class="k">#define</span> maxE 10000
+</pre>
+<p class="doc">
+/* A função abaixo é uma implementação do algoritmo de Kruskal.
+   Ela recebe um grafo <tt class="doc">G</tt> 
+   com custos nas arestas
+   e calcula uma MST em cada componente 
+   de&nbsp;<tt class="doc">G</tt>.&nbsp;
+   A função armazena as arestas das MSTs no 
+   vetor&nbsp;<tt class="doc">mst[0..k-1]</tt> e 
+   devolve&nbsp;<tt class="doc">k</tt>.&nbsp;*/
+
+<p class="doc" id="GRAPHmstK">
+/* A função supõe que o grafo tem no máximo
+   <tt class="doc">maxE</tt> arestas.&nbsp;
+   Supõe também que o custo de cada aresta é estritamente menor 
+   que <tt class="doc">maxCST</tt>.&nbsp;
+   O&nbsp;código foi copiado, com ligeiras modificações, 
+   do programa 20.5, p.249, de Sedgewick.&nbsp;*/
+
+<pre class="code">
+<span class="k">int</span> GRAPHmstK (<span class="k">Graph</span> G, <span class="k">Edge</span> mst[]) { 
+   <span class="k">int</span> i, k, E = G->A/2; 
+   <span class="k">Edge</span> a[maxE]; 
+   GRAPHedges(a, G);
+   sort(a, 0, E-1);
+   UFinit(G->V);
+   <span class="k">for</span> (i = k = 0; i < E <span class="k">&amp;&amp;</span> k < G->V-1; i++)
+      <span class="k">if</span> (<span class="k">!</span>UFfind(a[i].v, a[i].w)) {
+         UFunion(a[i].v, a[i].w);
+         mst[k++] = a[i];
+      }
+   <span class="k">return</span> k;
+}
+</pre>
+
+</blockquote>
+
+
+<p>No início de cada iteração,
+o conjunto de arestas <tt>mst[0..k-1]</tt>
+define uma floresta geradora de&nbsp;<tt>G</tt>.&nbsp;
+As&nbsp;as funções 
+<tt>UFfind</tt> e <tt>UFunion</tt> têm o seguinte papel:
+<ul>
+<li><tt>UFfind(v,</tt> <tt>w)</tt>&nbsp;
+tem valor <tt>0</tt> se e somente se <tt>v</tt> e <tt>w</tt> 
+estão em componentes distintas da floresta.
+<li><tt>UFunion(v,</tt> <tt>w)</tt>&nbsp;
+promove a união das componentes 
+que contêm <tt>v</tt> e&nbsp;<tt>w</tt> respectivamente.
+</ul>
+
+
+<p>Para dar uma implementação eficiente
+às funções <tt>UFfind</tt> e <tt>UFunion</tt>,
+podemos usar uma versão melhorada do 
+vetor de representantes
+<a href="#UFrepresentative">sugerido acima</a>.&nbsp;
+A&nbsp;estrutura que implementa essa versão melhorada 
+é conhecida como <i>union-find</i>.&nbsp;
+(A&nbsp;estrutura union-find
+é discutida na seção 1.3, p.11-19, 
+do volume&nbsp;1 do livro de Sedgewick.
+Também aparece no programa 4.8, p.152,
+do mesmo livro.)
+
+
+<p>A estrutura <i>union-find</i> é uma floresta de nós.
+Os nós são os vértices de nosso grafo&nbsp;<tt>G</tt>,
+mas a floresta <u>não</u> é um subdigrafo de&nbsp;<tt>G</tt>.&nbsp;
+Cada componente da floresta é representada 
+por uma <i>union-find tree</i>.&nbsp;
+Cada nó <tt>i</tt> da floresta tem um 
+pai&nbsp;&nbsp;<tt>id[i]</tt>.&nbsp;&nbsp;
+Se <tt>i</tt> é a raiz de uma union-find tree então 
+<tt>id[i]</tt>&nbsp;=&nbsp;<tt>i</tt>.&nbsp;
+Se&nbsp;<tt>i</tt> é raiz de uma union-find tree,
+então&nbsp; <tt>sz[i]</tt>&nbsp; é o número de nós na 
+union-find tree.
+
+
+<blockquote class="hlt" id="union-find">
+<p class="docdim">
+/* (O código abaixo é uma versão adaptada do programa 4.8, p.152, 
+   do volume&nbsp;1 
+   do livro de Sedgewick).&nbsp;*/
+<p class="docdim">
+/* A função <tt>UFfind</tt> devolve <tt>1</tt> 
+   se os vértices <tt>v</tt> e <tt>w</tt>
+   estiverem na mesma union-find tree
+   (e portanto na mesma componente da floresta 
+   <tt>mst[0..k-1]</tt>).&nbsp;*/
+<p class="docdim">
+/* A função <tt>UFunion</tt> 
+   faz a união das union-find trees
+   que contêm os vértices <tt>v</tt> e&nbsp;<tt>w</tt>.&nbsp;*/
+
+<pre class="codedim">
+<span class="k">static Vertex</span> id[maxV];
+<span class="k">static int</span> sz[maxV];
+
+<span class="k">void</span> UFinit(<span class="k">int</span> N) { 
+   <span class="k">Vertex</span> i;
+   <span class="k">for</span> (i = 0; i < N; i++) { 
+      id[i] = i; 
+      sz[i] = 1; 
+   }
+}
+
+<span class="k">int</span> UFfind(<span class="k">Vertex</span> v, <span class="k">Vertex</span> w) { 
+   <span class="k">return</span> (find(v) == find(w)); 
+}
+
+<span class="k">static Vertex</span> find(<span class="k">Vertex</span> x) { 
+   <span class="k">Vertex</span> i = x; 
+   <span class="k">while</span> (i != id[i]) 
+      i = id[i]; 
+   <span class="k">return</span> i; 
+}
+
+<span class="k">void</span> UFunion(<span class="k">Vertex</span> v, <span class="k">Vertex</span> w) { 
+   <span class="k">Vertex</span> i = find(v), j = find(w);
+   <span class="k">if</span> (i == j) <span class="k">return</span>;
+   <span class="k">if</span> (sz[i] < sz[j]) { 
+      id[i] = j; 
+      sz[j] += sz[i]; 
+   }
+   <span class="k">else</span> { 
+      id[j] = i; 
+      sz[i] += sz[j]; 
+   }
+}
+</pre>
+</blockquote>
+
+<p id="compactGRAPHmstK">
+(O código de <tt>GRAPHmstK</tt> pode parecer um pouco assustador
+porque depende de várias funções auxiliares.&nbsp;
+É&nbsp;um bom exercício
+escrever uma versão "compacta"
+da função <tt>GRAPHmstK</tt>
+que incorpore,
+tanto quanto razoável,
+o código das funções de manipulação da estrutura <i>union-find</i>.
+Essa versão compacta pode até corrigir uma pequena 
+ineficiência do código acima,
+que calcula 
+<tt>find(a[i].v)</tt> e <tt>find(a[i].w)</tt>
+duas vezes sem necessidade:
+um embutida em  <tt>UFfind</tt> e outra em <tt>UFunion</tt>.)
+
+
+
+<p class="inlineH3"><span class="inlineH3">Desempenho.</span>&nbsp;
+Graças à maneira com duas union-find trees 
+são fundidas em <tt>UFunion</tt>,&nbsp;
+a&nbsp;altura de cada union-find tree
+é limitada por <tt>log(V)</tt>.&nbsp;
+Assim, <tt>UFfind</tt> e <tt>UFunion</tt> 
+consomem tempo proporcional <tt>log(V)</tt>.
+
+<p>Podemos supor que a função <tt>sort</tt> consome tempo 
+proporcional a&nbsp; 
+<tt>E</tt>&nbsp;<tt>log(E)</tt>.&nbsp; 
+O restante do código de <tt>GRAPHmstK</tt> 
+também consome tempo proporcional a&nbsp;
+<tt>E</tt>&nbsp;<tt>log(E)</tt>.&nbsp; 
+Como <tt>log(E)</tt> <tt>&le;</tt> <tt>2log(V)</tt>,&nbsp;
+podemos dizer que o consumo de <tt>GRAPHmstK</tt> 
+é proporcional a
+<p class="display"><tt>E</tt>&nbsp;<tt>log(V)</tt>
+<p>no pior caso.
+
+
+
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=6>
+
+<li class="exr">
+No código do <i>union-find</i>,
+é verdade que, para todo vértice <tt>v</tt>,
+o valor de <tt>sz[v]</tt> é igual ao número de vértices 
+na union-find tree que contém <tt>v</tt>?
+
+
+<li class="exr" id="E20.50">
+Escreva uma implementação do <i>union-find</i>
+em que <i>find</i> consome tempo constante
+(independente de&nbsp;<tt>V</tt>)
+e <i>union</i> consome tempo proporcional a&nbsp;<tt>log(V)</tt>.
+
+<li class="exr" id="E20.18">
+Escreva uma função <tt>GRAPHmst</tt> que
+invoque <tt><a href="#GRAPHmstK">GRAPHmstK</a></tt>,
+e calcule
+o <a href="arborescences.html#parnt-array">vetor de pais</a> <tt>parnt</tt>
+da árvore que <tt>GRAPHmstK</tt>
+depositou no vetor&nbsp;<tt>mst</tt>.
+
+</ol>
+
+
+
+
+
+
+
+<p>&nbsp;
+<hr>
+<small>
+
+Last modified: Thu Feb 15 08:55:44 BRST 2007
+</small>
+
+</BODY>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/kruskal.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:41 GMT -->
+</HTML>

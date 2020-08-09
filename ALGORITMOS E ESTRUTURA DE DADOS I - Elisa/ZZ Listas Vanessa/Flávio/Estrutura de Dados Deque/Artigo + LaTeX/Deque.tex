@@ -1,0 +1,211 @@
+\documentclass[12pt]{article}
+
+\usepackage{sbc-template}
+\usepackage{url}
+\usepackage{graphicx,url}
+\usepackage{float}
+\usepackage{placeins}
+\usepackage[brazil]{babel}   
+\usepackage[latin1]{inputenc}  
+\usepackage{rawfonts}
+     
+\sloppy
+
+\title{Trabalho Final da Disciplina Algoritmos e Estrutura de Dados I \\ TAD Deque}
+
+\author{Flávio E. O. e Silva, Isabela de S. Silva, Maycon P. Goulart, Sandro R. dos Reis}
+
+\address{Universidade Federal de Itajubá (UNIFEI) \\ CEP -- 37.500-903 -- Itajubá -- MG -- Brasil
+\email{\{flaedu99, souza.isa96, mayconpgoulart\}@gmail.com, sandrouh@hotmail.com}
+}
+
+\begin{document} 
+
+\maketitle
+
+\begin{abstract}
+	This work aims to demonstrate the implementation of a data structure called deque, the same thing treated as a special type of queue. While working, you can view a feature of the deck and some of its applications. In addition to understanding an implementation of itself.
+\end{abstract}
+     
+\begin{resumo} 
+   Este trabalho tem como objetivo demonstrar a implementação de uma estrutura de dados denominada deque, a mesma será tratada como um tipo especial de fila. 
+   Ao decorrer do trabalho, será possível compreender a funcionalidade do deque, e algumas de suas aplicações. Além de entender a implementação tanto estática, quanto dinâmica, do mesmo.
+\end{resumo}
+
+\section{Introdução}
+	A estrutura de dados deque (Double Ended Queue) trata-se de um tipo especial de fila duplamente encadeada. Em uma fila todas as inserções são realizadas em um extremo, e as remoções ocorrem em seu extremo oposto. Já no deque, não há essa regra e tanto a inserção, quanto a remoção, podem ser realizadas em ambas extremidades da estrutura.\par
+	Apesar de sua semelhança com uma fila, a estrutura deque generaliza a ideia de fila e pilha, podendo ser utilizado como substituto de ambos. Na estrutura pilha, e devido suas particularidades, a inserção e remoção ocorrem no mesmo extremo.
+ 	
+\section{Descrição da Implementação} \label{sec:firstpage}
+	A estrutura deque pode ser implementada de duas formas, estáticamente e dinamicamente. A seguir, estará listado e explicado as funções utilizadas nas duas implementações:
+	
+\subsection{Função Cria Deque} 	
+	deque* cria\_deque() \{ \\
+	deque *d = (deque*)malloc(sizeof(deque));\\
+	if (!d)\{\par
+	printf("Erro ao alocar");\par
+	exit(1);\\
+    \} \\ 
+    d$\rightarrow$final = NULL;\\
+    d$\rightarrow$inicio = NULL; \\   
+    d$\rightarrow$qtd = 0; \\
+    return d;\\
+    \}\\ 
+    A função Cria Deque, irá alocar um espaço de memória reservado para a estrutura. A única diferença entre a implementação Dinâmica e da Estática, é o fato de que na Dinâmica, o final e o início inicializarão em NULL, para mostrar que não há nenhum dado, e no caso da Estática, inicializará em 0.
+    
+\subsection{Função Insere Início}
+	void insere\_inicio(deque *d, int i) \{\par
+    if (!d)\par
+    return ;\\
+    \}\\
+    no *novono = (no*)malloc(sizeof(no));\par
+	if (!novono) \{\par
+	printf("Erro ao alocar");\par
+	exit (1);\\ 
+  \} \\
+  novono$\rightarrow$dados.num = i;\\
+  novono$\rightarrow$prox = d$\rightarrow$inicio;\\
+  novono$\rightarrow$ant = NULL;\\
+  if (!d$\rightarrow$inicio)\par
+  d$\rightarrow$final = novono;\\
+  else\par     
+  d$\rightarrow$inicio$\rightarrow$ant = novono;\\
+  d$\rightarrow$inicio = novono;\\ 
+  d$\rightarrow$qtd++;\\
+  return ;\\ \} \\
+  A função Insere Início, irá inserir um número, digitado pelo usuário, na 1ª posição do deque. Dinamicamente, ele irá alocar um novo nó e verificará se há memória suficiente. Feito isso, ele irá inserir o número no nó, apontará o novono próximo para o antigo início e o seu anterior para NULL, pois ficará na 1ª posição. Por último, verificará se a lista estava vazia ou não. Caso esteja, o final também será o novono, senão, fará o antigo início apontar para o novono, a fim de manter duplamente encadeado e incrementará em 1 a quantidade.\\\\
+  if (d$\rightarrow$qtd == MAX) \{ \par 
+    printf("O Deque está cheio, não foi possível inserir");\par
+    setbuf(stdin, NULL);\par
+   getchar();\par
+   return ;\\
+ \}\\
+ d$\rightarrow$inicio - -;\\
+ if (d$\rightarrow$inicio $\prec$ 0)\par
+ d$\rightarrow$inicio = MAX-1;\par
+ A única diferença para o Estático, é que ele verificará se já estourou o limite do deque, caso estoure, não poderá inserir, senão, recuará o início em uma posição e irá inserir em seu lugar. Caso o início fique negativo, ele voltará para a posição MAX-1 (MAX é o tamanho máximo pré-determinado), para manter o caráter circular do deque.
+ 
+ \subsection{Função Insere no Final}
+  void insere\_final(deque *d, int i)\{\\
+  if (!d)\par
+  return ; 
+  no *novono = (no*)malloc(sizeof(no));\\
+  if (!novono) \{\par
+  printf("Erro ao alocar");\par
+  exit (1);\par
+  novono$\rightarrow$dados.num = i;\par                    novono$\rightarrow$prox = NULL;\\
+  if (!d$\rightarrow$final) \{\par
+  novono$\rightarrow$ant = NULL;\par                             d$\rightarrow$inicio = novono;\\
+\}\\
+else \{\par
+ novono$\rightarrow$ant = d$\rightarrow$final;\par                         d$\rightarrow$final$\rightarrow$prox = novono;\\
+\}\\
+d$\rightarrow$final = novono;\\                             d$\rightarrow$qtd++;\\
+return ;\\
+\}\\\\
+A função Insere Final irá inserir um número, digitado pelo usuário, na última posição do deque. Dinamicamente, ele irá alocar um novo nó e verificará se há memória suficiente. Feito isso, ele irá inserir o número no nó, apontará o novono próximo para NULL, por ser o último elemento. Irá verificar se possui apenas um elemento na lista, caso haja, apontará o seu anterior para NULL também e o início do deque irá ser o novono. Senão, o novono anterior apontará para o antigo final, para se manter duplamente encadeado e o próximo do final anterior, apontará para o novono. Por fim, o novono assumirá o final e será incrementado em 1 a quantidade.\par
+if (d$\rightarrow$qtd == MAX) \{\par                                       printf("O Deque está cheio, não foi possível inserir");\par
+ setbuf(stdin, NULL);\par                                   getchar();\par                                           
+ return ;\\    
+\}\\
+ d$\rightarrow$dados[d$\rightarrow$final].num = i;\\
+ d$\rightarrow$final = (d$\rightarrow$final+1)\%MAX;\\
+ 
+ A principal diferença entre as inserções Dinâmica e Estática, é que na estática, a função verificará se o tamanho máximo foi atingido, caso tenha atingido, não poderá inserir, senão, irá inserir o elemento na última posição normalmente.
+  \subsection{Função Remove Início}
+  void remove\_inicio(deque *d) \{\\           
+  if (!d $\parallel$ !d$\rightarrow$inicio)\\ \{\par
+   printf("Não foi possível remover");\par
+   setbuf(stdin, NULL);\par      
+   getchar();\par   
+   return;\\ \}\\
+   no *novono = d$\rightarrow$inicio;\\                         d$\rightarrow$inicio = d$\rightarrow$inicio$\rightarrow$prox;\\
+   if (!d$\rightarrow$inicio)\par                                     d$\rightarrow$final = NULL;\\
+   else\par      
+   d$\rightarrow$inicio$\rightarrow$ant = NULL;\\
+   free(novono);\\ 
+   d$\rightarrow$qtd- - ; \\
+   return ;\\ \}\\ 
+   A função Remove Início, removerá o primeiro elemento do deque. Primeiramente, ela irá verificar se o deque existe ou se está vazio. Caso esteja vazio ou não exista, imprimirá uma mensagem ao usuário dizendo que não pode remover. Senão, criará um nó auxiliar para armazenar o início. O início assumirá o seu próximo, ou seja, o segundo elemento. Caso ele assuma um valor NULL, o final também assumirá, pois o deque estará vazio, senão, o anterior do início assumirá NULL e por fim, dará free ao nó auxiliar, para liberar a memória do antigo início.\par
+   d$\rightarrow$inicio = (d$\rightarrow$inicio=1)\%MAX;\par
+   A única diferença na implementação Estática, é o fato de que o início irá assumir a próxima posição ao invés de liberar memória como no Dinâmico. 
+   
+   \subsection{Função Remover Final}
+   void remove\_final(deque *d) \{\\
+   if (!d $\parallel$ !d$\rightarrow$inicio)\{\par
+   printf("Não foi possível remover");\par
+   setbuf(stdin, NULL);\par
+   getchar();\par
+   return;\\
+    \}\\
+    no *novono = d$\rightarrow$final;\\
+    if (novono == d$\rightarrow$inicio)\ {\par
+    d$\rightarrow$inicio = NULL;\par                               d$\rightarrow$final = NULL;\\
+  \}\\
+  else\{\par 
+  novono$\rightarrow$ant$\rightarrow$prox = NULL;\par                       d$\rightarrow$final = novono$\rightarrow$ant;\\
+  \}\\ 
+  free(novono);\\
+  d$\rightarrow$qtd- -;\\                                   
+  return ;\\
+\}\\
+   A função Remove Final, removerá o último elemento do deque. Primeiramente, ele verificará se o deque existe ou se ele está vazio. Caso esteja vazio ou não exista, imprimirá uma mensagem ao usuário dizendo que não pode remover. Senão, criará um nó auxiliar para armazenar o final. Se o final for igual o início, o início e o final assumirão NULL, ou seja, o deque ficará vazio e só existia um elemento. Senão, o antigo final assumirá NULL e o final será o elemento anterior. Por fim, dará free no nó auxiliar e liberará a memória do antigo final e decrementará um na quantidade.\par
+   d$\rightarrow$final- -;\par
+   if (d$\rightarrow$final $\prec$ 0)\par
+   d$\rightarrow$final = MAX-1;\par  
+   A única diferença na implementação Estática é o fato de que ele irá recuar uma posição e assumir a anterior, e caso fique negativo, ele assumirá a posição MAX-1, para manter o caráter circular.
+  
+\subsection{Função Imprime Deque}
+ void imprime\_deque (deque *d)\ {\\
+ if (!d$\rightarrow$inicio)\ {\par
+  printf("O deque está vazio");\par
+  return ;\\
+\}\\
+ no *aux = d$\rightarrow$inicio;\\                            printf("Elementos do deque: ");\\
+ while (aux$\rightarrow$prox != NULL) \{\par
+ printf("\%d", aux$\rightarrow$dados.num);\par
+ aux = aux$\rightarrow$prox;\par
+  remove\_inicio(d);\\
+\}\\
+ printf("\%d", aux$\rightarrow$dados.num);\\
+ remove\_inicio(d);\\
+ return ;\\
+ \}\\\\
+ A função Imprime Deque, irá imprimir todos elementos presentes no deque, e por característica da fila, irá remover os elementos também. Primeiramente, irá verificar se o deque está vazio, caso esteja, irá avisar ao usuário que não foi possível imprimir. Senão, irá criar um nó auxiliar com a posição inicial e ir percorrendo a lista, assumindo o próximo valor, e após imprimir cada valor, ele é removido do deque.\\\\
+ while (d$\rightarrow$dados[d$\rightarrow$inicio].num != NULL) \{\par
+ printf (" \%d",d$\rightarrow$dados[d$\rightarrow$inicio].num);\par 
+ d$\rightarrow$inicio = (d$\rightarrow$inicio + 1) \% MAX;\par
+ d$\rightarrow$qtd- -;\par
+ if (d$\rightarrow$qtd == 0)\par\par  d$\rightarrow$dados[d$\rightarrow$inicio].num = NULL;\\  
+ \}\\
+ 
+   A principal diferença na implementação Estática é o fato de que o início assumirá a próxima posição, ao invés de ser removido do deque, mas o funcionamento é o mesmo.
+ 
+\section{Resultados das Aplicações}
+	Apesar das diversas aplicações da estrutura deque, nesse trabalho será exemplificado duas delas. Sendo elas:
+
+\subsection{Fila de Prioridade}
+	A solução que se baseia em usar um deque para uma fila de prioridade é que não há a necessidade de utilização de duas filas, mas sim de apenas um deque. Na aplicação simples utilizada neste trabalho, o programa recebe dois arquivos contendo dois dados de computadores diferentes. Esses dados são a matrícula de um aluno, o nome e o status (quanto menor o status, maior a prioridade de impressão), ao receber os dados do arquivo, eles são inseridos no deque. O primeiro arquivo é inserido no inicio e o segundo no final do deque, após terminar a leitura e o inserimento dos dados, o programa compara o "status" do dado contido no inicio com o dado contido no final, e então imprime na tela o de menor status(maior prioridade), simulando uma impressora que recebe dados de dois computadores diferentes.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=.5\textwidth]{aplicacao.jpeg}
+	\caption{Exemplificação do problema da fila de prioridade}
+	\label{fig:exampleFig2}
+\end{figure}
+
+\subsection{Palíndromo}
+	Palíndromos, são palavras, frases ou qualquer outra sequência de unidades, que podem ser lidas da esquerda para a direita ou da direita para a esquerda. Esse exemplo é um clássico quando se trata da estrutura deque. A implementação da mesma é simples, usa-se o deque para o armazenamento de uma string ou um número, e cada caractere como dado de um nó. Após a criação de um segundo deque, faz-se uma cópia do primeiro, retirando o dado pelo final e alocando no inicio do segundo deque, assim terá dois deques, um sendo o inverso do outro. Após a cópia, ocorre a comparação de ambos, podendo ser feita tanto pelo inicio, quanto pelo fim. Caso a comparação detecte que os deques são iguais, o dado fornecido é um palíndromo, caso contrário, não é um palíndromo.
+
+\section{Conclusão}\label{sec:figs}
+	No decorrer do trabalho foi demonstrado como a estrutura de dados deque se comporta. Foi explicitado algumas aplicações que o mesmo pode ser usado, sendo uma estrutura relativamente simples com suas limitações de inserção e remoção, porém extremamente útil para determinados casos, podendo poupar o esforço computacional. De acordo com a necessidade da aplicação, a inserção e remoção pelos dois extremos trazem uma maior eficiência em relação ao uso de outras estruturas.
+
+ %Referencias
+\bibliographystyle{sbc}
+\bibliography{sbc-template}
+\cite{andre:07}
+\cite{martin:06}
+\cite{chan}
+\cite{brad}
+\end{document}
+

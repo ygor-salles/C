@@ -1,0 +1,59 @@
+TRABALHO DE AUDITORIA DE SEGURANÇA EM SISTEMAS DE INFORMAÇÃO
+
+NOME: Ygor Salles Aniceto Carvalho
+MATRICULA: 2017014382
+
+O sistema tem como objetivo a criptografia e descriptografia de um arquivo
+de texto de modo mais simplificado, então utilizaremos um arquivo txt para
+exemplo.
+
+
+No exemplo utilizaremos o arquivo entrada.txt
+Seguem os passos para execução:
+
+################################################################################
+PRIMEIRA ETAPA - CRIPTOGRAFIA
+
+1 - Através de uma IDE ou do terminal do SO, executar o arquivo Criptografia.c.
+Irá exibir um menu onde você deve indicar o arquivo txt que deve ser criptografado, com a seguinte mensagem: Entre com o Nome do Arquivo Original = "
+
+2 - Digitar o nome do arquivo no caso: entrada.txt
+Lembrando que o arquivo entrada.txt deve estar na mesma pasta onde o código fonte foi executado
+
+3 - Irá exibir a seguinte mensagem "Entre com o Nome do Arquivo para Cifragem = "
+Você deverá digitar um nome para o sistema gerar um arquivo txt criptografado. Não esquecer de inserir a extensão no final do nome do arquivo, exemplo.txt.
+
+4 - Inserir a senha de 8 digitos para criptografia
+
+* Ok foi gerado um arquivo criptgado a partir do arquivo entrada.txt
+
+################################################################################
+SEGUNDA ETAPA - DESCRIPTOGRAFIA
+
+Nessa etapa iremos descriptograr os dados através do arquivo gerado pela execução do código fonte Criptografia.c
+
+1 - Executar o código Descriptografia.c.
+
+2 - Irá pedir para informar o nome do arquivo txt de criptografia gerado.
+Digitar o nome do arquivo com a extensão .txt, exemplo.txt.
+
+3 - Irá pedir para inserir um novo nome de arquivo .txt o qual será gerado para descriptografia dos dados gerados. Informar um nome para o arquivo
+
+4 - Iserir a senha de 8 digitos para que ocorra a descriptografia
+
+* Ok foi descriptografado o arquivo. Se você checar o diretório onde se encontra o código fonte poderá ver que além do arquivo entrada.txt foi gerado dois novos arquivos .txt, um que realizou a criptografia e outro que descriptografou retornando aos dados originais do arquivo entrada.txt
+
+#################################################################################
+IMPLEMENTAÇÃO:
+
+No código foi utilizado tipo unsigned char o qual é utilizado 1 byte pela notação binária da tabela ASCII. Os inteiros fora do intervalo 0 . . 255 são reduzidos módulo 28, ou seja, representados pelo resto da divisão por 256. Em outras palavras, todo inteiro N sem sinal é representado pelo unsigned char u tal que a diferença  N − u  é um múltiplo de 256.
+
+A grosso modo sabemos que os caracteres e qualquer outro tipo de dados são "vistos" pelo computador de forma binária 1 e 0 que representam pulsos elétricos no processador. E cada caracter é tratado com um tipo de binário. Ao realizar esse deslocamento de bytes no caso o 1 para esquerda ou direita alteramos complemtente aquele caracter, e uma forma de controlar esse deslocamento seja para direita ou esquerda é utilizando chave (senha) na qual faz alteraçoes desses bits e na função descifra o caminho reverso podendo chegar ao ponto de inicio.
+
+Função Cifra:
+Na função cifra o código varre todos o bloco de caracteres do arquivo, valida qual deles é par ou ímpar por byte, e faz a criptografia mais complexa dessa forma. Fazendo com que os bytes pares recebam o byte da chave deslocado para esquerda, mais, o byte do caracter em questão deslocado para a direita e para os bytes ímpares do texto de forma contrária a essa.
+
+Função Decifra:
+Na função decifra faz se o caminho reverso da cifra, porém necessário o tratamento de correção de string na qual na linguagem C o último caracter é dado como \n, seria necessário tratá-lo como foi feito nessa implementação
+
+ 

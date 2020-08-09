@@ -1,0 +1,3 @@
+Site Vetor: 
+
+http://linguagemc.com.br/vetores-ou-arrays-em-linguagem-c/

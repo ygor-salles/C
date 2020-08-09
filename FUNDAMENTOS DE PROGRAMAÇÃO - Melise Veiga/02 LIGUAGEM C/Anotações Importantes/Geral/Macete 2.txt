@@ -1,0 +1,49 @@
+
+typedef struct teste
+{
+    int vetor[10];
+    char string[11];
+} tteste;
+
+void funcao (tteste list)
+{
+    int i, j;
+    [Código ...];
+    for (i=0; i<10; i++){
+        printf (" %s",list[i].string);
+        for (j=0; j<10; j++)
+            printf (" %d",list[i].vetor[j]);
+    }
+
+    return ;
+}
+
+int main ()
+{
+    tteste lista[10];
+    int i, j;
+    
+    for (i=0; i<10; i++){
+        printf (" %[^\n]",lista[i].string);
+        for (j=0; j<10; j++)
+            scanf (" %d %[^\n]",&lista[i].vetor[j]);
+    }
+    
+    funcao (lista);
+    
+    for (i=0; i<10; i++){
+        printf (" %s",list[i].string);
+        for (j=0; j<10; j++)
+            printf (" %d",list[i].vetor[j]);
+    
+    return 0;
+}
+
+
+
+
+
+
+
+
+

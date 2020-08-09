@@ -1,0 +1,44 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+float **converte_a(int l, int c, float *v){
+    
+    float **m = (float**)malloc(l * sizeof(float*));
+    for(int i = 0; i < c; i++)
+        m[i] = (float*)malloc(c * sizeof(float));
+
+    for(int i = 0; i < l; i++){
+        for(int j = 0; j < c; j++){
+            m[i][j] = v[i*c+j];
+            printf(" %.2f -",m[i][j]);
+        }
+        printf("\n");
+    }
+    return m;
+    
+}
+
+int main(){
+    float **mat, x = 0;
+    int l, c;
+
+    printf("\nLinha: ");
+    scanf("%d",&l);
+    printf("\nColuna: ");
+    scanf("%d",&c);
+
+    float v[l*c];
+
+    for(int i = 0; i < l * c; i++){
+        v[i] = x++;
+        printf(" %.2f -", v[i]);
+    }
+
+    printf("\n\n");
+    float *z = &v[0];
+
+    mat = converte_a(l,c,z);
+
+    free(mat);
+    return 0;
+}

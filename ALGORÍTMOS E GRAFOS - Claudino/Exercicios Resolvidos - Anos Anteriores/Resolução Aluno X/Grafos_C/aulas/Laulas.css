@@ -1,0 +1,174 @@
+BODY {
+	MARGIN-LEFT: 9%; COLOR: #000000; MARGIN-RIGHT: 6%; BACKGROUND-COLOR: #ffffff
+}
+A:link {
+	COLOR: #0000ff
+}
+A:visited {
+	COLOR: #0000f0; TEXT-DECORATION: none
+}
+A:hover {
+	COLOR: red; TEXT-DECORATION: underline
+}
+A:active {
+	COLOR: red; TEXT-DECORATION: underline
+}
+A.name {
+	COLOR: #000000; TEXT-DECORATION: none
+}
+ACRONYM {
+	COLOR: blue
+}
+ACRONYM:hover {
+	COLOR: red
+}
+A.navig:link {
+	COLOR: white; TEXT-DECORATION: underline
+}
+A.navig:visited {
+	COLOR: white; TEXT-DECORATION: underline
+}
+A.navig:hover {
+	COLOR: red
+}
+A.navig:active {
+	COLOR: red
+}
+TD.navig {
+	BACKGROUND: #2040a0; COLOR: #ffffff; TEXT-ALIGN: center
+}
+SPAN.title {
+	COLOR: #2040a0
+}
+H1 {
+	MARGIN-TOP: 1.5em; MARGIN-BOTTOM: 1em; MARGIN-LEFT: -30px; COLOR: #2040a0
+}
+H2 {
+	MARGIN-TOP: 1.5em; MARGIN-BOTTOM: 1em; MARGIN-LEFT: -30px; COLOR: #5080ff
+}
+H3 {
+	MARGIN-TOP: 1.5em; MARGIN-BOTTOM: 1em; COLOR: #70b0ff
+}
+SPAN.paragraph {
+	FONT-WEIGHT: bold; COLOR: #000040
+}
+P.center {
+	TEXT-ALIGN: center
+}
+P.right {
+	TEXT-ALIGN: right
+}
+DIV.left {
+	MARGIN-LEFT: -30px; WIDTH: 105%
+}
+P.noindent {
+	MARGIN-LEFT: 0em
+}
+DFN {
+	FONT-WEIGHT: bold; COLOR: #000000; FONT-STYLE: normal; BACKGROUND-COLOR: #ffffb0
+}
+SPAN.dfnnoitalic {
+	PADDING-RIGHT: 0.7em; PADDING-LEFT: 0.7em; FONT-WEIGHT: bold; COLOR: #000000; BACKGROUND-COLOR: #ffffb0
+}
+SPAN.smallcaps {
+	FONT-VARIANT: small-caps
+}
+DIV.small {
+	FONT-SIZE: smaller
+}
+P.red {
+	COLOR: red
+}
+SPAN.red {
+	COLOR: red
+}
+SPAN.blood {
+	COLOR: #aa0000
+}
+SPAN.blue {
+	COLOR: blue
+}
+SPAN.hide {
+	DISPLAY: inline; COLOR: black; BACKGROUND-COLOR: #d0ffd0
+}
+P.hide {
+	DISPLAY: block; COLOR: black; BACKGROUND-COLOR: #d0ffd0
+}
+DIV.hide {
+	DISPLAY: block; COLOR: black; BACKGROUND-COLOR: #d0ffd0
+}
+PRE.hide {
+	FONT-SIZE: small; COLOR: black; BACKGROUND-COLOR: #d0ffd0
+}
+SPAN.invis {
+	VISIBILITY: hidden
+}
+SPAN.gray {
+	COLOR: gray
+}
+SPAN.comm {
+	COLOR: gray
+}
+SPAN.ustress {
+	COLOR: #600000; FONT-STYLE: italic
+}
+SPAN.stress {
+	COLOR: #702000; FONT-STYLE: italic
+}
+SPAN.epigrafesignature {
+	COLOR: black
+}
+P.epigrafe {
+	COLOR: #2040c0; TEXT-ALIGN: right
+}
+LI.space {
+	MARGIN-TOP: 0.2em
+}
+LI.sspace {
+	MARGIN-TOP: 0.5em
+}
+LI.ssspace {
+	MARGIN-TOP: 1em
+}
+PRE.ind {
+	MARGIN: 1em 2em 1em 2.7em; LINE-HEIGHT: 110%; WHITE-SPACE: pre
+}
+PRE.hlt {
+	PADDING-RIGHT: 8px; PADDING-LEFT: 8px; PADDING-BOTTOM: 8px; MARGIN: 1.5em 5em 1.5em 2.5em; LINE-HEIGHT: 120%; PADDING-TOP: 8px; WHITE-SPACE: pre; BACKGROUND-COLOR: #ffffd6
+}
+TT.hlt {
+	BACKGROUND-COLOR: #ffffe0
+}
+TABLE.aa {
+	MARGIN-TOP: 0.5em; MARGIN-BOTTOM: 0.5em
+}
+TABLE.ab {
+	MARGIN-TOP: 0.5em; MARGIN-BOTTOM: 1em
+}
+TABLE.ba {
+	MARGIN-TOP: 1em; MARGIN-BOTTOM: 0.5em
+}
+TABLE.bb {
+	MARGIN-TOP: 1em; MARGIN-BOTTOM: 1em
+}
+TABLE.ca {
+	MARGIN-TOP: 1em; MARGIN-BOTTOM: 0em
+}
+TABLE.cb {
+	MARGIN-TOP: 1.5em; MARGIN-BOTTOM: 1em
+}
+TABLE.cw {
+	PADDING-RIGHT: 2em; MARGIN-TOP: 1em; PADDING-LEFT: 2em; BACKGROUND: #ffffd6; MARGIN-BOTTOM: 1em; PADDING-BOTTOM: 2em; MARGIN-LEFT: 3em; PADDING-TOP: 2em
+}
+DIV.exr {
+	PADDING-RIGHT: 15px; MARGIN-TOP: 0em; PADDING-LEFT: 10px; PADDING-BOTTOM: 5px; MARGIN-LEFT: -5px; PADDING-TOP: 1px; BACKGROUND-COLOR: #e8e8f0
+}
+H2.exr {
+	MARGIN-TOP: 1.5em; MARGIN-BOTTOM: 0.5em; MARGIN-LEFT: -30px; COLOR: #5080ff
+}
+H3.exr {
+	MARGIN-TOP: 0em; MARGIN-BOTTOM: 1em; MARGIN-LEFT: 0%; COLOR: #707070
+}
+LI.exr {
+	MARGIN-TOP: 1em
+}

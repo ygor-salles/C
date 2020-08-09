@@ -1,0 +1,46 @@
+FUNÇÕES DA ALOCAÇÃO DINÂMICA - BIBLIOTECA STDLIB.H
+
+MALLOC - Aloca o necessário de memória para os dados que serão preenchido pelo usuário, EX: 
+int n, *vetor;
+printf ("Digite valor de n: ");
+vetor = (int*) malloc(n * sizeof(int));
+
+--------------------------------------------------------------------------------------------------------------------------------
+REALLOC - Próprio nome já diz, irá realocar memória de acordo com a necessidade de cada interação, Ex:
+char *ptr;
+    ptr = (char*) malloc(14);
+    strcpy(ptr, "LinguagemC");
+    printf ("String = %s",ptr);
+
+    ptr = (char*) realloc(ptr,22)
+    strcat(ptr, "Brasil");
+    printf ("String nova = %s",prt);
+
+--------------------------------------------------------------------------------------------------------------------------------
+CALLOC - Inicializa todos os elementos do vetor com zero, Ex:
+int *ptr, i, n;
+    printf ("Digite o numero de elementos: "); scanf ("%d",&n);
+
+    ptr = calloc(n, sizeof(int));
+
+    ptr[0] = 1;
+    for (i=0; i<n; i++)
+        ptr[i] = ptr[i] + 1;
+
+---------------------------------------------------------------------------------------------------------------------------------
+SIZEOF - Aloca automaticamente a quantidade necessária de bytes para utilização do vetor, Ex:
+int n, *vetor;
+printf ("Digite valor de n: ");
+vetor = (int*) malloc(n * sizeof(int));
+
+OBS: o sizeof irá analisar a quantidade necessária de byts para armazenar o tipo int vezes a quantidade n (o total para o vetor)
+
+---------------------------------------------------------------------------------------------------------------------------------
+FREE - Desaloca memória do vetor, caso ele não seja mais utilizado no programa, Ex:
+free(vetor)
+
+OBS: Para matriz devemos obter o for, EX: 
+for (i=0; i<linha; i++){
+    free(matriz[i]);
+}
+free(matriz);

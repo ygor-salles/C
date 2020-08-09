@@ -1,0 +1,33 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+/* P3 - Questão 4 */
+
+int main ()
+{
+    int codigo[30], i, j;
+    FILE *arq;
+    arq = fopen("P3exercicio4.txt","w+");
+
+    if (arq == NULL){
+        printf ("\nArquivo invalido");
+        exit(1);
+    }
+    else{
+        for (i=0; i<30; i++){
+            printf ("Digite o codigo: ");
+            scanf ("%d",&codigo[i]);
+            fprintf (arq, "\n%d",codigo[i]);
+        }
+        j=1;
+        rewind(arq);
+
+        for (i=0; i<30; i++){
+            fscanf (arq, "%d",&codigo[i]);
+            printf ("\nCodigo [%d]: %d",j++, codigo[i]);
+        }
+    }
+    printf ("\n\n");
+    fclose(arq);
+    system("pause");
+}

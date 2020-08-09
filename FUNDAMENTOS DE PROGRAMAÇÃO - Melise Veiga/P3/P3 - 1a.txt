@@ -1,0 +1,5 @@
+typedef struct
+{
+    int cod, ponto;
+    char login[51], senha[11];
+} usuario;

@@ -1,0 +1,13 @@
+﻿COM111 - Questão múltipla escolha
+Número: 
+Enunciado:
+Para n grande, qual função cresce mais rápido:
+
+- A: √n
+- B: n^7
+- C:  3^n + 2n
+- D: log n
+- E: NDA, todas crescem na mesma proporção.
+
+
+Autores(as): 2017014382, 2017009453, 2017014328

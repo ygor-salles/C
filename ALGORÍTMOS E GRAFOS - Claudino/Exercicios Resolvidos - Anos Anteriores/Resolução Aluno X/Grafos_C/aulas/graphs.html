@@ -1,0 +1,244 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/graphs.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:38 GMT -->
+<HEAD>
+<TITLE>Algoritmos para Grafos: Grafos nao-dirigidos</TITLE>
+<META NAME="Author" CONTENT="Paulo Feofiloff">
+<META name="language" content="Portuguese">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1"> 
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<LINK rel="stylesheet" href="code.css" type="text/css">
+</HEAD>
+<BODY>
+
+
+
+
+
+
+<p class="top">
+<a href="../index.html#contents">Algoritmos em C para Grafos via Sedgewick</a>&nbsp;
+
+
+
+
+<h1>Grafos</h1>
+
+
+<p>Um <i>grafo</i> 
+é um tipo especial de digrafo,
+também conhecido como 
+<i>grafo não-dirigido</i> e <i>grafo não-orientado</i>.&nbsp;
+Grafos são modelos naturais para muitos problemas práticos.
+
+
+
+<p>
+(Esta página corresponde aproximadamente
+às seções 17.0 e 17.1 (Glossary)
+do capítulo&nbsp;17 (Graph Properties and Types)
+do livro de Sedgewick.)
+
+
+
+
+
+<h2 id="graph">Definições básicas</h2>
+
+
+
+<p>Um&nbsp; <span class="dfn">grafo</span>&nbsp;
+(=&nbsp;<i>graph</i>)&nbsp;
+é um 
+<a href="digraphs.html#symmetric">digrafo simétrico</a>.&nbsp;&nbsp;
+Em virtude de suas propriedades especiais 
+e de suas aplicações práticas,
+grafos merecem ser estudados à parte dos digrafos.
+
+
+
+<p id="edge">
+Os arcos de um grafo andam aos pares:&nbsp;
+cada arco&nbsp; <tt>v-w</tt>&nbsp; 
+é acompanhado do arco&nbsp;&nbsp;<tt>w-v</tt>.&nbsp;
+Convém tratar esse par de arcos como uma nova entidade.
+Assim, diremos que um
+par de <a href="digraphs.html#antiparallel"
+>arcos anti-paralelos</a> é uma 
+
+<p class="display">
+<span class="dfn">aresta</span> (=&nbsp;<i>edge</i>).
+
+<p>As pontas dos dois arcos são
+as <span class="dfn">pontas</span> da aresta.
+As duas pontas de uma aresta são indistinguíveis: 
+não há ponta inicial nem ponta final.&nbsp;
+(Mas convém lembrar que as duas pontas são diferentes.)&nbsp;
+Uma aresta com pontas <tt>v</tt> e <tt>w</tt> será denotada,
+indiferentemente, por
+
+<p class="display">
+<tt>v-w</tt>&nbsp;&nbsp; ou&nbsp;&nbsp; <tt>w-v</tt>.
+
+<p>(Convém lembrar que nossos grafos não têm "arestas paralelas",
+ou seja, arestas com um mesmo par de pontas.)
+
+<p>Diremos que uma aresta <tt>v-w</tt> <span class="dfn">liga</span>
+os vértices <tt>v</tt> e&nbsp;<tt>w</tt>.&nbsp;
+Diremos também que <tt>v-w</tt> <span class="dfn">incide</span>
+em <tt>v</tt> e em&nbsp;<tt>w</tt>.
+
+<p>O número de arestas de um grafo é a metade do seu 
+número de arcos.&nbsp; 
+Se&nbsp; <tt>E</tt>&nbsp; denota o número de arestas 
+e&nbsp; <tt>A</tt>&nbsp; denota o número de arcos então
+
+<p class="display">
+<tt>A = 2&middot;E</tt>&nbsp;.
+
+
+
+
+
+
+<h2>Exemplo</h2>
+
+<p>Uma maneira cômoda de especificar um grafo é 
+exibir o conjunto de suas arestas.&nbsp;&nbsp; 
+Por exemplo, o conjunto de arestas
+
+<p class="display">
+<tt>0-1 0-5 1-5 2-4 3-1 5-3</tt>
+
+<p>define um grafo sobre o conjunto de vértices&nbsp;
+<tt>0..5</tt>.&nbsp;
+Cada elemento <tt>v-w</tt> dessa lista representa dois arcos: 
+o arco <tt>v-w</tt> e o arco&nbsp;<tt>w-v</tt>.&nbsp;
+(Compare com o <a href="digraphs.html#symmetric"
+>exemplo de digrafo simétrico na página anterior</a>.)
+
+
+
+
+
+
+
+
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=1>
+
+
+
+<li class="exr">
+Exiba todos os grafos 
+com conjunto de vértices <tt>0..3</tt>.&nbsp;
+Para cada valor de <tt>E</tt>,
+quantos grafos diferentes existem com vértices <tt>0..3</tt>
+e <tt>E</tt> arestas?
+
+</ol>
+
+
+
+
+
+
+  
+<h2 id="degree">Graus de vértices</h2>
+
+<p>O&nbsp; <span class="dfn">grau</span>&nbsp;
+de um vértice em um grafo é o número de arestas 
+que incidem no vértice.
+Esse número é igual ao grau de entrada do vértice 
+e também ao grau de saída do vértice.
+
+<p id="density">É fácil verificar que 
+a soma dos graus de todos os vértices de um grafo 
+vale&nbsp;<tt>2E</tt>,&nbsp;
+sendo <tt>E</tt> o número de arestas.&nbsp;
+Portanto, o <span class="dfn">grau médio</span>
+do grafo é o número&nbsp; <tt>2E/V</tt>&nbsp;,
+sendo <tt>V</tt> o número de vértices.
+
+<p id="isolated">Convém lembrar que um vértice é 
+<a href="digraphs.html#isolated">isolado</a>
+se o seu grau é nulo.
+
+
+
+
+<h2>Número máximo de arestas</h2>
+
+<p>Quantas arestas, no máximo, tem um grafo com <tt>V</tt> vértices?&nbsp;
+<span class="dim">[Veja Property 17.1, p.8, em Sedgewick.]</span>&nbsp;
+
+Não é difícil verificar que a resposta é
+
+<p class="display"><tt>V&middot;(V-1)/2</tt>&nbsp;.
+
+<p>Esse número é pouco menor 
+que&nbsp;&nbsp;<tt>&frac12;</tt>&nbsp;<tt>V<sup>2</sup></tt>.
+
+
+<p id="complete">
+Um grafo é&nbsp; <span class="dfn">completo</span>&nbsp;
+se todo par não-ordenado de vértices distintos é um aresta.&nbsp;
+Um grafo completo com <tt>V</tt> vértices
+tem exatamente <tt>V&middot;(V-1)/2</tt> arestas.
+
+
+
+
+
+
+
+
+
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=2>
+
+<li class="exr" id="E17.9">
+Quantos grafos diferentes existem com conjunto de vértices <tt>0..V-1</tt> 
+e <tt>E</tt> arestas?
+
+
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<p>&nbsp;
+<hr>
+<small>
+
+Last modified: Thu Feb 15 08:55:53 BRST 2007
+</small>
+
+</BODY>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/graphs.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:38 GMT -->
+</HTML>

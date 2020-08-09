@@ -1,0 +1,527 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/flowdatastruct.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:42 GMT -->
+<HEAD>
+<TITLE>Algoritmos para Grafos: Estrutura de dados para fluxo</TITLE>
+<META NAME="Author" CONTENT="Paulo Feofiloff">
+<META name="language" content="Portuguese">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1"> 
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<LINK rel="stylesheet" href="code.css" type="text/css">
+</HEAD>
+<BODY>
+
+
+
+
+
+
+
+<p class="top">
+<a href="../index.html#contents">Algoritmos em C para Grafos via Sedgewick</a>&nbsp;
+
+
+
+
+<h1>Estrutura de dados para redes de fluxo</h1>
+
+
+
+
+<p>Para representar <a href="flow.html#capacitatednetwork"
+>redes capacitadas</a>,
+poderíamos usar a estrutura de dados  
+já empregada para <a href="weightedgraphs.html#lists"
+>digrafos com custos nos arcos</a>,
+depois de substituir "custo" por "capacidade".&nbsp;&nbsp;
+Mas é conveniente definir uma nova estrutura,
+sob medida para tratar do problema do fluxo máximo.&nbsp;
+Em particular, é conveniente que a estrutura represente 
+uma rede de fluxo,
+conforme a seguinte definição.
+
+<p id="flownetwork">
+Uma <span class="dfn">rede de fluxo</span> 
+(=&nbsp;<i>flow network</i>)
+é uma 
+<ul>
+<li><a href="flow.html#capacitatednetwork">rede capacitada</a> 
+<li>juntamente com um fluxo na rede 
+<li>
+que 
+<a href="flow.html#respectscapacity">respeita</a>
+as capacidades dos arcos.
+</ul>
+
+<p>(Esta página é um resumo 
+de parte da seção 
+22.1 (Flow Networks)
+do capítulo&nbsp;22
+(Network Flow) 
+do livro de Sedgewick.)
+
+
+
+
+
+
+
+
+
+<h2 id="lists">Listas de adjacência</h2>
+
+
+<p>Nossas <a href="#flownetwork">redes de fluxo</a>
+serão representadas por listas de adjacência.
+Como de hábito, cada arco <tt>v-w</tt> será representado 
+por um nó na lista encadeada <tt>adj[v]</tt>.&nbsp;
+Além do campo&nbsp; <tt>w</tt>,&nbsp; esse nó terá
+<ul>
+<li>
+um campo&nbsp; <tt>cap</tt>&nbsp;
+para armazenar a capacidade do arco <tt>v-w</tt>&nbsp;&nbsp;e
+<li>
+um campo&nbsp; <tt>flow</tt>&nbsp;
+para armazenar o valor do fluxo no arco.&nbsp;
+</ul>
+<p>O&nbsp;nó terá ainda um campo <tt>dup</tt>,
+cujo uso será descrito mais adiante.
+
+
+
+
+
+
+
+
+<blockquote class="hlt" id="flownet">
+<p class="doc">
+/* Copiado do programa 22.1, p.366, de Sedgewick.&nbsp;*/
+
+<pre class="code">
+<span class="k">typedef struct</span> node *link;
+
+<span class="k">struct</span> node { 
+   <span class="k">Vertex</span> w; 
+   <span class="k">int</span> cap; 
+   <span class="k">int</span> flow; 
+   <span class="k">link</span> dup; 
+   <span class="k">link</span> next;
+};
+
+<span class="k">link</span> NEW (<span class="k">Vertex</span> w, <span class="k">int</span> cap, <span class="k">int</span> flow, <span class="k">link</span> next) { 
+   <span class="k">link</span> x = <span class="k">malloc</span>(<span class="k">sizeof</span> *x);
+   x->w = w; 
+   x->cap = cap; 
+   x->flow = flow; 
+   x->next = next;     
+   <span class="k">return</span> x;                         
+}
+
+<span class="k">struct</span> flownet { 
+   <span class="k">int</span> V, A;
+   <span class="k">link</span> *adj; 
+   <span class="k">Vertex</span> s, t; 
+};
+
+<span class="k">typedef struct</span> flownet *Flownet;
+</pre>
+</blockquote>
+
+
+
+<p>Eis algumas funções óbvias para construção de uma rede de fluxo:
+
+<blockquote class="hlt">
+<pre class="code">
+<span class="k">Flownet</span> FLOWinit (<span class="k">int</span> V) { 
+   <span class="k">Vertex</span> v;
+   <span class="k">Flownet</span> G = <span class="k">malloc</span>(<span class="k">sizeof</span> *G);
+   G->adj = <span class="k">malloc</span>(V * <span class="k">sizeof(link)</span>);
+   G->V = V; 
+   G->A = 0;
+   <span class="k">for</span> (v = 0; v < V; v++) G->adj[v] = <span class="k">NULL</span>;
+   <span class="k">return</span> G;
+}
+</pre>
+
+<p class="doc">
+/* Insere 
+   um arco <tt class="doc">v-w</tt>,
+   de capacidade <tt class="doc">cap</tt> e 
+   fluxo nulo 
+   na rede&nbsp;<tt class="doc">G</tt>.&nbsp;*/
+
+
+<pre class="code">
+<span class="k">void</span> FLOWinsertA (<span class="k">Flownet</span> G, <span class="k">Vertex</span> v, <span class="k">Vertex</span> w, <span class="k">int</span> cap) { 
+   <span class="k">if</span> (v == w <span class="k">||</span> cap < 0) <span class="k">return</span>;
+   G->adj[v] = NEW(w, cap, 0, G->adj[v]);
+   G->adj[v]->dup = G->adj[w];
+   G->A++;
+}
+</pre>
+</blockquote>
+
+
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=1>
+
+<li class="exr">
+Escreva uma função que receba uma rede de fluxo 
+e verifique se as capacidades dos arcos são mesmo não-negativas
+e se os fluxos respeitam as capacidades.
+Em outras palavras, verifique se&nbsp;
+<tt>0 &le; flow &le; cap</tt>&nbsp; em cada arco.
+
+<li class="exr">
+Escreva uma função que receba uma rede de fluxo e um vértice <tt>v</tt>
+e devolva o <a href="flow.html#inflowoutflow">saldo</a> do fluxo 
+em <tt>v</tt>.&nbsp;
+Escreva outra função que receba um rede de fluxo e 
+verifique se os campos <tt>flow</tt> de fato representam um 
+<a href="flow.html#flow">fluxo</a> 
+em relação aos vértices inicial <tt>s</tt> e final&nbsp;<tt>t</tt>.
+
+<li class="exr">
+Escreva uma função que receba um arquivo contendo 
+a descrição de uma rede capacitada 
+e construa a correspondente estrutura <tt>flownet</tt>.&nbsp;
+A primeira linha do arquivo deve especificar
+o número de vértices da rede e os seus vértices inicial e final;
+cada uma das linhas seguintes deve ter um arco e sua capacidade.
+Exemplo:
+<pre class="small">
+         6 0 5
+         0-1   2
+         0-2   3
+         1-3   3
+         1-4   1
+         2-3   1
+         2-4   1
+         3-5   2
+         4-5   3
+</pre>
+<p>Preencha os campos <tt>flow</tt> dos arcos com zeros.
+
+<li class="exr">
+Escreva uma função que gere uma rede capacitada aleatória
+com <tt>V</tt> vértices e <tt>A</tt> arcos.
+As capacidades devem ser escolhidas aleatoriamente no intervalo
+<tt>[0,M-1]</tt>.
+Os vértices inicial e final também devem ser escolhidos aleatoriamente.
+
+</ol>
+
+
+
+
+
+
+
+<h2 id="expanded">Redes de fluxo expandidas</h2>
+
+<p>É difícil procurar 
+<a href="flow-FF.html#augmentingpath">caminhos de aumento</a>
+numa rede de fluxo
+porque esses caminhos podem ter arcos inversos.&nbsp;
+Para contornar essa dificuldade,
+vamos introduzir o conceito de rede de fluxo expandida.
+
+<p id="artificialarc2">
+Suponha dada uma <a href="#flownetwork">rede de fluxo</a>.
+Para cada arco <tt>v-w</tt>,
+acrescente à rede um arco&nbsp;<tt>w-v</tt>.&nbsp;
+Diremos que os novos arcos são <span class="dfn">artificiais</span>
+e os antigos são <span class="dfn">originais</span>&nbsp;
+(cada arco artificial é
+<a href="digraphs.html#antiparallel">anti-paralelo</a>
+ao correspondente arco original).&nbsp;&nbsp;
+A capacidade de cada arco artificial <tt>w-v</tt> será, 
+por definição,
+o negativo da capacidade do correspondente 
+arco original&nbsp;<tt>v-w</tt>.&nbsp;
+O&nbsp;fluxo em cada arco artificial será
+o negativo do fluxo no correspondente arco original.&nbsp;
+
+<p>(É preciso admitir que a aplicação dos termos "capacidade" e "fluxo" 
+aos arcos artificiais é 
+<a href="flow.html#integercapacity">um tanto abusiva</a>,
+uma vez que esses números são tipicamente negativos.)
+
+<p>A&nbsp;rede que acabamos de construir será chamada
+<span class="dfn">rede de fluxo expandida</span>,
+ou simplesmente <span class="dfn">rede expandida</span>.&nbsp;
+Ela representa, com certas vantagens,
+a rede de fluxo original.&nbsp;&nbsp;
+<span class="dim">[O&nbsp;conceito de rede expandida
+substitui, com vantagem,
+o conceito de "rede residual" de Sedgewick.]</span>
+
+<p>(Se a rede original tiver arcos anti-paralelos,
+a rede expandida terá arcos paralelos,
+o que entra em choque com nossa <a href="digraphs.html#parallel"
+>proibição de tais arcos</a>.&nbsp;
+Felizmente, a estrutura de dados que definimos acima 
+é capaz de representar arcos paralelos.
+Podemos, portanto, desrespeitar a proibição ao tratar de redes expandidas.)
+
+
+<p>A estrutura de dados que definimos acima para representar redes de fluxo
+também é capaz de representar redes expandidas:&nbsp;
+basta acrescentar os arcos artificiais à rede de fluxo original.&nbsp;
+O&nbsp;campo&nbsp; <tt>dup</tt>&nbsp; 
+nos nós das listas de adjacência será usado para apontar de um arco original 
+para o correspondente arco artificial
+
+e vice-versa.&nbsp;
+Para cada o arco artificial teremos 
+<p class="display"><tt>cap &le; flow &le; 0</tt>
+<p>e para cada o arco original teremos 
+<tt>0 &le; flow &le; cap</tt>.
+
+<p>Eis uma função que transforma uma rede de fluxo
+na correspondente rede de fluxo expandida:
+
+<blockquote class="hlt">
+<p class="doc" id="FLOWbuild">
+/* Transforma uma rede de fluxo 
+   <tt class="doc">G</tt>
+   na correspondente rede de fluxo expandida.&nbsp;*/
+
+<pre class="code" id="Expand">
+<span class="k">void</span> Expand (<span class="k">Flownet</span> G) {
+   <span class="k">Vertex</span> s = G->s, t = G->t, v, w; <span class="k">link</span> po, pa;
+   <span class="k">int</span> cap, flow;
+   <span class="k">for</span> (v = 0; v < G->V; v++) 
+      <span class="k">for</span> (po = G->adj[v]; po != <span class="k">NULL</span>; po = po->next) 
+         po->dup = <span class="k">NULL</span>;
+   <span class="k">for</span> (v = 0; v < G->V; v++) 
+      <span class="k">for</span> (po = G->adj[v]; po != <span class="k">NULL</span>; po = po->next) 
+         <span class="k">if</span> (po->dup == <span class="k">NULL</span>) {
+            w = po->w;
+            cap = po->cap;
+            flow = po->flow;
+            G->adj[w] = pa = NEW(v, -cap, -flow, G->adj[w]);
+            po->dup = pa;
+            pa->dup = po;
+         }
+}
+</pre>
+</blockquote>
+
+
+<p>Veja como é fácil calcular o saldo do fluxo num vértice <tt>v</tt> 
+de uma rede de fluxo expandida:
+
+
+<blockquote class="hlt">
+<p class="doc">
+/* A&nbsp;função <tt class="doc">flowV</tt>
+   calcula o <a class="doc" href="flow.html#inflowoutflow">saldo</a> 
+   de fluxo no vértice <tt class="doc">v</tt>
+   de uma rede de fluxo expandida&nbsp;<tt class="doc">G</tt>.&nbsp;
+   (Copiado do programa 22.2, p.367, de Sedgewick.)&nbsp;*/
+
+<pre class="code" id="flowV">
+<span class="k">int</span> flowV (<span class="k">Flownet</span> G, <span class="k">Vertex</span> v) { 
+   <span class="k">link</span> p; <span class="k">int</span> x = 0;
+   <span class="k">for</span> (p = G->adj[v]; p != <span class="k">NULL</span>; p = p->next)
+      x += p->flow;
+   <span class="k">return</span> x;
+}
+</pre>
+
+</blockquote>
+
+<p>A intensidade do fluxo nada mais é que o valor da expressão
+<tt>flowV(G,</tt>&nbsp;<tt>G->s)</tt>.
+
+
+
+
+
+
+
+
+
+<h2>Exemplo 1</h2>
+
+
+<p>Considere a rede de fluxo (não-expandida) abaixo
+(esse exemplo é cópia de parte da figura 22.17, p.377, de Sedgewick).
+<pre>
+         arco  cap flow    s = 0
+         0-1   2      2    t = 5
+         0-2   3      2
+         1-3   3      1
+         1-4   1      1
+         2-3   1      1
+         2-4   1      1
+         3-5   2      2
+         4-5   3      2
+</pre>
+<p>A tabela seguinte mostra a correspondente rede de fluxo expandida.
+Os arcos artificiais estão pintados de vermelho.
+<pre>
+         arco  cap flow
+         0-1   2      2
+         <span class="red">1-0  -2     -2</span> 
+         0-2   3      2
+         <span class="red">2-0  -3     -2</span> 
+         1-3   3      1
+         <span class="red">3-1  -3     -1</span> 
+         1-4   1      1
+         <span class="red">4-1  -1     -1</span> 
+         2-3   1      1
+         <span class="red">3-2  -1     -1</span> 
+         2-4   1      1
+         <span class="red">4-2  -1     -1</span> 
+         3-5   2      2
+         <span class="red">5-3  -2     -2</span> 
+         4-5   3      2
+         <span class="red">5-4  -3     -2</span> 
+</pre>
+
+
+
+
+
+
+
+
+<h2 id="expandedaugmpath">Rede expandida e capacidades residuais</h2>
+
+<p>Um 
+<a href="paths.html#path">caminho</a> (sem arcos inversos)
+de <tt>s</tt> a <tt>t</tt> na rede de fluxo expandida
+corresponde a um caminho de aumento 
+na rede de fluxo original se
+os seus arcos originais têm fluxo menor que a capacidade e
+os seus arcos artificiais têm fluxo estritamente negativo,
+ou seja, se
+<ul>
+<li><tt>cap</tt> &ge; <tt>0</tt>&nbsp; implica em&nbsp; 
+    <tt>flow</tt>&nbsp;&lt;&nbsp;<tt>cap</tt>&nbsp;&nbsp;e
+<li><tt>cap</tt> &lt; <tt>0</tt>&nbsp; implica em&nbsp;
+    <tt>flow</tt>&nbsp;&lt;&nbsp;<tt>0</tt>
+</ul>
+
+<p>para todo arco do caminho.&nbsp;&nbsp;
+Diremos, simplesmente,
+que um caminho com essas propriedades é um  
+<span class="dfn">caminho de aumento na rede de fluxo expandida</span>.
+
+<p id="residualcapacity">Cada arco da rede de fluxo expandida 
+tem uma capacidade residual,
+definida da seguinte maneira.&nbsp;
+A&nbsp;<span class="dfn">capacidade residual de um arco original</span>
+da rede expandida
+(ou seja, um arco com <tt>cap</tt>&nbsp;&ge;&nbsp;<tt>0</tt>)
+é a diferença
+
+<p class="display">
+<tt>cap</tt> <tt>-</tt> <tt>flow</tt>
+
+<p>e a <span class="dfn">capacidade residual de um arco artificial</span>
+(ou seja, um arco com <tt>cap</tt>&nbsp;&lt;&nbsp;<tt>0</tt>)&nbsp;é
+
+<p class="display">
+<tt>-flow</tt>.
+
+<p>(Note que essas capacidades residuais são 
+números não-negativos.)&nbsp;&nbsp;
+O&nbsp;código de nossas implementações
+calculará as capacidades residuais dos arcos da rede de fluxo expandida
+sempre da mesma maneira:&nbsp;
+Se&nbsp; <tt>v</tt>&nbsp; é um vértice e&nbsp;
+<tt>L</tt>&nbsp; é o endereço de um nó na lista&nbsp; 
+<tt>adj[v]</tt>&nbsp;
+então o valor da expressão
+<pre>
+           L->cap >= 0 ? L->cap - L->flow : -L->flow
+</pre>
+<p>é a capacidade residual do arco (original ou artificial) 
+que tem ponta inicial <tt>v</tt> e ponta final&nbsp;<tt>L->w</tt>.
+
+<p>A 
+<span class="dfn">capacidade residual de um caminho</span> (dirigido)
+na rede de fluxo expandida 
+é a menor das capacidades residuais de seus arcos.&nbsp;
+(Observe como essa definição corresponde, 
+precisamente, à definição de 
+<a href="flow-FF.html#residualcapacity">capacidade residual de 
+um caminho de aumento</a> na rede de fluxo original.)&nbsp;
+Um caminho de <tt>s</tt> a <tt>t</tt> 
+na rede de fluxo expandida é um caminho de aumento se e somente se
+sua capacidade residual é estritamente positiva.
+
+
+
+<h2 id="fig22.17">Exemplo 2</h2>
+
+<p>Considere a rede de fluxo (não-expandida) abaixo.&nbsp;
+(Esse exemplo é cópia de parte da figura 22.17, p.377, de Sedgewick.)
+<pre>
+         arco  cap  flow   s = 0
+         0-1   2    2      t = 5
+         0-2   3    1
+         1-3   3    2
+         1-4   1    0
+         2-3   1    0
+         2-4   1    1
+         3-5   2    2
+         4-5   3    1
+</pre>
+
+<p>A tabela seguinte mostra os arcos da 
+correspondente rede de fluxo expandida
+com suas capacidades residuais.&nbsp;
+Os <a href="#artificialarc2">arcos artificiais</a>
+estão pintados de vermelho.
+<pre>
+         arco  capres
+         0-1   0
+         <span class="red">1-0   2</span> 
+         0-2   2 
+         <span class="red">2-0   1</span> 
+         1-3   1 
+         <span class="red">3-1   2</span> 
+         1-4   1 
+         <span class="red">4-1   0</span> 
+         2-3   1 
+         <span class="red">3-2   0</span> 
+         2-4   0
+         <span class="red">4-2   1</span> 
+         3-5   0
+         <span class="red">5-3   2</span> 
+         4-5   2 
+         <span class="red">5-4   1</span> 
+</pre>
+
+
+
+
+
+
+
+
+
+
+
+<p>&nbsp;
+<hr>
+<small>
+
+Last modified: Tue Jul 24 07:59:11 BRT 2007
+</small>
+
+</BODY>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/flowdatastruct.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:42 GMT -->
+</HTML>

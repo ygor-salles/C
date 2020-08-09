@@ -1,0 +1,43 @@
+COM112: questão de múltipla escolha
+Enunciado:
+
+A figura a seguir apresenta uma árvore binária de pesquisa, que mantém a seguinte
+propriedade fundamental: o valor associado �  raiz é sempre menor do que o valor de todos os
+nós da subárvore �  direita e sempre maior do que o valor de todos os nós da subávore � 
+esquerda. 
+
+						15
+					       /  \
+					     10	   20
+                       			    /  \  /  \
+				           7   13 17  25
+						\
+						14
+
+
+
+Em relação �  árvore apresentada na figura, avalie as afirmações a seguir.
+
+I. A árvore possui a vantagem de realizar a busca de elementos de forma eficiente,
+como a busca binária em um vetor.
+II. A árvore está desbalanceada, pois a subárvore da esquerda possui um número de nós
+maior do que a subárvore da direita.
+III. Quando a árvore é percorrida utilizando o método de caminhamento pós-ordem, os
+valores são encontrados em ordem decrescente.
+IV. O número de comparações realizadas em função do número n de elementos na
+árvore em uma busca binária realizada com sucesso é O(log n).
+
+É correto apenas o que se afirma em
+
+A. I e III
+B. I e IV
+C. II e III
+D. I, II e IV
+E. NDA
+ 
+Link: http://www.pucgoias.edu.br/ArquivisWordpress/enade/ciencia-computacao.pdf
+Autores: 2017009453, 2017014382
+
+
+
+Resposta B

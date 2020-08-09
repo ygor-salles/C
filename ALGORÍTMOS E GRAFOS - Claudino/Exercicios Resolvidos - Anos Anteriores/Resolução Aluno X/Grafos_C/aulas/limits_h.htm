@@ -1,0 +1,65 @@
+<HTML>
+  <HEAD>
+  <META HTTP-EQUIV="Content-Type" content="text/html; charset=ISO-8859-1"> 
+  <LINK rel="stylesheet" href="apend.css" type="text/css">
+</HEAD>
+<BODY>
+
+
+<h3>
+Esta é uma versão muito simplificada e enfeitada do arquivo limits.h
+</h3>
+
+
+
+<p><table cellpadding=8 cellspacing=0 border=1><tr><td>
+<pre>/* ///////////////////////////////////////////////////
+// Valores mínimos e máximos de várias tipos-de-dados.    
+/////////////////////////////////////////////////// */
+
+         
+/* Valores mínimo (-2^{31}) e máximo (2^{31}-1) do 
+   tipo-de-dados int. */
+
+#define INT_MIN  (-2147483648)
+#define INT_MAX   (2147483647)                       
+
+                                                       
+/* Valor máximo (2^{32}-1) do tipo-de-dados unsigned 
+   int. */
+
+#define UINT_MAX  (4294967295)
+
+                                                       
+/* Valores mínimo (-2^{15}) e máximo (2^{15}-1) do 
+   tipo-de-dados short int. */
+
+#define SHRT_MIN      (-32768)
+#define SHRT_MAX       (32767)
+
+                                                       
+/* Valores mínimo e máximo do tipo-de-dados long int. */
+
+#define LONG_MIN (-2147483648L)
+#define LONG_MAX  (2147483647L)
+
+                                                       
+/* Valores mínimo e máximo do tipo-de-dados double. */
+
+#define DBL_MIN   2.2250738585072014E-308
+#define DBL_MAX   1.7976931348623157E+308
+
+
+/* Valores mínimo e máximo do tipo-de-dados float. */
+
+#define FLT_MIN   1.175494351E-38F                  
+#define FLT_MAX   3.402823466E+38F                  
+                                                       
+</pre>
+</table>
+
+
+<p>&nbsp;
+
+</BODY>
+</HTML>

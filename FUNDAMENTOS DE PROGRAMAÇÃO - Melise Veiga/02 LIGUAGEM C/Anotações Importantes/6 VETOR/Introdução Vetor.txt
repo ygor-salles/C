@@ -1,0 +1,14 @@
+VETORES:  armazenar uma determinada quantidade de valores do mesmo tipo.
+
+Uma estratégia de prenchimento do vetor é o uso do FOR:
+
+ex:
+int vetor[10];
+for (i=0; i<10; i++){
+	printf ("Digite num: ");
+	scanf ("%d",&vet[i]);
+}
+
+O i do for representará a posição do vetor. Sempre deve-se inicializar o 
+vetor do 0, com i=0 no caso para que não acesse outros espaços de memória 
+que não foi reservado ao código.

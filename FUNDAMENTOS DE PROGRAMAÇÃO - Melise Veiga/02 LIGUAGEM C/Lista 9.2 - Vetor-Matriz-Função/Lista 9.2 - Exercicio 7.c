@@ -1,0 +1,1 @@
+Exercicio 7 igual o 1

@@ -1,0 +1,12 @@
+Criar uma tabela Hash simples sem necessário tratamento de colisões com as funções:
+
+Inserir
+
+Consultar
+
+Remover
+
+
+
+
+Usar Chave e string na estrutura

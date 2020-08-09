@@ -1,0 +1,462 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/arborescences.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:40 GMT -->
+<HEAD>
+<TITLE>Algoritmos para Grafos: Arborescencias</TITLE>
+<META NAME="Author" CONTENT="Paulo Feofiloff">
+<META name="language" content="Portuguese">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1"> 
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<LINK rel="stylesheet" href="code.css" type="text/css">
+</HEAD>
+<BODY>
+
+
+
+
+
+
+<p class="top">
+<a href="../index.html#contents">Algoritmos em C para Grafos via Sedgewick</a>&nbsp;
+
+
+
+
+<h1>Arborescências</h1>
+
+
+
+
+
+
+<p>Esta página introduz um tipo simples mas importante de digrafo:&nbsp;
+a arborescência.&nbsp;
+(O&nbsp;livro de Sedgewick
+define o conceito de maneira apenas vaga;
+veja páginas&nbsp;84 e&nbsp;91-92.)
+
+
+
+
+
+
+
+
+
+<h2 id="arborescence">Definição</h2>
+
+<p>A definição de arborescência exige uma sentença um tanto longa
+e convoluída.&nbsp;
+Uma&nbsp; <span class="dfn">arborescência</span>&nbsp;
+é um digrafo em que 
+
+<ul>
+<li>
+não existem vértices com 
+<a href="digraphs.html#indegreeoutdegree">grau de entrada</a> maior que&nbsp;<tt>1</tt>,
+<li>
+existe exatamente um vértice com 
+grau de entrada&nbsp;<tt>0</tt>,
+<li>
+cada um dos vértices é término de um 
+<a href="paths.html#path">caminho</a> com origem
+no único vértice que tem grau de entrada nulo.
+</ul>
+
+<p>O único vértice com grau de entrada nulo
+é a <span class="dfn">raiz</span> da arborescência.&nbsp;
+É claro que todos os vértices diferentes da raiz têm 
+grau de entrada igual a&nbsp;<tt>1</tt>.
+
+
+<p>Arborescências são conhecidas por vários outros nomes.&nbsp;
+Eis alguns sinônimos de arborescência:
+<ol type="none">
+<li>árvore radicada
+    (=&nbsp;<i>rooted tree</i>),
+<li>árvore enraizada,
+<li>árvore dirigida
+    (=&nbsp;<i>directed tree</i>),
+<li>árvore de busca
+    (=&nbsp;<i>search tree</i>).
+</ol>
+<p>Embora Sedgewick diga "árvore" no lugar de "arborescência",
+eu prefiro reservar a palavra "árvore"
+para <a href="trees.html">outro conceito</a>.&nbsp;&nbsp;
+<span class="dim">[Acho que "diárvore"
+seria um bom substituto para "arborescência".]</span>
+
+<p id="exemplo1">Exemplo: 
+O conjunto de arcos abaixo define um arborescência 
+com raiz&nbsp;<tt>0</tt>.
+<p class="display">
+<tt>0-1 1-2 1-3 3-4 3-5 0-6 6-7 6-8 6-9 0-10 10-11</tt>
+
+
+
+
+
+
+
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=1>
+
+<li class="exr">
+Seja <i>G</i> um digrafo e <i>r</i> um de seus vértices.
+Dizemos que <i>G</i> é uma 
+<span class="dfn">arborescência com raiz&nbsp;<i>r</i></span> 
+se
+<ul type="square">
+<li>
+<i>r</i> é o único vértice de <i>G</i>&nbsp; ou&nbsp;
+<li>
+o digrafo <i>G&ndash;r</i> consiste 
+em <i>k</i> arborescências
+disjuntas (isto é, sem vértices em comum),
+com raízes 
+<i>r</i><sub>1</sub>, &hellip;, <i>r<sub>k</sub></i> respectivamente,&nbsp;
+e os arcos de <i>G</i> incidentes a <i>r</i> são 
+<i>r-r</i><sub>1</sub>, &hellip;,&nbsp;<i>r-r<sub>k</sub></i>.
+</ul>
+Mostre que essa definição recursiva 
+é equivalente à definição dada na seção anterior.
+
+
+<li class="exr">
+Escreva uma função que decida se um dado digrafo é ou não uma 
+arborescência. 
+Em caso afirmativo, a função deve devolver a raiz da arborescência.
+Em caso negativo, a função deve devolver&nbsp;<tt>-1</tt>.
+
+</ol>
+
+
+
+<h2>Propriedades</h2>
+
+<p>É fácil constatar que, 
+para todo vértice <tt>v</tt> de uma arborescência,
+existe um e apenas um 
+<a href="paths.html#simple">caminho simples</a> 
+que começa na raiz e termina em&nbsp;<tt>v</tt>.
+
+<p>É fácil constatar também que toda arborescência com 
+<tt>V</tt> vértices tem exatamente&nbsp;
+<tt>V</tt>&nbsp;<tt>-</tt>&nbsp;<tt>1</tt>&nbsp; arcos.
+
+
+
+<h2 id="parentchild">Pais e filhos</h2>
+
+<p>Todo vértice <tt>w</tt> de uma arborescência,
+exceto a raiz,
+tem um <span class="dfn">pai</span>:&nbsp;
+trata-se do único vértice <tt>v</tt> tal que <tt>v-w</tt> é um arco.
+
+<p id="leaf">Para qualquer vértice <tt>v</tt> de uma arborescência,
+cada vértice adjacente a <tt>v</tt> é um 
+<span class="dfn">filho</span> de&nbsp;<tt>v</tt>.&nbsp;
+Vértice sem filhos são chamados 
+<span class="dfn">folhas</span> (=&nbsp;<i>leaves</i>) 
+ou <span class="dfn">vértices externos</span> 
+(=&nbsp;<i>external nodes</i>).
+
+
+<h2 id="ancestordescendant">Ancestrais, descendentes e 
+subarborescências</h2>
+
+<p>Em uma arborescência,
+um vértice <tt>v</tt> é <span class="dfn">ancestral</span>
+de um vértice <tt>w</tt>
+se o único caminho que vai da raiz até <tt>w</tt> 
+passa por&nbsp;<tt>v</tt>.&nbsp;
+Nessas mesmas condições, diz-se que
+<tt>w</tt> é um <span class="dfn">descendente</span>
+de&nbsp;<tt>v</tt>.&nbsp;
+É claro que todo vértice é descendente da raiz.
+
+<p id="proper">Um ancestral <span class="dfn">próprio</span>
+de um vértice <tt>w</tt> é qualquer ancestral de <tt>w</tt>
+exceto o próprio&nbsp;<tt>w</tt>.&nbsp;
+Analogamente, um descendente <span class="dfn">próprio</span>
+de um vértice <tt>v</tt> é qualquer descendente de <tt>v</tt>
+que seja diferente de&nbsp;<tt>v</tt>.
+
+<p>Para qualquer vértice <tt>v</tt> da arborescência,
+seja <tt>D(v)</tt> 
+o conjunto de todos os descendentes de&nbsp;<tt>v</tt>.&nbsp;
+O&nbsp; conjunto de todos os arcos 
+que têm ambas as pontas em <tt>D(v)</tt>
+define uma arborescência
+com raiz&nbsp;<tt>v</tt>.&nbsp;
+Diremos que esta é a 
+<span class="dfn">subarborescência com raiz <tt>v</tt></span>.
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=3>
+
+<li class="exr">
+Escreva uma função que construa uma arborescência aleatória
+com <tt>V</tt> vértices.
+Cada vértice deve ter no máximo <tt>f</tt> filhos.
+
+</ol>
+
+
+
+
+
+
+<h2 id="preorder">Varredura em pré-ordem</h2>
+
+<p>Uma <span class="dfn">varredura em pré-ordem</span>
+de uma arborescência
+é uma maneira sistemática de visitar os vértices da arborescência.
+Eis uma descrição 
+<a href="http://www.ime.usp.br/~pf/algoritmos/aulas/recu.html"
+>recursiva</a> da varredura em pré-ordem:
+<ol>
+<li>
+visite a raiz, 
+<li>
+para cada filho <tt>v</tt> da raiz,
+faça uma varredura em pré-ordem da subarborescência com raiz&nbsp;<tt>v</tt>.
+</ol>
+
+<p>Quando a <a href="dfs1.html#DIGRAPHdfs">busca em profundidade</a>
+é aplicado a uma arborescência com raiz <tt>0</tt>
+ela faz uma varredura em pré-ordem:
+
+
+
+
+
+<blockquote class="hlt">
+<pre class="codedim">
+<span class="k">static int</span> cnt, pre[maxV];
+</pre>
+
+<p class="doc">
+/* A função <tt class="doc">preorder</tt> recebe uma arborescência 
+   <tt class="doc">G</tt> com raiz <tt class="doc">r</tt>
+   e visita os vértices de <tt class="doc">G</tt> em pré-ordem.
+   A&nbsp;ordem em que os vértices são visitados
+   é registrasa no vetor <tt class="doc">pre</tt>.&nbsp;*/
+
+<pre class="codedim">
+<span class="k">void</span> preorder (<span class="k">Digraph</span> G, <span class="k">Vertex</span> r) { 
+   cnt = 0;
+   visitR(G, r);
+}
+
+<span class="k">void</span> visitR (<span class="k">Digraph</span> G, <span class="k">Vertex</span> v) { 
+   <span class="k">link</span> p; 
+   pre[v] = cnt++; 
+   <span class="k">for</span> (p = G->adj[v]; p != <span class="k">NULL</span>; p = p->next)
+      visitR(G, p->w); 
+}
+</pre>
+</blockquote>
+
+
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=4>
+
+<li class="exr">
+Visite os vértices da arborescência abaixo
+em pré-ordem.
+<center>
+<pre class="small">
+<tt>0-1 1-2 1-3 3-4 3-5 0-6 6-7 6-8 6-9 0-10 10-11</tt>
+</pre>
+</center>
+<p>Registre a ordem em que os vértices são visitados 
+num vetor <tt>pre</tt> indexado pelos vértices.
+
+
+<li class="exr">
+Considere a arborescência descrita abaixo.
+Note que ela tem raiz <tt>0</tt>.
+<pre class="small">
+                0-1 1-2 1-3 0-4 4-5 4-6
+</pre>
+<p>Considere a seguinte numeração dos vértices
+<pre class="small">
+          v     0  1  2  3  4  5  6  7
+      pre[v]    0  1  2  4  3  4  5  6
+</pre>
+<p>Essa numeração corresponde a uma varredura em pré-ordem?
+
+<li class="exr" id="postorder">
+[<span class="sc">Postorder</span>]&nbsp;
+Defina varredura em <i>pós</i>-ordem de uma arborescência.
+Escreva uma função que execute a varredura de uma arborescência
+em pós-ordem.
+
+</ol>
+
+
+
+
+<h2 id="parnt-array">Vetor de pais</h2>
+
+
+<p>O <span class="dfn">vetor de pais</span>
+de uma arborescência é um vetor,
+digamos <tt>parnt</tt>
+
+tal que,
+para cada vértice <tt>w</tt> distinto da raiz,
+
+<p class="display">
+<tt>parnt[w]</tt>&nbsp; é o pai de&nbsp;&nbsp;<tt>w</tt>.
+
+<p><span class="dim">[O nome do vetor é uma abreviatura 
+de <i>parent</i>.&nbsp;
+Sedgewick escreve "<tt>st</tt>",
+pois está pensando na expressão <i>spanning tree</i>.]</span>&nbsp;
+Quanto à raiz&nbsp;<tt>r</tt>,
+é muito conveniente adotar a definição&nbsp;&nbsp;
+<tt>parnt[r]</tt> = <tt>r</tt>&nbsp;.&nbsp;
+
+Essa definição permite distinguir a raiz dos demais vértices, 
+pois <tt>parnt[w]</tt> &ne; <tt>w</tt>
+quando <tt>w</tt> não é a raiz.
+
+
+<blockquote>
+<p>&nbsp;
+<p>Exemplo: Eis o vetor de pais da arborescência 
+de <a href="#exemplo1">um dos exemplos acima</a>:
+<pre>
+            v     0  1  2  3  4  5  6  7  8  9  10 11
+      parnt[v]    0  0  1  1  3  3  0  6  6  6   0 10
+</pre>
+<p>&nbsp;
+</blockquote>
+
+<p>Dado o vetor de pais, <tt>parnt</tt>,
+de uma arborescência,
+é fácil determinar o caminho que leva 
+da raiz a um dado vértice&nbsp;<tt>v</tt>:&nbsp;
+basta inverter a seqüência impressa pelo seguinte fragmento de código:
+
+<blockquote>
+<pre class="code">
+   <span class="k">Vertex</span> x;
+   <span class="k">for</span> (x = v; parnt[x] != x; x = parnt[x])
+      <span class="k">printf</span>("<span class="t">%d-</span>", x);
+   <span class="k">printf</span>("<span class="t">%d</span>", x);
+</pre>
+</blockquote>
+
+
+
+
+
+
+
+
+
+
+
+
+<h2 id="backarcetc">Subdigrafos que são arborescências</h2>
+
+<p>Seja <tt>T</tt> uma arborescência 
+e suponha que <tt>T</tt> é 
+<a href="footnotes/subgraph.html">subdigrafo</a>
+de um digrafo&nbsp;<tt>G</tt>.&nbsp;
+Seja <tt>v-w</tt> um arco de <tt>G</tt> 
+que tem ambas as pontas em&nbsp;<tt>T</tt>.
+
+<ul>
+<li class="sspaced" id="treearc">
+Se <tt>v-w</tt> é um arco de <tt>T</tt>,
+dizemos que <tt>v-w</tt> é um&nbsp; 
+<span class="dfn">arco de arborescência</span>
+(=&nbsp;<i>tree arc</i>).&nbsp;
+É&nbsp;claro que nesse caso <tt>v</tt> é o
+<a href="#parentchild">pai</a> de&nbsp;<tt>w</tt>
+em&nbsp;<tt>T</tt>.
+
+<li class="sspaced" id="descendantarc">
+Se <tt>w</tt> é 
+um <a href="#ancestordescendant"
+>descendente</a> de <tt>v</tt> em <tt>T</tt>,
+mas não é filho de <tt>v</tt>,&nbsp;
+dizemos que <tt>v-w</tt> é um 
+<span class="dfn">arco descendente</span>
+(=&nbsp;<i>descendant arc</i>).
+
+<li class="sspaced" id="backarc">
+Se <tt>w</tt> é 
+um <a href="#ancestordescendant"
+>ancestral</a> de <tt>v</tt> em <tt>T</tt>,
+dizemos que <tt>v-w</tt> é um 
+<span class="dfn">arco de retorno</span>
+(=&nbsp;<i>back arc</i>).&nbsp;
+No caso especial em que <tt>w</tt> é o 
+<a href="#parentchild">pai</a> 
+de <tt>v</tt> em <tt>T</tt>,
+dizemos também que 
+<tt>v-w</tt> é um 
+<span class="dfn">arco-pai</span>&nbsp;
+(=&nbsp;<i>parent arc</i>).
+
+<li class="sspaced" id="crossarc">
+Se <tt>w</tt> não é 
+<a href="#ancestordescendant"
+>ancestral</a> de <tt>v</tt> 
+nem 
+<a href="#ancestordescendant"
+>descendente</a> de <tt>v</tt>,&nbsp;
+dizemos que 
+<tt>v-w</tt> é um 
+<span class="dfn">arco cruzado</span>
+(=&nbsp;<i>cross arc</i>).
+
+</ul>
+
+
+<p>Desses quatro tipos de arco de <tt>G</tt>, 
+apenas o primeiro pertence a&nbsp;<tt>T</tt>.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<p>&nbsp;
+<hr>
+<small>
+
+Last modified: Thu Feb 15 08:55:50 BRST 2007
+</small>
+
+</BODY>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/arborescences.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:40 GMT -->
+</HTML>

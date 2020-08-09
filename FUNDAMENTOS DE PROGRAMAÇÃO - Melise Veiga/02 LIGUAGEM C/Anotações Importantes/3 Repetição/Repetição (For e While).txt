@@ -1,0 +1,32 @@
+DIFERENÇA ENTRE A ESTRUTURA WHILE E FOR:
+
+FOR: É utilizado mais para sequencia de números, ele possui um ponto de inicio de parada ja programado
+ou alguns casos estabelecidos pelo usuário com uma variável n de parada.
+
+
+WHILE: É utilizado mais para dependencia do que o usuário digitar. 
+Enquanto o usuário não digita o valor de parada a sequencia não terá fim.
+
+
+FOR
+//Escreva um algoritmo que leia dez números do usuário e imprima a metade de cada número
+
+for (i=1; i<=10; i++){
+printf ("\n\n Digite um numero: ");
+scanf ("%d",&num);
+printf ("%f",num/2);
+}
+
+
+WHILE
+// Escreva um algoritmo que leia sequência de números digitados pelo usuário
+// até que o número 0 seja digitado e retorne a soma dos números digitados
+
+soma = 0;
+while (num != 0) {
+soma = soma+num;
+printf ("\n\n Digite um número: ");
+scanf ("%d",&num);
+}
+
+printf ("\n\n O valor total da soma dos números digitados eh de: %d",soma);

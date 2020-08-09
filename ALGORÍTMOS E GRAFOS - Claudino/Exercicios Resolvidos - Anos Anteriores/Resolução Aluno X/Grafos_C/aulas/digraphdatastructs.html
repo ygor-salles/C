@@ -1,0 +1,194 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/digraphdatastructs.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:38 GMT -->
+<HEAD>
+<TITLE>Algoritmos para Grafos: Estruturas de dados</TITLE>
+<META NAME="Author" CONTENT="Paulo Feofiloff">
+<META name="language" content="Portuguese">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1"> 
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<LINK rel="stylesheet" href="code.css" type="text/css">
+</HEAD>
+<BODY>
+
+
+
+
+
+
+
+<p class="top">
+<a href="../index.html#contents">Algoritmos em C para Grafos via Sedgewick</a>&nbsp;
+
+
+
+
+<h1>Estruturas de dados</h1>
+
+
+<p>(Esta página corresponde aproximadamente
+à seção 17.2 (Graph ADT)
+do capítulo&nbsp;17 (Graph Properties and Types)
+do livro de Sedgewick.)
+
+
+
+
+<h2>Vértices, arcos e arestas</h2>
+
+<p>Os&nbsp;vértices de nossos digrafos serão representados por 
+números inteiros no intervalo&nbsp;
+<tt>0..V-1</tt>.&nbsp;
+O conjunto de vértices será, portanto,
+
+<p class="display">
+<tt>0  1  2  3  ...  V-1</tt>&nbsp;.
+
+
+<p>Os arcos de nossos digrafos 
+serão representados por <a href="stru.html">structs</a> do tipo&nbsp;
+<tt>Arc</tt>.&nbsp;
+Se&nbsp; <tt>a</tt>&nbsp; é um arco então&nbsp; <tt>a.v</tt>&nbsp; 
+é a ponta inicial e&nbsp; <tt>a.w</tt>&nbsp;
+é a ponta final do arco.&nbsp;
+A&nbsp;construção de arcos
+ficará a cargo de uma função&nbsp; <tt>ARC</tt>.
+
+
+<blockquote class="hlt">
+<p class="doc" id="Vertex">
+/* Vértices são representados por 
+   objetos do tipo <tt class="doc">Vertex</tt>.&nbsp;
+   Os vértices de um digrafo são <tt class="doc">0,1,..,V-1</tt>.&nbsp;*/
+
+<pre class="code">
+<span class="k">#define</span> Vertex <span class="k">int</span>
+</pre>
+
+<p class="doc" id="ARC">
+/* Um objeto do tipo <tt class="doc">Arc</tt> representa um arco 
+   com ponta inicial <tt class="doc">v</tt> 
+   e ponta final&nbsp;<tt class="doc">w</tt>.&nbsp;*/
+
+<pre class="code">
+<span class="k">typedef struct</span> { 
+   <span class="k">Vertex</span> v; 
+   <span class="k">Vertex</span> w; 
+} Arc;
+</pre>
+
+<p class="doc">
+/* A&nbsp;função <tt class="doc">ARC</tt> recebe dois 
+   vértices <tt class="doc">v</tt> e <tt class="doc">w</tt> 
+   e devolve um arco com ponta inicial <tt class="doc">v</tt> 
+   e ponta final&nbsp;<tt class="doc">w</tt>.&nbsp;*/
+
+<pre class="code">
+<span class="k">Arc</span> ARC (<span class="k">Vertex</span> v, <span class="k">Vertex</span> w) {
+   <span class="k">Arc</span> e;
+   e.v = v;
+   e.w = w;
+   <span class="k">return</span> e;
+}
+</pre>
+</blockquote>
+
+
+<p><span class="dim">[O livro de Sedgewick
+usa "<tt>int</tt>" no lugar do nosso "<tt>Vertex</tt>".
+Também usa "<tt>Edge</tt>" e "<tt>EDGE</tt>" 
+no lugar dos nossos "<tt>Arc</tt>" e "<tt>ARC</tt>".]</span>&nbsp;
+Embora nossos digrafos não tenham <a href="digraphs.html#loop">laços</a>,
+é conveniente, às vezes,
+usar expressões como <tt>ARC(v,v)</tt>
+para gerar pseudo-arcos que servem como valor inicial 
+de certas variáveis em nossos programas.
+
+
+
+<p>As arestas dos grafos
+serão representadas por structs do tipo&nbsp; <tt>Edge</tt>,&nbsp;
+idênticas a <tt>Arc</tt>.&nbsp;
+Se&nbsp; <tt>e</tt>&nbsp; é uma aresta
+então&nbsp; <tt>e.v</tt>&nbsp; e&nbsp; <tt>e.w</tt>&nbsp;
+serão as duas pontas dessa aresta.&nbsp;
+A&nbsp;construção de arestas  
+ficará a cargo da função&nbsp; <tt>EDGE</tt>,
+idêntica à função <tt>ARC</tt>.
+
+
+<blockquote class="hlt">
+<p class="doc" id="EDGE">
+/* Um objeto do tipo <tt class="doc">Edge</tt> representa
+   uma aresta com pontas <tt class="doc">v</tt> 
+   e&nbsp;<tt class="doc">w</tt>.&nbsp;*/
+
+<pre class="code">
+<span class="k">#define</span> Edge <span class="k">Arc</span>
+</pre>
+
+<p class="doc">
+/* A&nbsp;função <tt class="doc">EDGE</tt> recebe dois 
+   vértices <tt class="doc">v</tt> e <tt class="doc">w</tt> 
+   e devolve 
+   uma aresta com pontas <tt class="doc">v</tt> 
+   e&nbsp;<tt class="doc">w</tt>.&nbsp;*/
+
+<pre class="code">
+<span class="k">#define</span> EDGE <span class="k">ARC</span>
+</pre>
+</blockquote>
+
+
+
+
+
+
+
+
+
+
+
+<h2 id="matricesandlists">Matrizes de adjacência e listas de adjacência</h2>
+
+<p>O conjunto dos arcos de um digrafo 
+
+pode ser representado de diversas maneiras.&nbsp;
+Usaremos duas representações clássicas:
+<ul>
+<li class="spaced">
+<a href="adjmatrix.html">a matriz de adjacência</a> e
+<li class="spaced">
+<a href="adjlists.html">o vetor de listas de adjacência</a>.
+</ul>
+
+<p>
+
+A primeira é mais usada para 
+digrafos <a href="digraphs.html#dense">densos</a>.&nbsp;
+A segunda é mais usada para 
+digrafos <a href="digraphs.html#sparse">esparsos</a>.&nbsp;
+Estudaremos essas duas estruturas de dados nas próximas páginas.
+
+
+
+
+
+
+
+
+
+
+
+<p>&nbsp;
+<hr>
+<small>
+
+Last modified: Thu Feb 15 08:55:52 BRST 2007
+</small>
+
+</BODY>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/digraphdatastructs.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:38 GMT -->
+</HTML>

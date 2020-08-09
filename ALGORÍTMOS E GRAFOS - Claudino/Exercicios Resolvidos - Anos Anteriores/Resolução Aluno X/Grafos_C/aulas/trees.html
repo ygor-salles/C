@@ -1,0 +1,175 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/trees.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:40 GMT -->
+<HEAD>
+<TITLE>Algoritmos para Grafos: Florestas e arvores</TITLE>
+<META NAME="Author" CONTENT="Paulo Feofiloff">
+<META name="language" content="Portuguese">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1"> 
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<LINK rel="stylesheet" href="code.css" type="text/css">
+</HEAD>
+<BODY>
+
+
+
+
+
+
+
+<p class="top">
+<a href="../index.html#contents">Algoritmos em C para Grafos via Sedgewick</a>&nbsp;
+
+
+
+
+
+<h1>Florestas e árvores</h1>
+
+<p>Uma árvore é o grafo que se obtém 
+quando acrescentamos um arco 
+<a href="digraphs.html#antiparallel">anti-paralelo</a> a cada 
+arco de uma <a href="arborescences.html">arborescência</a>.&nbsp;
+Embora correta, 
+essa caracterização de árvores não é conveniente como definição.&nbsp;
+É&nbsp;melhor adotar uma definição mais tradicional.&nbsp;
+O&nbsp;primeiro passo da definição introduz 
+um outro tipo de grafo: a floresta.
+
+
+
+<h2 id="forest">Florestas</h2>
+
+<p>Uma&nbsp;
+<span class="dfn">floresta</span>&nbsp;
+(=&nbsp;<i>forest</i>)&nbsp;
+é um <a href="graphs.html">grafo</a>
+sem <a href="cycles.html#undirected">ciclos não-triviais</a>.&nbsp;
+<span class="dim">[Para cada arco <tt>v-w</tt> da floresta,
+o caminho <tt>v-w-v</tt> é um ciclo,
+mas esse ciclo é trivial.]</span>&nbsp;&nbsp;
+Por exemplo, 
+o grafo definido pelo conjunto de arestas abaixo
+é uma floresta.
+<p class="display">
+<tt>0-1 0-5 1-2 1-3 1-4 6-7 6-8</tt>
+
+
+
+
+<p>Florestas também são conhecidas como 
+<span class="dfn">grafos acíclicos</span>.&nbsp;
+Uma
+<span class="dfn">folha</span>
+(=&nbsp;<i>leaf</i>)
+de uma floresta é qualquer vértice de grau&nbsp;1.
+
+
+
+
+
+
+<h2 id="tree">Árvores</h2>
+
+<p>Uma&nbsp;
+<span class="dfn">árvore</span>&nbsp;
+(=&nbsp;<i>tree</i>)&nbsp;
+é uma floresta 
+<a href="connected.html#connected">conexa</a>.&nbsp;
+Portanto, cada 
+<a href="components.html#component">componente</a>
+de uma floresta é um árvore.
+
+<p>Por exemplo, o grafo 
+definido pelo conjunto de arestas&nbsp;
+<tt>0-1 0-5 1-2 1-3 1-4</tt>&nbsp;
+é uma árvore.
+
+<p>Não confunda árvores com
+<a href="arborescences.html">arborescências</a>.&nbsp;
+Uma árvore é um <a href="digraphs.html#symmetric"
+>digrafo simétrico</a>,
+enquanto uma arborescência é um digrafo não-simétrico.&nbsp;
+As palavras "raiz", "pai" e "filho" não fazem sentido numa árvore.
+
+
+<blockquote class="display" id="uniquepath">
+<span class="sc">Propriedade</span>&nbsp;1:&nbsp;
+Para cada par <tt>s,t</tt> de vértices de uma árvore
+existe um e um só caminho simples de <tt>s</tt> 
+a&nbsp;<tt>t</tt>.
+</blockquote>
+
+
+
+<blockquote class="display" id="EeqVminus1">
+<span class="sc">Propriedade</span>&nbsp;2:&nbsp;
+Toda árvore com <tt>V</tt> vértices tem exatamente 
+<tt>V-1</tt> arestas.
+</blockquote>
+
+
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=1>
+
+<li class="exr">
+Mostre que toda floresta com 
+<tt>V</tt> vértices e <tt>C</tt> componentes
+tem exatamente <tt>V-C</tt> arestas.
+
+<li class="exr">
+Prove que toda floresta com pelo menos uma aresta
+tem pelo menos duas folhas.
+
+<li class="exr" id="E18.21minus">
+Escreva uma função que reconheça florestas.
+Ao receber um grafo <tt>G</tt>,
+a função deve devolver <tt>1</tt> se <tt>G</tt> é uma floresta
+e devolver <tt>0</tt> em caso contrário.&nbsp;
+Escreva uma segunda versão de sua função 
+que imprima um ciclo não-trivial 
+imediatamente antes de devolver&nbsp;<tt>0</tt>.
+
+Compile e teste sua função.
+
+<li class="exr" id="recognizetree">
+Escreva uma função que reconheça árvores.
+Ao receber um grafo <tt>G</tt>,
+a função devolve <tt>1</tt> se <tt>G</tt> é uma árvore
+e devolve <tt>0</tt> em caso contrário. 
+
+
+<li class="exr">
+Escreva uma função que construa uma árvore aleatória
+com <tt>V</tt> vértices.
+Cada vértices deve ter no máximo <tt>g</tt> vizinhos.
+
+
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+<p>&nbsp;
+<hr>
+<small>
+
+Last modified: Thu Feb 15 08:55:48 BRST 2007
+</small>
+
+</BODY>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/trees.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:40 GMT -->
+</HTML>

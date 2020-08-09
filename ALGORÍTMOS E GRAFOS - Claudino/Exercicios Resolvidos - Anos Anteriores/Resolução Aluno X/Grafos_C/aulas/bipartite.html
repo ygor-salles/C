@@ -1,0 +1,221 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/bipartite.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:40 GMT -->
+<HEAD>
+<TITLE>Algoritmos para Grafos: Grafos bipartidos</TITLE>
+<META NAME="Author" CONTENT="Paulo Feofiloff">
+<META name="language" content="Portuguese">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1"> 
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<LINK rel="stylesheet" href="code.css" type="text/css">
+</HEAD>
+<BODY>
+
+
+
+
+
+
+
+<p class="top">
+<a href="../index.html#contents">Algoritmos em C para Grafos via Sedgewick</a>&nbsp;
+
+
+
+
+
+<h1>Grafos bipartidos e ciclos ímpares</h1>
+
+
+<p>Esta página trata de grafos bipartidos,
+uma espécie simples mas muito útil de grafos.&nbsp;&nbsp;
+(A&nbsp;página 
+é um resumo da última parte da seção 18.5, p.103-105,
+do livro de Sedgewick.)
+
+
+<h2>Bipartição</h2>
+
+<p id="bipartite">Um 
+<a href="graphs.html">grafo</a> é&nbsp;
+<span class="dfn">bipartido</span>&nbsp;
+(=&nbsp;<i>bipartite</i>)&nbsp;
+se existe uma <a href="footnotes/partition.html">bipartição</a> 
+do seu conjunto de vértices
+tal que cada aresta tem uma ponta em uma das partes da bipartição e 
+a outra ponta na outra parte.
+
+<p>Outra maneira de formular a definição:&nbsp;
+um grafo é bipartido 
+se for possível atribuir uma de duas cores a cada vértice
+de tal forma que as pontas de cada aresta tenham cores diferentes.
+
+
+
+
+
+<h2>Ciclos ímpares</h2>
+
+<p>É fácil verificar que grafos que têm
+<a href="cycles.html#cycle">ciclos</a> de 
+<a href="paths.html#length">comprimento</a> ímpar
+não são bipartidos.&nbsp;
+
+É um pouco mais difícil provar que 
+
+<p class="display">
+todo grafo sem ciclos ímpares admite bipartição.
+
+<p>A função abaixo 
+(junto com a prova de sua correção)
+constitui uma prova dessa fato fundamental.&nbsp;
+A&nbsp;estrutura da função é o de uma 
+<a href="dfs1.html">busca em profundidade</a>.
+
+
+<blockquote class="hlt">
+<p class="doc">
+/* Vamos supor que nossos grafos
+   têm no máximo <tt class="doc">maxV</tt>
+   vértices.&nbsp;*/ 
+
+<pre class="code">
+<span class="k">int</span> color[maxV];
+</pre>
+
+<p class="doc" id="GRAPHtwocolor">
+/* A função devolve <tt class="doc">1</tt>
+   se o grafo &nbsp;<tt class="doc">G</tt>
+   é bipartido e devolve <tt class="doc">0</tt>
+   em caso contrário. 
+   Além disso, se <tt class="doc">G</tt> é bipartido,
+   a função atribui uma "cor" a cada vértice de <tt class="doc">G</tt>
+   de tal forma que toda aresta tenha pontas de cores diferentes.
+   As cores dos vértices, <tt class="doc">0</tt> 
+   e&nbsp;<tt class="doc">1</tt>,
+   são registradas no vetor&nbsp;<tt>color</tt>
+   indexado pelos vértices.&nbsp;
+   (Veja programa 18.6, p.105, de Sedgewick.)&nbsp;*/
+
+<pre class="code">
+<span class="k">int</span> GRAPHtwocolor (<span class="k">Graph</span> G) { 
+   <span class="k">Vertex</span> v;
+   <span class="k">int</span> c = 0;
+   <span class="k">for</span> (v = 0; v < G->V; v++) 
+      color[v] = -1;
+   <span class="k">for</span> (v = 0; v < G->V; v++)
+      <span class="k">if</span> (color[v] == -1) 
+         <span class="k">if</span> (dfsRclr(G, v, 0) == 0) <span class="k">return</span> 0;
+   <span class="k">return</span> 1;
+}
+</pre>
+
+<p class="doc">
+<pre class="code">
+<span class="k">int</span> dfsRclr (<span class="k">Graph</span> G, <span class="k">Vertex</span> v, <span class="k">int</span> c) { 
+   <span class="k">link</span> p; 
+   color[v] = 1-c;
+   <span class="k">for</span> (p = G->adj[v]; p != <span class="k">NULL</span>; p = p->next) {
+      <span class="k">Vertex</span> w = p->w; 
+      <span class="k">if</span> (color[w] == -1) {
+         <span class="k">if</span> (dfsRclr(G, w, 1-c) == 0) <span class="k">return</span> 0; 
+      }
+      <span class="k">else if</span> (color[w] == 1-c) <span class="k">return</span> 0;
+   }
+   <span class="k">return</span> 1;
+}
+</pre>
+</blockquote>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=1>
+
+<li class="exr">
+Quais dos dois grafos abaixo são bipartidos?
+<center>
+<pre class="small">
+0-1 1-2 2-3 3-0 0-4 4-5 5-2
+0-1 1-2 2-3 3-0 4-6 0-5 5-2
+</pre>
+</center>
+
+<li class="exr" id="E18.27b">
+Modifique o código de <tt>GRAPHtwocolor</tt> 
+de modo que além de devolver <tt>0</tt>
+a função também imprima um ciclo de comprimento ímpar.&nbsp;
+
+<li class="exr" id="E18.27">
+Prove que a função <tt>GRAPHtwocolor</tt> está correta.&nbsp;
+Mais precisamente, 
+mostre que se a função <tt>GRAPHtwocolor</tt> devolve <tt>0</tt>
+então <tt>G</tt> tem 
+um ciclo de comprimento ímpar.&nbsp;
+
+<li class="exr">
+Escreva a documentação da função <tt>dfsRclr</tt>&nbsp;
+(ou seja, diga <i>o&nbsp;que</i> a função faz).
+
+<li class="exr">
+Escreva uma função que gere um grafo bipartido aleatório 
+com <tt>n1</tt> vértices de uma "cor",
+<tt>n2</tt> vértices da outra e 
+<tt>E</tt> arestas.
+
+
+<li class="exr">
+[<span class="sc">Desafio</span>]&nbsp;
+Escreva uma função que procure um ciclo de comprimento par
+num grafo.
+
+
+<li class="exr">
+[<span class="sc">Desafio</span>]&nbsp;
+Um grafo é <i>tripartido</i>
+se for possível atribuir uma de três cores a cada vértice
+de tal forma que as pontas de cada aresta tenham cores diferentes.&nbsp;
+Escreva uma função que decide se um grafo é tripartido.
+
+
+
+
+</ol>
+
+
+
+
+
+
+
+
+
+
+<p>&nbsp;
+<hr>
+<small>
+
+Last modified: Thu Feb 15 08:55:48 BRST 2007
+<br>
+&nbsp;</small>
+
+</BODY>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/bipartite.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:40 GMT -->
+</HTML>

@@ -1,0 +1,3 @@
+http://linguagemc.com.br/a-estrutura-de-repeticao-for-em-c/
+
+http://linguagemc.com.br/o-comando-while-em-c/

@@ -1,0 +1,285 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/components.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:40 GMT -->
+<HEAD>
+<TITLE>Algoritmos para Grafos: Componentes</TITLE>
+<META NAME="Author" CONTENT="Paulo Feofiloff">
+<META name="language" content="Portuguese">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1"> 
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<LINK rel="stylesheet" href="code.css" type="text/css">
+</HEAD>
+<BODY>
+
+
+
+
+
+
+
+<p class="top">
+<a href="../index.html#contents">Algoritmos em C para Grafos via Sedgewick</a>&nbsp;
+
+
+
+
+<h1>Componentes de grafos</h1>
+
+
+
+<p>Esta página trata exclusivamente de grafos.&nbsp;
+Em digrafos não-simétricos,
+os conceitos correspondentes
+são mais complexos e serão discutidos em outra ocasião.
+
+<p>(Esta página corresponde a uma parte da 
+seção 18.5 (DFS Algorithms), p.99-103, 
+do capítulo&nbsp;18 (Graph Search)
+do livro de Sedgewick.)
+
+
+
+<h2 id="connected">Grafos conexos e caminhos</h2>
+
+<p>Eis um fato básico simples mas importante:&nbsp;
+Um grafo é
+<a href="connected.html#connected">conexo</a>
+se e somente se, 
+para cada par <i>(s,t)</i> de seus vértices,
+existe um 
+<a href="paths.html#path">caminho</a> com origem&nbsp; 
+<i>s</i>&nbsp; e término&nbsp;&nbsp;<i>t</i>.
+
+<p>Em virtude da <a href="digraphs.html#symmetric">simetria</a>,
+a existência de um caminho de <i>s</i> a <i>t</i>
+equivale à existência 
+de um caminho de <i>t</i> a&nbsp;<i>s</i>.&nbsp;
+Portanto, um grafo é conexo
+se e somente se 
+quaisquer dois de seus vértices são ligados por um caminho.
+
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=1>
+
+<li class="exr">
+Seja <i>s</i> um vértice de um grafo.
+Suponha que todo vértice <i>v</i> do grafo
+é término de um caminho com origem&nbsp;<i>s</i>.&nbsp;
+Mostre que o grafo é conexo.
+
+</ol>
+
+
+
+
+
+
+
+<h2 id="component">Componentes de grafos</h2>
+
+
+<p>Um conjunto <i>X</i> de vértices de um 
+grafo <i>G</i> é 
+<span class="dfn">fechado</span>&nbsp;se
+
+<ol>
+<li class="spaced">
+<i>X</i> não é vazio,
+<li class="spaced">
+o <a href="footnotes/subgraph.html">subgrafo induzido</a> 
+por <i>X</i> é conexo&nbsp; e
+<li class="spaced">
+nenhuma aresta de <i>G</i> tem 
+uma ponta em <i>X</i> e outra fora de&nbsp;<i>X</i>.
+</ol>
+
+<p>Uma <span class="dfn">componente</span>
+(=&nbsp;<i>component</i>)
+de um grafo é o 
+subgrafo induzido
+por qualquer subconjunto fechado 
+do seu conjunto de vértices.&nbsp;&nbsp;
+É&nbsp;claro que qualquer componente de um grafo 
+é um grafo conexo.&nbsp; 
+(A&nbsp;expressão "componente conexa"
+é às vezes usada no lugar de "componente".)
+
+<p>O conjunto de vértices de todo grafo
+admite uma única partição&nbsp;
+<i>X</i><sub>1</sub>,
+<i>X</i><sub>2</sub>,
+&hellip;,
+<i>X<sub>k</sub></i>&nbsp;
+em que cada <i>X<sub>i</sub></i>
+é um conjunto fechado.&nbsp;
+O&nbsp;subgrafo induzido por cada <i>X<sub>i</sub></i>
+é uma componente.&nbsp;
+Assim, todo grafo
+tem uma coleção bem definida de componentes.
+
+
+
+
+
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=2>
+
+<li class="exr">
+Mostre que duas componentes diferentes de um grafo
+não têm vértices em comum.
+
+
+<li class="exr">
+Determine o número de componentes do grafo 
+definido pelo conjunto de arestas abaixo.
+<p class="display">
+<tt>3-7 1-4 7-8 0-5 5-2 3-8 2-9 0-6 4-9 2-6 6-4</tt>
+
+</ol>
+
+
+
+
+<h2>Cálculo das componentes de grafos</h2>
+
+<p>A função abaixo calcula o número de componentes
+de um grafo.
+Ela usa uma <a href="dfs1.html">busca em profundidade</a>
+(com <tt>cc</tt> no papel de <tt>lbl</tt>)
+para fazer o serviço.
+
+
+<p>Além de contar o número de componentes,
+a função atribui um rótulo 
+<tt>cc[v]</tt> a cada vértice <tt>v</tt> 
+de tal modo que
+dois vértices tenham o mesmo rótulo
+se e somente se estão na mesma componente.
+
+
+
+<blockquote class="hlt">
+<pre class="code">
+<span class="k">#define</span> maxV 10000
+<span class="k">static int</span> cc[maxV];
+</pre>
+
+<p class="doc" id="GRAPHcc">
+/* A função abaixo devolve o número de componentes 
+   do grafo&nbsp;<tt class="doc">G</tt>.
+   Além disso, ela armazena no vetor <tt class="doc">cc</tt>
+   o número do componente a que o vértice pertence:
+   se o vértice <tt class="doc">v</tt> pertence ao 
+   <tt class="doc">k</tt>-ésimo componente então 
+   <tt class="doc">cc[v] == k-1</tt>. 
+   (O&nbsp;código foi copiado do programa 18.4, p.100, de Sedgewick.)&nbsp;*/
+
+<pre class="code">
+<span class="k">int</span> GRAPHcc (<span class="k">Graph</span> G) { 
+   <span class="k">Vertex</span> v; <span class="k">int</span> id = 0;
+   <span class="k">for</span> (v = 0; v < G->V; v++) cc[v] = -1;
+   <span class="k">for</span> (v = 0; v < G->V; v++)
+      <span class="k">if</span> (cc[v] == -1) 
+         dfsRcc(G, v, id++);
+   <span class="k">return</span> id;
+}
+</pre>
+
+<p class="doc">
+/* A função <tt class="doc">dfsRcc</tt> supõe que 
+   o grafo <tt class="doc">G</tt> 
+   é representado por listas de adjacência.&nbsp;*/
+</p>
+<pre class="code">
+<span class="k">void</span> dfsRcc (<span class="k">Graph</span> G, <span class="k">Vertex</span> v, <span class="k">int</span> id) { 
+   <span class="k">link</span> p; 
+   cc[v] = id;
+   <span class="k">for</span> (p = G->adj[v]; p != <span class="k">NULL</span>; p = p->next)
+      <span class="k">if</span> (cc[p->w] == -1) 
+         dfsRcc(G, p->w, id); 
+}
+</pre>
+</blockquote>
+
+
+<p>Depois de executar <tt>GRAPHcc</tt> uma só vez, 
+é possível saber,
+em tempo constante,
+se dois vértices,
+digamos <tt>s</tt> e <tt>t</tt>,
+estão na mesma componente:
+
+<pre>
+    int GRAPHconnect(Graph G, Vertex s, Vertex t) { 
+       return (cc[s] == cc[t]); 
+    }
+</pre>
+
+
+
+
+
+
+
+
+<h2>Exercícios</h2>
+
+<ol start=4>
+
+<li class="exr" id="E18.30">
+Prove que todo grafo conexo tem um vértice 
+cuja remoção não desconecta o grafo.
+Escreva uma função que encontre um tal vértice.&nbsp;
+
+
+<li class="exr" id="E18.31">
+Prove que todo grafo com dois ou mais vértices
+tem pelo menos dois vértices
+cuja remoção não aumenta o número de componentes.
+
+<li class="exr" id="property18.13">
+Faça experimentos para determinar quantas arestas um 
+<a href="random.html">grafo aleatório</a> 
+com <tt>V</tt> vértices 
+
+(para <tt>V</tt> = <tt>100</tt>, <tt>1000</tt>, <tt>10000</tt>)
+precisa ter para ser conexo.&nbsp;
+(Use a função <tt><a href="random.html#GRAPHrand1">GRAPHrand1</a></tt>
+para gerar os grafos.)&nbsp;&nbsp;
+Faça experimentos para determinar quantas arestas um grafo aleatório
+com <tt>V</tt> vértices precisa ter 
+para que um de seus componentes seja "gigante"
+(contenha, digamos, <tt>0.95&times;V</tt> ou mais vértices).
+
+
+
+</ol>
+
+
+
+
+
+
+
+
+
+
+<p>&nbsp;
+<hr>
+<small>
+
+Last modified: Thu Feb 15 08:55:49 BRST 2007</small>
+
+</BODY>
+
+<!-- Mirrored from www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/components.html by HTTrack Website Copier/3.x [XR&CO'2007], Tue, 29 Apr 2008 11:36:40 GMT -->
+</HTML>

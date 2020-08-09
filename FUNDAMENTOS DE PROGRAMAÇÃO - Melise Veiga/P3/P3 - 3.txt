@@ -1,0 +1,44 @@
+#include <stdio.h>
+
+/* P3 - Questão 3 */
+
+int main ()
+{
+	int matriz [50][50], n, i, j;
+
+	printf ("Digite o valor da dimensão <= 50: ");
+	scanf ("%d",&n);
+
+    if (n<=0 || n>50){
+        printf ("\nDados incorretos!\n");
+    }
+    else{
+        printf ("\nDigite os numeros da matriz: \n");
+        for (i=0;i<n;i++)
+            for (j=0;j<n;j++)
+                scanf ("%d", &matriz[i][j]);
+
+        printf ("\nMatriz dos numeros digitados: \n");
+        for (i=0;i<n;i++){
+            for (j=0;j<n;j++){
+                printf ("_%d_|", matriz[i][j]);
+            }
+            printf ("\n");
+        }
+
+        printf ("\nDiagonal Primaria: \n");
+        for (i=0;i<n;i++)
+            for (j=0;j<n;j++)
+                if (j == i)
+                    printf ("%d ", matriz[i][j]);
+
+        printf ("\n\nDiagonal Secundaria: \n");
+        for (i=0;i<n;i++)
+            for (j=0;j<n;j++)
+                if (j == (n-1-i))
+                    printf ("%d ", matriz[i][j]);
+
+        printf ("\n");
+    }
+    return 0;
+}

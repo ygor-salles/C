@@ -1,0 +1,30 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+/* Exercicio 5 - P2 */
+
+float imc (float h, char s)
+{
+    if (s == 'm' || s == 'M'){
+        return 72.7*h-58;
+    }
+    else if (s == 'f' || s == 'F'){
+        return 62.1*h-44.7;
+    }
+}
+
+int main ()
+{
+    float altura, funcao;
+    char sexo;
+
+    printf ("Digite sua altura: ");
+    scanf ("%f",&altura);
+    printf ("Digite seu sexo: ");
+    scanf (" %c",&sexo);
+
+    funcao = imc(altura, sexo);
+    printf ("\nSeu peso ideal eh: %.2f\n",funcao);
+
+    return 0;
+}
