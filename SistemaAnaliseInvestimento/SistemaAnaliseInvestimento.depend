@@ -1,0 +1,7 @@
+# depslib dependency file v1.0
+1600736179 source:c:\users\particular\documents\projetos c\sistemaanaliseinvestimento\main.c
+	<stdio.h>
+	<stdlib.h>
+	<math.h>
+	<locale.h>
+

@@ -1,0 +1,1 @@
+Executável se econtra na pasta bin/Debug
