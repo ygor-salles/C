@@ -3,7 +3,7 @@
 #include<math.h>
 #include<locale.h>
 
-/* SISTEMA DE AN¡LISE DE INVESTIMENTOS */
+/* SISTEMA DE AN√ÅLISE DE INVESTIMENTOS */
 
 void menu();
 void capitalizacao_simples();
@@ -20,7 +20,7 @@ void vpl();
 int main()
 {
     setlocale(LC_ALL, "Portuguese");
-    int i, op;
+    int op;
 
     do{
         menu();
@@ -39,7 +39,7 @@ int main()
             case 9: gradiente_geometrico(); break;
             case 10: vpl(); break;
             case 11: printf("\n\nFinalizando...\n"); break;
-            default: printf("OpÁ„o inv·lida!"); break;
+            default: printf("Op√ß√£o inv√°lida!"); break;
         }
 
         printf("\n\n");
@@ -54,26 +54,26 @@ int main()
 void menu()
 {
     int i;
-    //TELA DE EXIBI«√O AO INICIAR O SISTEMA
+    //TELA DE EXIBI√á√ÉO AO INICIAR O SISTEMA
     printf("    #############################################################\n");
     for (i=0; i<7; i++){
         if (i==3)
-            printf("    #            SISTEMA DE AN¡LISE DE INVESTIMENTOS            #\n");
+            printf("    #            SISTEMA DE AN√ÅLISE DE INVESTIMENTOS            #\n");
             printf("    #                                                           #\n");
     }
     printf("    #############################################################\n");
 
-    printf("\n\n      ************ ....::: MENU DE OP«’ES :::.... ************\n");
-    printf("\n                ESCOLHA O N⁄MERO CONFORME OP«√O DESEJADA\n");
-    printf("\n                1 - CapitalizaÁ„o Simples");
+    printf("\n\n      ************ ....::: MENU DE OP√á√ïES :::.... ************\n");
+    printf("\n                ESCOLHA O N√öMERO CONFORME OP√á√ÉO DESEJADA\n");
+    printf("\n                1 - Capitaliza√ß√£o Simples");
     printf("\n                2 - Juros Simples");
-    printf("\n                3 - CapitalizaÁ„o Composta");
+    printf("\n                3 - Capitaliza√ß√£o Composta");
     printf("\n                4 - Juros Compostos");
-    printf("\n                5 - Fator de SÈrie uniforme - data atual");
-    printf("\n                6 - Fator de SÈrie uniforme - data futura");
-    printf("\n                7 - Fator de SÈrie gradiente - data atual");
-    printf("\n                8 - Fator de SÈrie gradiente - data futura");
-    printf("\n                9 - Fator de SÈrie gradiente geomÈtrico - data atual");
+    printf("\n                5 - Fator de S√©rie uniforme - data atual");
+    printf("\n                6 - Fator de S√©rie uniforme - data futura");
+    printf("\n                7 - Fator de S√©rie gradiente - data atual");
+    printf("\n                8 - Fator de S√©rie gradiente - data futura");
+    printf("\n                9 - Fator de S√©rie gradiente geom√©trico - data atual");
     printf("\n                10 - VPL, VAUE(VAE), CAUE(CAE)");
     printf("\n                11 - Finalizar Programa");
     printf("\n                Opcao: ");
@@ -84,8 +84,8 @@ void capitalizacao_simples()
 {
     int op;
     float s, p, i, n, resultado;
-    printf("\n\n                ....:::  CAPITALIZA«√O SIMPLES  :::....\n");
-    printf("INFORME QUAL VALOR QUER DESCOBRIR /OBS: PERÕODO DA TAXA E TEMPO DEVEM SER IGUAIS...\n");
+    printf("\n\n                ....:::  CAPITALIZA√á√ÉO SIMPLES  :::....\n");
+    printf("INFORME QUAL VALOR QUER DESCOBRIR /OBS: PER√çODO DA TAXA E TEMPO DEVEM SER IGUAIS...\n");
     printf("\n 1 - Montante");
     printf("\n 2 - Capital");
     printf("\n 3 - Taxa");
@@ -124,7 +124,7 @@ void capitalizacao_simples()
         printf("\n\nTEMPO = %.2f\n\n",resultado);
     }
     else
-        printf("\n\nOP«√O INV¡LIDA!..");
+        printf("\n\nOP√á√ÉO INV√ÅLIDA!..");
 
     return ;
 }
@@ -134,7 +134,7 @@ void juros_simples()
     int op;
     float j, p, i, n, resultado;
     printf("\n\n                    ....:::  JUROS SIMPLES  :::....\n");
-    printf("INFORME QUAL VALOR QUER DESCOBRIR /OBS: PERÕODO DA TAXA E TEMPO DEVEM SER IGUAIS...\n");
+    printf("INFORME QUAL VALOR QUER DESCOBRIR /OBS: PER√çODO DA TAXA E TEMPO DEVEM SER IGUAIS...\n");
     printf("\n 1 - Rendimento de Juros");
     printf("\n 2 - Capital");
     printf("\n 3 - Taxa");
@@ -173,7 +173,7 @@ void juros_simples()
         printf("\n\nTEMPO = %.2f\n\n",resultado);
     }
     else
-        printf("\n\nOP«√O INV¡LIDA!..");
+        printf("\n\nOP√á√ÉO INV√ÅLIDA!..");
 
     return ;
 }
@@ -182,8 +182,8 @@ void cap_composta()
 {
     int op;
     float s, p, i, n, resultado;
-    printf("\n\n                ....:::  CAPITALIZA«√O COMPOSTA  :::....\n");
-    printf("INFORME QUAL VALOR QUER DESCOBRIR /OBS: PERÕODO DA TAXA E TEMPO DEVEM SER IGUAIS...\n");
+    printf("\n\n                ....:::  CAPITALIZA√á√ÉO COMPOSTA  :::....\n");
+    printf("INFORME QUAL VALOR QUER DESCOBRIR /OBS: PER√çODO DA TAXA E TEMPO DEVEM SER IGUAIS...\n");
     printf("\n 1 - Montante");
     printf("\n 2 - Capital");
     printf("\n 3 - Taxa");
@@ -222,7 +222,7 @@ void cap_composta()
         printf("\n\nTEMPO = %.2f\n\n",resultado);
     }
     else
-        printf("\n\nOP«√O INV¡LIDA!..");
+        printf("\n\nOP√á√ÉO INV√ÅLIDA!..");
 
     return ;
 }
@@ -232,7 +232,7 @@ void juros_compostos()
     int op;
     float j, p, i, n, resultado;
     printf("\n\n                    ....:::  JUROS COMPOSTOS  :::....\n");
-    printf("INFORME QUAL VALOR QUER DESCOBRIR /OBS: PERÕODO DA TAXA E TEMPO DEVEM SER IGUAIS...\n");
+    printf("INFORME QUAL VALOR QUER DESCOBRIR /OBS: PER√çODO DA TAXA E TEMPO DEVEM SER IGUAIS...\n");
     printf("\n 1 - Rendimento de Juros");
     printf("\n 2 - Capital");
     printf("\n 3 - Taxa");
@@ -271,7 +271,7 @@ void juros_compostos()
         printf("\n\nTEMPO = %.2f\n\n",resultado);
     }
     else
-        printf("\n\nOP«√O INV¡LIDA!..");
+        printf("\n\nOP√á√ÉO INV√ÅLIDA!..");
 
     return ;
 }
@@ -280,8 +280,8 @@ void uniforme_atual()
 {
     int op;
     float r, p, i, n, a, soma=0, resultado;
-    printf("\n\n            ....::: S…RIE UNIFORME - DATA ATUAL   :::....\n");
-    printf("INFORME QUAL VALOR QUER DESCOBRIR /OBS: PERÕODO DA TAXA E TEMPO DEVEM SER IGUAIS...\n");
+    printf("\n\n            ....::: S√âRIE UNIFORME - DATA ATUAL   :::....\n");
+    printf("INFORME QUAL VALOR QUER DESCOBRIR /OBS: PER√çODO DA TAXA E TEMPO DEVEM SER IGUAIS...\n");
     printf("\n 1 - Valor Atual (Capital Atual)");
     printf("\n 2 - Parcela");
     printf("\nOpcao: "); scanf("%d",&op);
@@ -290,7 +290,7 @@ void uniforme_atual()
         printf("\nInforme Parcela: "); scanf("%f",&r);
         printf("Informe Taxa(%%): "); scanf("%f",&i);
         printf("Informe Tempo: "); scanf("%f",&n);
-        printf("Informe AcrÈscimos (0 se n„o houve ou 0 para parar): \n");
+        printf("Informe Acr√©scimos (0 se n√£o houve ou 0 para parar): \n");
         do{
             scanf("%f",&a);
             soma = soma + a;
@@ -300,7 +300,7 @@ void uniforme_atual()
         printf("\n\nVALOR ATUAL (CAPITAL ATUAL) = $%.2f\n\n",resultado);
 
         resultado = resultado + soma;
-        printf("\n\nTOTAL (ATUAL + ACR…SCIMO) = $%.2f\n\n",resultado);
+        printf("\n\nTOTAL (ATUAL + ACR√âSCIMO) = $%.2f\n\n",resultado);
     }
     else if (op == 2){
         printf("\nInforme Valor Atual: "); scanf("%f",&p);
@@ -311,7 +311,7 @@ void uniforme_atual()
         printf("\n\nPARCELA = $%.2f\n\n",resultado);
     }
     else
-        printf("\n\nOP«√O INV¡LIDA!..");
+        printf("\n\nOP√á√ÉO INV√ÅLIDA!..");
 
     return ;
 }
@@ -320,8 +320,8 @@ void uniforme_futuro()
 {
     int op;
     float r, f, i, n, a, soma=0, resultado;
-    printf("\n\n            ....::: S…RIE UNIFORME - DATA FUTURA   :::....\n");
-    printf("INFORME QUAL VALOR QUER DESCOBRIR /OBS: PERÕODO DA TAXA E TEMPO DEVEM SER IGUAIS...\n");
+    printf("\n\n            ....::: S√âRIE UNIFORME - DATA FUTURA   :::....\n");
+    printf("INFORME QUAL VALOR QUER DESCOBRIR /OBS: PER√çODO DA TAXA E TEMPO DEVEM SER IGUAIS...\n");
     printf("\n 1 - Valor futuro (Montante)");
     printf("\n 2 - Parcela");
     printf("\nOpcao: "); scanf("%d",&op);
@@ -330,7 +330,7 @@ void uniforme_futuro()
         printf("\nInforme Parcela: "); scanf("%f",&r);
         printf("Informe Taxa(%%): "); scanf("%f",&i);
         printf("Informe Tempo: "); scanf("%f",&n);
-        printf("Informe AcrÈscimos (0 se n„o houve ou 0 para parar): \n");
+        printf("Informe Acr√©scimos (0 se n√£o houve ou 0 para parar): \n");
         do{
             scanf("%f",&a);
             soma = soma + a;
@@ -340,7 +340,7 @@ void uniforme_futuro()
         printf("\n\nVALOR FUTURO (MONTANTE) = $%.2f\n\n",resultado);
 
         resultado = resultado + soma;
-        printf("\n\nTOTAL (FUTURO + ACR…SCIMO) = $%.2f\n\n",resultado);
+        printf("\n\nTOTAL (FUTURO + ACR√âSCIMO) = $%.2f\n\n",resultado);
     }
     else if (op == 2){
         printf("\nInforme Valor Futuro: "); scanf("%f",&f);
@@ -351,7 +351,7 @@ void uniforme_futuro()
         printf("\n\nPARCELA = $%.2f\n\n",resultado);
     }
     else
-        printf("\n\nOP«√O INV¡LIDA!..");
+        printf("\n\nOP√á√ÉO INV√ÅLIDA!..");
 
     return ;
 }
@@ -360,8 +360,8 @@ void gradiente_atual()
 {
     int op;
     float g, u, p, i, n, resultado, a, soma=0;
-    printf("\n\n            ....::: S…RIE GRADIENTE - DATA ATUAL :::....\n");
-    printf("INFORME QUAL VALOR QUER DESCOBRIR /OBS: PERÕODO DA TAXA E TEMPO DEVEM SER IGUAIS...\n");
+    printf("\n\n            ....::: S√âRIE GRADIENTE - DATA ATUAL :::....\n");
+    printf("INFORME QUAL VALOR QUER DESCOBRIR /OBS: PER√çODO DA TAXA E TEMPO DEVEM SER IGUAIS...\n");
     printf("\n 1 - Valor Atual (Capital Atual)");
     printf("\n 2 - Parcela");
     printf("\nOpcao: "); scanf("%d",&op);
@@ -371,7 +371,7 @@ void gradiente_atual()
         printf("Informe Parcela Uniforme: "); scanf("%f",&u);
         printf("Informe Taxa(%%): "); scanf("%f",&i);
         printf("Informe Tempo: "); scanf("%f",&n);
-        printf("Informe AcrÈscimos (0 se n„o houve ou 0 para parar): \n");
+        printf("Informe Acr√©scimos (0 se n√£o houve ou 0 para parar): \n");
         do{
             scanf("%f",&a);
             soma = soma + a;
@@ -381,7 +381,7 @@ void gradiente_atual()
         printf("\n\nVALOR ATUAL GRADIENTE (CAPITAL ATUAL GRADIENTE) = $%.2f\n\n",resultado);
 
         resultado = resultado + soma + (u * ( (pow(1+i, n)-1) / (pow(1+i, n) * i) ) );
-        printf("\n\nTOTAL (ATUAL GRADIENTE + UNIFORME + ACR…SCIMO) = $%.2f\n\n",resultado);
+        printf("\n\nTOTAL (ATUAL GRADIENTE + UNIFORME + ACR√âSCIMO) = $%.2f\n\n",resultado);
     }
     else if (op == 2){
         printf("\nInforme Valor Atual: "); scanf("%f",&p);
@@ -392,7 +392,7 @@ void gradiente_atual()
         printf("\n\nPARCELA GRADIENTE = $%.2f\n\n",resultado);
     }
     else
-        printf("\n\nOP«√O INV¡LIDA!..");
+        printf("\n\nOP√á√ÉO INV√ÅLIDA!..");
 
     return ;
 }
@@ -401,8 +401,8 @@ void gradiente_futuro()
 {
     int op;
     float g, u, f, i, n, resultado, a, soma=0;
-    printf("\n\n            ....::: S…RIE GRADIENTE - DATA FUTURO :::....\n");
-    printf("INFORME QUAL VALOR QUER DESCOBRIR /OBS: PERÕODO DA TAXA E TEMPO DEVEM SER IGUAIS...\n");
+    printf("\n\n            ....::: S√âRIE GRADIENTE - DATA FUTURO :::....\n");
+    printf("INFORME QUAL VALOR QUER DESCOBRIR /OBS: PER√çODO DA TAXA E TEMPO DEVEM SER IGUAIS...\n");
     printf("\n 1 - Valor FUTURO (MONTANTE)");
     printf("\n 2 - Parcela");
     printf("\nOpcao: "); scanf("%d",&op);
@@ -411,7 +411,7 @@ void gradiente_futuro()
         printf("\nInforme Parcela Gradiente: "); scanf("%f",&g);
         printf("Informe Taxa(%%): "); scanf("%f",&i);
         printf("Informe Tempo: "); scanf("%f",&n);
-        printf("Informe AcrÈscimos (0 se n„o houve ou 0 para parar): \n");
+        printf("Informe Acr√©scimos (0 se n√£o houve ou 0 para parar): \n");
         do{
             scanf("%f",&a);
             soma = soma + a;
@@ -421,7 +421,7 @@ void gradiente_futuro()
         printf("\n\nVALOR FUTURO GRADIENTE (CAPITAL FUTURO GRADIENTE) = $%.2f\n\n",resultado);
 
         resultado = resultado + soma + (u * ( (pow(1+i, n)-1) / (pow(1+i, n) * i) ));
-        printf("\n\nVALOR PRESENTE TOTAL DA S…RIE GRADIENTE (PARCELAS UNIFORMES + PARCELAS GRADIENTES) …: $%.2f\n\n",resultado);
+        printf("\n\nVALOR PRESENTE TOTAL DA S√âRIE GRADIENTE (PARCELAS UNIFORMES + PARCELAS GRADIENTES) √â: $%.2f\n\n",resultado);
     }
     else if (op == 2){
         printf("\nInforme Valor FUTURO: "); scanf("%f",&f);
@@ -432,7 +432,7 @@ void gradiente_futuro()
         printf("\n\nPARCELA GRADIENTE = $%.2f\n\n",resultado);
     }
     else
-        printf("\n\nOP«√O INV¡LIDA!..");
+        printf("\n\nOP√á√ÉO INV√ÅLIDA!..");
 
     return ;
 }
@@ -441,8 +441,8 @@ void gradiente_geometrico()
 {
     int op;
     float g, p, i, n, resultado, a, s, soma=0;
-    printf("\n\n            ....::: S…RIE GRADIENTE GEOM…TRICO - DATA ATUAL :::....\n");
-    printf("INFORME QUAL VALOR QUER DESCOBRIR /OBS: PERÕODO DA TAXA E TEMPO DEVEM SER IGUAIS...\n");
+    printf("\n\n            ....::: S√âRIE GRADIENTE GEOM√âTRICO - DATA ATUAL :::....\n");
+    printf("INFORME QUAL VALOR QUER DESCOBRIR /OBS: PER√çODO DA TAXA E TEMPO DEVEM SER IGUAIS...\n");
     printf("\n 1 - Valor Atual (Capital Atual)");
     printf("\n 2 - Parcela");
     printf("\nOpcao: "); scanf("%d",&op);
@@ -452,17 +452,17 @@ void gradiente_geometrico()
         printf("Informe Taxa i(%%): "); scanf("%f",&i);
         printf("Informe Taxa g(%%): "); scanf("%f",&g);
         printf("Informe Tempo: "); scanf("%f",&n);
-        printf("Informe AcrÈscimos (0 se n„o houve ou 0 para parar): \n");
+        printf("Informe Acr√©scimos (0 se n√£o houve ou 0 para parar): \n");
         do{
             scanf("%f",&s);
             soma = soma + s;
         } while(a != 0);
         i = i/100;
         resultado = a * ( (1- pow((1+g)/(1+i), n) ) / (i-g) );
-        printf("\n\nVALOR ATUAL GEOM…TRICO (CAPITAL ATUAL GEOM…TRICO) = $%.2f\n\n",resultado);
+        printf("\n\nVALOR ATUAL GEOM√âTRICO (CAPITAL ATUAL GEOM√âTRICO) = $%.2f\n\n",resultado);
 
         resultado = resultado + soma;
-        printf("\n\nTOTAL (ATUAL GEOM…TRICO + ACR…SCIMO) = $%.2f\n\n",resultado);
+        printf("\n\nTOTAL (ATUAL GEOM√âTRICO + ACR√âSCIMO) = $%.2f\n\n",resultado);
     }
     else if (op == 2){
         printf("\nInforme Valor Atual: "); scanf("%f",&p);
@@ -470,35 +470,35 @@ void gradiente_geometrico()
         printf("Informe Tempo: "); scanf("%f",&n);
         i = i/100;
         resultado = p / ( (1- pow((1+g)/(1+i), n) ) / (i-g) );
-        printf("\n\nPARCELA GEOM…TRICA = $%.2f\n\n",resultado);
+        printf("\n\nPARCELA GEOM√âTRICA = $%.2f\n\n",resultado);
     }
     else
-        printf("\n\nOP«√O INV¡LIDA!..");
+        printf("\n\nOP√á√ÉO INV√ÅLIDA!..");
 
     return ;
 }
 
 void vpl()
 {
-    float r, p, i, n, a, investimento=0, resultado, rc, j;
+    float r, i, n, a, investimento=0, resultado, rc, j;
     float vaue, caue;
     char op;
-    printf("\n\n            ....::: VPL - VALOR PRESENTE LÕQUIDO   :::....\n");
-    printf("OBS: PERÕODO DA TAXA E TEMPO DEVEM SER IGUAIS e OS DÕGITOS TUDO EM POSITIVO...\n");
+    printf("\n\n            ....::: VPL - VALOR PRESENTE L√çQUIDO   :::....\n");
+    printf("OBS: PER√çODO DA TAXA E TEMPO DEVEM SER IGUAIS e OS D√çGITOS TUDO EM POSITIVO...\n");
 
     printf("\nInforme Custo Operacional: "); scanf("%f",&r);
     printf("Informe Taxa(%%): "); scanf("%f",&i);
     printf("Informe Tempo: "); scanf("%f",&n);
-    printf("Informe investimentos (0 se n„o houve ou 0 para parar): \n");
+    printf("Informe investimentos (0 se n√£o houve ou 0 para parar): \n");
     do{
         scanf("%f",&a);
         investimento = investimento + a;
     } while(a != 0);
-    printf("Informe valor a recuperar (0 se n„o houve): "); scanf("%f",&rc);
-    printf("Houve diferenÁa no tempo de recuperaÁ„o? (s/n): "); scanf(" %c",&op);
+    printf("Informe valor a recuperar (0 se n√£o houve): "); scanf("%f",&rc);
+    printf("Houve diferen√ßa no tempo de recupera√ß√£o? (s/n): "); scanf(" %c",&op);
     j = n;
     if (op == 's' || op == 'S'){
-        printf("Informe o novo Tempo de recuperaÁ„o: "); scanf("%f",&j);
+        printf("Informe o novo Tempo de recupera√ß√£o: "); scanf("%f",&j);
     }
 
     i = i/100;
